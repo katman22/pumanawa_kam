@@ -8,3 +8,115 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+.forecast_form {
+    max-width: 600px;
+    min-width: 450px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.footer_tag{
+    margin-top: 30px;
+    margin-left: 25px;
+}
+
+.weather_input {
+    width: 450px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.text-left {
+    padding-left: 50px;
+    padding-bottom: 10px;
+}
+
+.weather_div {
+    padding: 20px;
+    min-width: 500px;
+    max-width: 700px;
+    border-radius: 8px;
+}
+
+.geo_formatted {
+    margin-top: 10px;
+}
+
+.text_only{
+    margin-left: 30px;
+}
+.table_aliceblue{
+    background-color: aliceblue;
+}
+
+.table_daily_container{
+    width: 100%;
+    overflow-x: auto;
+    margin-left: 30px;
+}
+
+.table_weekly_container{
+    width: 100%;
+    overflow-y: auto;
+    margin-left: 30px;
+    max-height: 500px;
+}
+
+.table_geo_container{
+    width: 100%;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.table_daily{
+    min-height: 150px;
+    vertical-align: top;
+    line-height: 15px;
+    column-width: 100px;
+    max-width: 500px;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.summary_div {
+    max-width: 600px;
+    min-width: 450px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.summary_table {
+    max-width: 600px;
+    min-width: 550px;
+    background-color: rgb(11, 94, 215);
+    padding: 10px;
+    color: white;
+}
+
+.forecast_btns_table {
+    max-width: 300px;
+    min-width: 300px;
+    margin-top: 20px;
+    background-color: white;
+    padding: 10px;
+    color: white;
+}
+
+.summary_table td {
+    padding: 20px;
+}

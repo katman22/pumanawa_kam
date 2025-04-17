@@ -1,0 +1,22 @@
+<div class="weather_div">
+  <p class="text-left fs-4">Kam's Stuff</p>
+  <figcaption class="blockquote-footer text-left">
+   Various Coding Samples and Tools
+    <br/>Kia ora : Nau Mai Piki Mai
+  </figcaption>
+</div>
+
+
+<div class="weather_div">
+  <p class="text-left fs-2"><u>Weather Forecaster</u></p>
+  <p class="text-left fs-6">
+    Local forecast summary with options for a Full Weather and a Text Only Forecast. A fourteen-day window is available in the full and text only forecasts.
+    <%= form_with url: forecast_index_path, method: 'GET', class: 'forecast_form', data: { turbo_frame: false }, id: 'location_form' do %>
+      <%= text_field_tag :location,
+                         params[:location],
+                         placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
+                         class: 'weather_input' %>
+      <%= submit_tag 'Go', class: 'btn btn-primary' %>
+    <% end %>
+  </p>
+</div>
