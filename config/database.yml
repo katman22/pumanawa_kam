@@ -89,8 +89,6 @@ production:
     username: pumanawa_kam
     password: <%= ENV["PUMANAWA_KAM_PROD_PWD"] %>
     url: <%= ENV["DATABASE_URL"] %>
-    variables:
-      sslmode: require
 #  cache:
 #    <<: *primary_production
 #    database: pumanawa_kam_production_cache
