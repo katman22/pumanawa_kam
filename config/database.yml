@@ -88,15 +88,18 @@ production:
     database: pumanawa_kam_production
     username: pumanawa_kam
     password: <%= ENV["PUMANAWA_KAM_PROD_PWD"] %>
-  cache:
-    <<: *primary_production
-    database: pumanawa_kam_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: pumanawa_kam_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: pumanawa_kam_production_cable
-    migrations_paths: db/cable_migrate
+    url: <%= ENV["DATABASE_URL"] %>
+    variables:
+      sslmode: require
+#  cache:
+#    <<: *primary_production
+#    database: pumanawa_kam_production_cache
+#    migrations_paths: db/cache_migrate
+#  queue:
+#    <<: *primary_production
+#    database: pumanawa_kam_production_queue
+#    migrations_paths: db/queue_migrate
+#  cable:
+#    <<: *primary_production
+#    database: pumanawa_kam_production_cable
+#    migrations_paths: db/cable_migrate
