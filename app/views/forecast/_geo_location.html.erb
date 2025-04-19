@@ -1,42 +1,62 @@
 <turbo-frame id="location_response">
   <br/>
   <div class="table_geo_container">
-  <div class="summary_div">
-    <% if @erred %>
-      <p class="fs-6">Location Response: <%= @locations %></p>
-    <% else %>
-      <p class="fs-6">Location Response from: <%= @location %>, Total Locations: <%= @total %></p>
-      <table class="table">
-        <thead>
-        <tr>
-          <th scope="col">Location</th>
-          <th scope="col">Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @locations.each do |location_hash| %>
+    <div class="summary_div">
+      <% if @erred %>
+        <p class="fs-6">Location Response: <%= @locations %></p>
+      <% else %>
+        <p class="fs-6">Location Response from: <%= @location %>, Total Locations: <%= @total %></p>
+        <table class="table">
+          <thead>
           <tr>
-            <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %></p></td>
-            <td>
-              <%= button_to "Forecast", forecast_summary_path,
-                            method: :post,
-                            params: {
+            <th scope="col">Location</th>
+            <th scope="col">&nbsp;</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @locations.each do |location_hash| %>
+            <tr>
+              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %></p></td>
+              <td>
+                <%= button_to "Summary", forecast_summary_path,
+                              method: :post,
+                              params: {
+                                lat: location_hash["geometry"]["lat"],
+                                long: location_hash["geometry"]["lng"],
+                                location: @location,
+                                zip: location_hash["components"]["postcode"],
+                                location_name: location_hash["formatted"]
+                              },
+                              form: { data: { turbo_frame: "summary_response" } },
+                              class: "btn btn-primary"
+                %>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Forecast links: <%= link_to 'Full Forecast', forecast_full_path(
+                lat: location_hash["geometry"]["lat"],
+                long: location_hash["geometry"]["lng"],
+                location: @location,
+                zip: location_hash["components"]["postcode"],
+                location_name: location_hash["formatted"]
+              ), data: { turbo: false } %> |
+                <%= link_to 'Text Only Forecast',
+                            forecast_text_only_path(
                               lat: location_hash["geometry"]["lat"],
                               long: location_hash["geometry"]["lng"],
                               location: @location,
                               zip: location_hash["components"]["postcode"],
                               location_name: location_hash["formatted"]
-                            },
-                            form: { data: { turbo_frame: "summary_response" } },
-                            class: "btn btn-primary"
-              %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    <% end %>
+                            ), data: { turbo: false }
+                %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% end %>
 
-  </div>
+    </div>
   </div>
 </turbo-frame>
