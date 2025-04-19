@@ -16,25 +16,8 @@
           <tbody>
           <% @locations.each do |location_hash| %>
             <tr>
-              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %></p></td>
-              <td>
-                <%= button_to "Summary", forecast_summary_path,
-                              method: :post,
-                              params: {
-                                lat: location_hash["geometry"]["lat"],
-                                long: location_hash["geometry"]["lng"],
-                                location: @location,
-                                zip: location_hash["components"]["postcode"],
-                                location_name: location_hash["formatted"]
-                              },
-                              form: { data: { turbo_frame: "summary_response" } },
-                              class: "btn btn-primary"
-                %>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                Forecast links: <%= link_to 'Full Forecast', forecast_full_path(
+              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
+                <%= link_to 'Full Forecast', forecast_full_path(
                 lat: location_hash["geometry"]["lat"],
                 long: location_hash["geometry"]["lng"],
                 location: @location,
@@ -49,6 +32,20 @@
                               zip: location_hash["components"]["postcode"],
                               location_name: location_hash["formatted"]
                             ), data: { turbo: false }
+                %></p>
+              </td>
+              <td>
+                <%= button_to "Summary", forecast_summary_path,
+                              method: :post,
+                              params: {
+                                lat: location_hash["geometry"]["lat"],
+                                long: location_hash["geometry"]["lng"],
+                                location: @location,
+                                zip: location_hash["components"]["postcode"],
+                                location_name: location_hash["formatted"]
+                              },
+                              form: { data: { turbo_frame: "summary_response" } },
+                              class: "btn btn-primary"
                 %>
               </td>
             </tr>

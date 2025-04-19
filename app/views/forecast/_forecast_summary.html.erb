@@ -17,7 +17,7 @@
           <td><%= image_tag(summary["icon"], title: summary["detailedForecast"]) %></td>
           <td><p class="fs-3"><%= sprintf("%.0f", summary["high"]) %>&deg; <%= summary["temperatureUnit"] %>
             / <%= sprintf("%.0f", summary["low"]) %>&deg;<%= summary["temperatureUnit"] %></p></td>
-          <td><p class="fs-3"><%= summary["windSpeed"] %> <%= summary["windDirection"] %></p></td>
+          <td><p class="fs-3"><%= summary["windDirection"] %> <%= summary["windSpeed"] %></p></td>
         </tr>
         <tr>
           <td><%= summary["shortForecast"] %></td>
