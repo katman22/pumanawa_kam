@@ -1,32 +1,42 @@
 <div class="weather_div">
   <p class="text-left fs-2">Weather Forecast</p>
   <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+    Forecast Data supplied by
+    <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
+    GeoLocation Data supplied by
+    <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
     <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
   </figcaption>
+  <!-- START ALIGNMENT ROW -->
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-md-6">
 
-  <%= form_with url: forecast_geo_location_path, method: 'POST', class: 'forecast_form', data: { turbo_frame: "location_response" }, id: 'location_form' do %>
-    <%= text_field_tag :location,
-                       params[:location],
-                       placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
-                       class: 'weather_input' %>
-    <%= submit_tag 'Go', class: 'btn btn-primary' %>
-  <% end %>
+      <%= form_with url: forecast_geo_location_path, method: 'POST', class: 'forecast_form', data: { turbo_frame: "location_response" }, id: 'location_form' do %>
+        <%= text_field_tag :location,
+                           params[:location],
+                           placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
+                           class: 'weather_input' %>
+        <%= submit_tag 'Go', class: 'btn btn-primary' %>
+      <% end %>
 
-  <turbo-frame id="location_response">
-    <% if @locations %>
-    <%= render partial: "geo_location" %>
-    <% end %>
-  </turbo-frame>
+      <turbo-frame id="location_response">
+        <% if @locations %>
+          <%= render partial: "geo_location" %>
+        <% end %>
+      </turbo-frame>
 
-<turbo-frame id="summary_response">
-</turbo-frame>
+      <turbo-frame id="summary_response">
+      </turbo-frame>
+    </div>
+  </div>
 </div>
 <div class="footer_tag">
   <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+    Forecast Data supplied by
+    <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
+    GeoLocation Data supplied by
+    <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
     <br/>Search for forecast
   </figcaption>
 </div>
