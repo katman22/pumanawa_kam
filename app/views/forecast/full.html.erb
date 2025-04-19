@@ -1,58 +1,109 @@
 <div class="weather_div">
-  <p class="text-left fs-4">Full Forecast for:<br/><%= @location_name %></p></p>
+  <p class="text-left fs-4">Full Forecast for:<br/><%= @location_name %></p>
+
   <figcaption class="blockquote-footer text-left">
     Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
     GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
     <br/>Full Local forecast : <a href="javascript:window.history.back();">Back to Summary</a>
   </figcaption>
+
   <% if @erred %>
     <p class="fs-6">Error Response: <%= @message %></p>
   <% else %>
-    <div class="table_daily_container">
-    <table class="table_daily table" >
-      <tr>
-        <% @forecasts.each do |forecast| %>
-        <td>
-          <p><small>
-          <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %><br/>
-            <b><%= forecast["name"] %></b><br/>
-          </small></p>
-        </td>
-        <% end %>
-      </tr>
-    </table>
-    </div>
 
-    <% days = @forecasts.size %>
-    <p class="text-decoration-underline text_only"><i><%= days %> Day Forecast</i></p>
-    <div class="table_weekly_container">
-    <table class="table table_aliceblue">
+    <!-- START ALIGNMENT ROW -->
+    <div class="row">
+      <!-- Left Column -->
+      <div class="col-md-8">
+        <div class="table_daily_container">
+          <table class="table_daily table">
+            <tr>
+              <% @forecasts.each do |forecast| %>
+                <td class="text-right align-top" style="vertical-align: top;">
+                  <div class="d-flex flex-column align-items-right" style="min-height: 120px;"> <!-- Adjust height as needed -->
+                    <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
+                      <small><b><%= forecast["name"] %></b></small>
+                    </div>
+                    <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
+                    <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
+                      <% temp = forecast["isDaytime"] ? "high #{forecast["temperature"]}" : "low #{forecast["temperature"]}" %>
+                      <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
+                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast["temperatureUnit"] %></b></small><br/>
+                      <br/>
+                      <small>
+                        <%= forecast["shortForecast"] %>
+                      </small>
+                    </div>
+                  </div>
+                </td>
+              <% end %>
+            </tr>
+          </table>
 
-      <% @forecasts.each do |forecast| %>
-        <% precipitation = forecast["probabilityOfPrecipitation"] %>
-        <tr class="table-primary">
-          <td colspan=2><i><%= forecast["name"] %>:</i></td>
-        </tr>
-        <tr>
-          <th  rowspan="2"><%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %></th>
-          <td><p><small>
-            <b>InBrief:</b> <%= forecast["shortForecast"] %>, <b>temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>, <b>wind direction:</b> <%= forecast["windDirection"] %>,<br/>
-            <b>wind speed:</b> <%= forecast["windSpeed"] %> <b>Chance of precipitation: </b><%= precipitation["value"] || 0 %>%
-          </small></p></td>
-        </tr>
-        <tr>
-          <td><p><small><%= forecast["detailedForecast"] %></small></p></td>
-        </tr>
-      <% end %>
-    </table>
+        </div>
+
+        <% days = @forecasts.size %>
+        <p class="text-decoration-underline text_only"><i><%= days %> Day Forecast</i></p>
+        <div class="table_weekly_container">
+          <table class="table table_aliceblue">
+            <% @forecasts.each do |forecast| %>
+              <% precipitation = forecast["probabilityOfPrecipitation"] %>
+              <tr class="table-primary">
+                <td colspan=2><i><%= forecast["name"] %>:</i></td>
+              </tr>
+              <tr>
+                <th rowspan="2"><%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %></th>
+                <td>
+                  <p><small>
+                    <b>InBrief:</b> <%= forecast["shortForecast"] %>, <b>temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
+                    <b>wind direction:</b> <%= forecast["windDirection"] %>,<br/>
+                    <b>wind speed:</b> <%= forecast["windSpeed"] %>
+                    <b>Chance of precipitation: </b><%= precipitation["value"] || 0 %>%
+                  </small></p>
+                </td>
+              </tr>
+              <tr>
+                <td><p><small><%= forecast["detailedForecast"] %></small></p></td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-md-4">
+        <div class="text_only bg-light p-3 rounded shadow-sm">
+          <h5>Weather Tips</h5>
+          <ul class="small">
+            <li>Carry an umbrella if rain chance > 50%</li>
+            <li>Layer up on windy days</li>
+            <li>High UV? Wear sunscreen!</li>
+          </ul>
+
+          <hr/>
+
+          <h6 class="text-muted">Current Location</h6>
+          <p><%= @location_name %></p>
+        </div>
+        <div class="text_only bg-light p-3 rounded shadow-sm">
+          <h5>Weather Tips</h5>
+          <ul class="small">
+            <li>Carry an umbrella if rain chance > 50%</li>
+            <li>Layer up on windy days</li>
+            <li>High UV? Wear sunscreen!</li>
+          </ul>
+
+          <hr/>
+
+          <h6 class="text-muted">Current Location</h6>
+          <p><%= @location_name %></p>
+        </div>
+      </div>
+
+
+
     </div>
+    <!-- END ALIGNMENT ROW -->
+
   <% end %>
-
-</div>
-<div class="footer_tag">
-  <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Full Local forecast : <a href="javascript:window.history.back();">Back to Summary</a>
-  </figcaption>
 </div>
