@@ -20,13 +20,13 @@
             <tr>
               <% @forecasts.each do |forecast| %>
                 <td class="text-right align-top" style="vertical-align: top;">
-                  <div class="d-flex flex-column align-items-right" style="min-height: 120px;"> <!-- Adjust height as needed -->
+                  <div class="d-flex flex-column align-items-right" style="min-height: 120px;width: 100px"> <!-- Adjust height as needed -->
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
                       <small><b><%= forecast["name"] %></b></small>
                     </div>
                     <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
-                      <% temp = forecast["isDaytime"] ? "high #{forecast["temperature"]}" : "low #{forecast["temperature"]}" %>
+                      <% temp = forecast["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast["temperature"]}" %>
                       <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
                       <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast["temperatureUnit"] %></b></small><br/>
                       <br/>
@@ -55,10 +55,10 @@
                 <th rowspan="2"><%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %></th>
                 <td>
                   <p><small>
-                    <b>InBrief:</b> <%= forecast["shortForecast"] %>, <b>temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
-                    <b>wind direction:</b> <%= forecast["windDirection"] %>,<br/>
-                    <b>wind speed:</b> <%= forecast["windSpeed"] %>
-                    <b>Chance of precipitation: </b><%= precipitation["value"] || 0 %>%
+                    <b>In Brief:</b> <%= forecast["shortForecast"] %>, <b>Temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
+                    <b>Wind Direction:</b> <%= forecast["windDirection"] %>,<br/>
+                    <b>Wind Speed:</b> <%= forecast["windSpeed"] %>
+                    <b>Chance of Precipitation: </b><%= precipitation["value"] || 0 %>%
                   </small></p>
                 </td>
               </tr>
