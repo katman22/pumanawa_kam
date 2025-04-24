@@ -36,7 +36,7 @@ class ForecastController < ApplicationController
   end
 
   def dual
-    @recent_locations = session[:recent_locations].take(12)
+    @recent_locations = session[:recent_locations]
   end
 
   def dual_geo_location
