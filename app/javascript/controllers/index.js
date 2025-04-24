@@ -2,3 +2,7 @@
 import { application } from "controllers/application"
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)
+
+import RecentLocationController from "controllers/recent_location_controller"
+
+application.register("recent-location", RecentLocationController)

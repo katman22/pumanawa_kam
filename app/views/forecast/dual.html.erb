@@ -1,0 +1,71 @@
+<!-- START ALIGNMENT ROW -->
+<div class="row"  data-controller="recent-location">
+  <!-- Left Column -->
+  <div class="col-md-6">
+    <div class="weather_div">
+      <p class="text-left fs-2">Weather Forecast</p>
+      <figcaption class="blockquote-footer text-left">
+        Forecast Data supplied by
+        <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
+        GeoLocation Data supplied by
+        <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+        <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
+      </figcaption>
+      <%= form_with url: forecast_dual_geo_location_path, method: 'POST', class: 'dual_forecast_form', id: 'location_form' do %>
+        <p class="fs-6"> Enter a city, state & zip or latitude and longitude <br/>I.E. Salt Lake, UT 84101 or 41.00,
+          -101.00</p>
+        <%= text_field_tag :location,
+                           params[:location],
+                           placeholder: 'Enter city, state, zip OR lat & lng',
+                           class: 'weather_input',
+                           data: { controller: "", "recent-location-target": "input" } %>
+
+        <%= submit_tag 'Screen A', class: 'btn btn-primary', name: 'commit', value: 'Locale A', data: { turbo_frame: "location_response_a" } %>
+        <%= submit_tag 'Screen B', class: 'btn btn-primary', name: 'commit', value: 'Locale B', data: { turbo_frame: "location_response_b" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @recent_locations %>
+    <div class="col-md-4">
+      <div class="recent_locations text_only bg-light p-3 rounded shadow-sm">
+        <h5>Recent Search Locations</h5>
+        <div class="table_recent_container">
+
+          <table class="table table-striped table-hover">
+            <% @recent_locations.each do |recent| %>
+              <tr data-action="click->recent-location#select"
+                  data-location="<%= recent["location_name"] %>"
+                  data-lat="<%= recent["latitude"] %>"
+                  data-lng="<%= recent["longitude"] %>">
+                <td class="fs-8"><%= recent["location_name"] %></td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+<!-- START ALIGNMENT ROW -->
+<div class="row">
+  <!-- Left Column -->
+  <div class="col-md-5">
+    <div class="dual_result_div">
+      <span class="float-end text-end badge text-bg-primary">Locale A</span>
+      <turbo-frame id="location_response_a">
+      </turbo-frame>
+    </div>
+  </div>
+
+  <!-- Right Column -->
+  <div class="col-md-5">
+    <div class="dual_result_div">
+      <span class="float-end text-end badge text-bg-primary">Locale B</span>
+      <turbo-frame id="location_response_b">
+      </turbo-frame>
+    </div>
+  </div>
+
+
+</div>

@@ -1,20 +1,13 @@
+<turbo-frame id="<%= turbo_location %>">
 <div class="weather_div">
-  <p class="text-left fs-4">Full Forecast for:<br/><%= @location_name %></p>
-
-  <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Full Local forecast : <a href="javascript:window.history.back();">Back to Summary</a>
-  </figcaption>
+  <p class="text-left fs-6">Full Forecast for:<br/><%= @location_name %></p>
 
   <% if @erred %>
     <p class="fs-6">Error Response: <%= @message %></p>
   <% else %>
 
     <!-- START ALIGNMENT ROW -->
-    <div class="row">
       <!-- Left Column -->
-      <div class="col-md-8">
         <div class="table_daily_container">
           <table class="table_daily table">
             <tr>
@@ -70,40 +63,5 @@
         </div>
       </div>
 
-      <!-- Right Column -->
-      <div class="col-md-4">
-        <div class="text_only bg-light p-3 rounded shadow-sm">
-          <h5>Weather Tips</h5>
-          <ul class="small">
-            <li>Carry an umbrella if rain chance > 50%</li>
-            <li>Layer up on windy days</li>
-            <li>High UV? Wear sunscreen!</li>
-          </ul>
-
-          <hr/>
-
-          <h6 class="text-muted">Current Location</h6>
-          <p><%= @location_name %></p>
-        </div>
-        <div class="text_only bg-light p-3 rounded shadow-sm">
-          <h5>Weather Tips</h5>
-          <ul class="small">
-            <li>Carry an umbrella if rain chance > 50%</li>
-            <li>Layer up on windy days</li>
-            <li>High UV? Wear sunscreen!</li>
-          </ul>
-
-          <hr/>
-
-          <h6 class="text-muted">Current Location</h6>
-          <p><%= @location_name %></p>
-        </div>
-      </div>
-
-
-
-    </div>
-    <!-- END ALIGNMENT ROW -->
-
   <% end %>
-</div>
+  </turbo-frame>

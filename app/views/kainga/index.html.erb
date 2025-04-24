@@ -12,9 +12,14 @@
     <div class="weather_div">
       <p class="text-left fs-2"><u>Weather Forecaster</u></p>
       <p class="text-left fs-6">
-        Local forecast summary with options for a Full Weather and a Text Only Forecast. A fourteen-day window is
+        Local forecast summary with options for a Full Weather and a Text Only Forecast. A seven-day window is
         available in the full and text only forecasts.
-        <%= form_with url: forecast_index_path, method: 'GET', class: 'forecast_form', data: { turbo_frame: false }, id: 'location_form' do %>
+      <p class ="text_only">
+        View forecasts in two screens: <%= link_to 'Dual Screen Forecasts', forecast_dual_path, data: { turbo: false } %>
+      </p>
+      <p class ="text_only fs-5">
+        Original Forecaster:
+        <%= form_with url: forecast_view_path, method: 'GET', class: 'forecast_form text_only', data: { turbo_frame: false }, id: 'location_form' do %>
           <%= text_field_tag :location,
                              params[:location],
                              placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',

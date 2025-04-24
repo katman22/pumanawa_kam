@@ -20,11 +20,20 @@
  */
 
 .forecast_form {
-    max-width: 600px;
+    max-width: 700px;
     min-width: 450px;
     border-radius: 10px;
     background-color: aliceblue;
-    margin: 0 auto;
+    margin: 10px 5px;
+    padding: 20px;
+}
+
+.dual_forecast_form {
+    max-width: 740px;
+    min-width: 450px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 10px 5px;
     padding: 20px;
 }
 
@@ -34,7 +43,7 @@
 }
 
 .weather_input {
-    width: 450px;
+    width: 500px;
     padding: 8px;
     border-radius: 8px;
 }
@@ -51,8 +60,26 @@
     border-radius: 8px;
 }
 
+.result_div {
+    padding: 20px;
+    min-width: 400px;
+    max-width: 95%;
+    border-radius: 8px;
+}
+
+.dual_result_div {
+    padding: 0px;
+    min-width: 400px;
+    max-width: 95%;
+    border-radius: 8px;
+}
+
 .geo_formatted {
     margin-top: 10px;
+}
+
+.recent_locations {
+    margin-top: 30px;
 }
 
 .text_only{
@@ -75,10 +102,26 @@
     max-height: 500px;
 }
 
+.table_recent_container{
+    width: 100%;
+    overflow-y: auto;
+    margin-left: 0;
+    max-height: 200px;
+}
+
 .table_geo_container{
     width: 100%;
     overflow-y: auto;
     max-height: 500px;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .table_daily{
@@ -92,11 +135,20 @@
 }
 
 .summary_div {
-    max-width: 600px;
+    max-width: 700px;
     min-width: 450px;
     border-radius: 10px;
     background-color: aliceblue;
-    margin: 30px auto;
+    margin: 10px 10px;
+    padding: 20px;
+}
+
+.dual_div {
+    max-width: 700px;
+    min-width: 450px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 10px 0;
     padding: 20px;
 }
 

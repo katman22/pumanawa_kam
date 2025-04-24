@@ -10,15 +10,18 @@
   <!-- START ALIGNMENT ROW -->
   <div class="row">
     <!-- Left Column -->
-    <div class="col-md-6">
-
+    <div class="col-md-7">
+      <p class ="text_only">
+        <%= link_to 'Dual Screen Forecasts', forecast_dual_path, data: { turbo: false } %>
+      </p>
       <%= form_with url: forecast_geo_location_path, method: 'POST', class: 'forecast_form', data: { turbo_frame: "location_response" }, id: 'location_form' do %>
         <%= text_field_tag :location,
                            params[:location],
                            placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
                            class: 'weather_input' %>
-        <%= submit_tag 'Go', class: 'btn btn-primary' %>
+        <%= submit_tag 'Go', class: 'btn btn-primary', name: 'commit', value: 'Go' %>
       <% end %>
+
 
       <turbo-frame id="location_response">
         <% if @locations %>

@@ -32,6 +32,15 @@
                               zip: location_hash["components"]["postcode"],
                               location_name: location_hash["formatted"]
                             ), data: { turbo: false }
+                %> |
+                <%= link_to 'Dual Screen Forecasts',
+                            forecast_dual_path(
+                              lat: location_hash["geometry"]["lat"],
+                              long: location_hash["geometry"]["lng"],
+                              location: @location,
+                              zip: location_hash["components"]["postcode"],
+                              location_name: location_hash["formatted"]
+                            ), data: { turbo: false }
                 %></p>
               </td>
               <td>
