@@ -60,6 +60,13 @@
     border-radius: 8px;
 }
 
+.mobile_weather_div {
+    padding: 10px;
+    min-width: 500px;
+    max-width: 100%;
+    border-radius: 8px;
+}
+
 .result_div {
     padding: 20px;
     min-width: 400px;

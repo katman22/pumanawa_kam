@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   root "kainga#index"
 
+  scope path: "kainga", controller: :kainga do
+    get "index", action: :index
+    get "mobile", action: :mobile
+  end
+
+  get "mobile" => "kainga#mobile"
+
   scope path: "forecast", controller: :forecast do
     get  "view", action: :index, as: :forecast_view
     get  "full", action: :full, as: :forecast_full
