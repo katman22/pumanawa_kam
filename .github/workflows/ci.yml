@@ -75,6 +75,13 @@ jobs:
       RAILS_ENV: test
 
     steps:
+      - name: Debug Rails environment
+        run: |
+          echo "ENV RAILS_ENV=$RAILS_ENV"
+          bin/rails runner "puts 'Rails.env: ' + Rails.env"
+          env:
+          RAILS_ENV: test
+
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config google-chrome-stable
 
