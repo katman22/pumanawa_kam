@@ -1,5 +1,4 @@
 class ForecastController < ApplicationController
-
   include BaseForecaster
 
   def index
