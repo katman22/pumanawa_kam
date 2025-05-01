@@ -1,9 +1,9 @@
 class MobileForecastController < ApplicationController
-  
+  include BaseForecaster
   FULL_TURBO = "full_response"
-  
-  def index
 
+  def index
+    find_locations
   end
 
   def full
@@ -33,30 +33,4 @@ class MobileForecastController < ApplicationController
       turbo_stream.replace("location_response", partial: "geo_location", locals: { location: @location, locations: @locations, total: @total, erred: @erred })
     ]
   end
-
-  private
-
-  def location_services
-    location_service_result = OpenCage::GeoLocation::LocationFromInput.(@location)
-    @erred = location_service_result.failure?
-    if @erred
-      @locations = location_service_result.value
-      @total = 0
-    else
-      @locations = location_service_result.value[:locations]
-      @total = location_service_result.value[:total]
-    end
-  end
-
-  def create_forecasts
-    @location = params[:location]
-    service_result = Noaa::Forecast::TextOnly.(params[:lat], params[:long])
-    if service_result.success?
-      @forecasts = service_result.value["forecasts"]
-    else
-      @erred = true
-      @message = service_result.value
-    end
-  end
-
 end

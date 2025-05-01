@@ -1,15 +1,12 @@
 <turbo-frame id="full_response">
-<div class="mobile_weather_div">
+  <div class="mobile_weather_div">
 
-  <% if @erred %>
-    <p class="fs-6">Error Response: <%= @message %></p>
-  <% else %>
+    <% if @erred %>
+      <p class="fs-6">Error Response: <%= @message %></p>
+    <% else %>
 
-    <!-- START ALIGNMENT ROW -->
-    <div class="row">
-      <!-- Left Column -->
-      <div class="col-md-3">
-        <%= @location_name %>
+      <div class="row">
+        <p><%= @location_name %></p>
         <div class="mobile_daily_container">
           <table class="mobile_daily table">
             <tr>
@@ -37,9 +34,7 @@
 
         </div>
       </div>
-    </div>
-    <!-- END ALIGNMENT ROW -->
 
-  <% end %>
-</div>
+    <% end %>
+  </div>
 </turbo-frame>
