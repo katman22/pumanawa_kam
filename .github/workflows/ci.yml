@@ -79,7 +79,7 @@ jobs:
         run: |
           echo "ENV RAILS_ENV=$RAILS_ENV"
           bin/rails runner "puts 'Rails.env: ' + Rails.env"
-          env:
+        env:
           RAILS_ENV: test
 
       - name: Install packages
