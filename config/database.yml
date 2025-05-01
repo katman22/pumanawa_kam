@@ -61,8 +61,8 @@ development:
 test:
   <<: *default
   database: pumanawa_kam_test
-  username: pumanawa
-  password: <%= ENV.fetch("PUMANAWA_KAM_DEV_PWD") %>
+  username: postgres
+  password: postgres
   url: postgresql://pumanawa:mTnP%40%24%2444@localhost:5432/pumanawa_kam_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
