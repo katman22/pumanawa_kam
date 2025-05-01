@@ -73,9 +73,6 @@ jobs:
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       RAILS_ENV: test
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-      PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
-      PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
 
     steps:
       - name: Install packages
@@ -94,7 +91,7 @@ jobs:
         env:
           RAILS_ENV: test
           # postgres://postgres:postgres@localhost:5432
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test test:system
 
