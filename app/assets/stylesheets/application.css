@@ -28,6 +28,17 @@
     padding: 20px;
 }
 
+
+.mobile_forecast_form {
+    max-width: 375px;
+    min-width: 375px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 10px 5px;
+    padding: 10px;
+}
+
+
 .dual_forecast_form {
     max-width: 740px;
     min-width: 450px;
@@ -48,6 +59,12 @@
     border-radius: 8px;
 }
 
+.mobile_weather_input {
+    width: 300px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
 .text-left {
     padding-left: 50px;
     padding-bottom: 10px;
@@ -62,8 +79,8 @@
 
 .mobile_weather_div {
     padding: 10px;
-    min-width: 500px;
-    max-width: 100%;
+    min-width: 400px;
+    max-width: 400px;
     border-radius: 8px;
 }
 
@@ -102,6 +119,12 @@
     margin-left: 30px;
 }
 
+.mobile_daily_container{
+    width: 100%;
+    overflow-x: auto;
+    margin-left: 5px;
+}
+
 .table_weekly_container{
     width: 100%;
     overflow-y: auto;
@@ -120,6 +143,13 @@
     width: 100%;
     overflow-y: auto;
     max-height: 500px;
+}
+
+.table_mobile_geo_container{
+    margin: 0 5px;
+    width: 370px;
+    overflow-y: auto;
+    max-height: 350px;
 }
 
 .link-button {
@@ -141,9 +171,28 @@
     border-collapse: collapse;
 }
 
+.mobile_daily{
+    min-height: 150px;
+    vertical-align: top;
+    line-height: 15px;
+    column-width: 100px;
+    max-width: 375px;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
 .summary_div {
     max-width: 700px;
     min-width: 450px;
+    border-radius: 10px;
+    background-color: aliceblue;
+    margin: 10px 10px;
+    padding: 20px;
+}
+
+.mobile_summary_div {
+    max-width: 350px;
+    min-width: 350px;
     border-radius: 10px;
     background-color: aliceblue;
     margin: 10px 10px;

@@ -1,0 +1,33 @@
+<turbo-frame id="location_response">
+  <div class="table_mobile_geo_container">
+    <div class="mobile_summary_div">
+      <% if @erred %>
+        <p class="fs-6">Location Response: <%= @locations %></p>
+      <% else %>
+        <p class="fs-6">Location Response from: <%= @location %>, Total Locations: <%= @total %></p>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Location</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @locations.each do |location_hash| %>
+            <tr>
+              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
+                <%= link_to 'Full Forecast', mobile_forecast_full_path(
+                lat: location_hash["geometry"]["lat"],
+                long: location_hash["geometry"]["lng"],
+                location: @location,
+                location_name: location_hash["formatted"]
+              ), data: { turbo_frame: 'full_response'} %> </p>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% end %>
+
+    </div>
+  </div>
+</turbo-frame>

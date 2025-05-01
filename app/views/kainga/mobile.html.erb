@@ -6,4 +6,24 @@
   </figcaption>
 </div>
 
-
+<div class="row">
+  <!-- Left Column -->
+  <div class="col-md-4">
+    <div class="mobile_weather_div">
+      <p class="fs-2">Weather Forecaster</p>
+      <p class="fs-6">
+        Local forecast summary with options for a Full Weather and a Text Only Forecast. A seven-day window is
+        available in the full and text only forecasts.
+      <p class ="fs-5">
+        <u>Forecast Location:</u>
+        <%= form_with url: mobile_forecast_index_path, method: 'GET', class: 'mobile_forecast_form', data: { turbo_frame: false}, id: 'location_form' do %>
+          <%= text_field_tag :location,
+                             params[:location],
+                             placeholder: 'City, state or zip I.E: Salt Lake City, UT or 84101',
+                             class: 'mobile_weather_input' %>
+          <%= submit_tag 'Go', class: 'btn btn-primary' %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+</div>

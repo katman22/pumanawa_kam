@@ -52,6 +52,7 @@ class ForecastController < ApplicationController
       turbo_stream.replace(turbo_location, partial: "geo_location_dual", locals: { location: @location, locations: @locations, total: @total, erred: @erred, turbo_location: turbo_location })
     ]
   end
+
   def full_forecast_for_location(turbo_location)
     found_location = @locations.first
     @latitude = found_location["geometry"]["lat"]
@@ -96,7 +97,7 @@ class ForecastController < ApplicationController
   end
 
   def summary_forecast_for_location
-    service_result = Noaa::Forecast::Summary.(@latitude, @longitude, @zip)
+    service_result = Noaa::Forecast::Summary.(@latitude, @longitude)
     if service_result.failure?
       @erred = true
       @summary = service_result.value
@@ -107,7 +108,7 @@ class ForecastController < ApplicationController
   end
 
   def create_forecasts
-    service_result = Noaa::Forecast::TextOnly.(@latitude, @longitude, @zip)
+    service_result = Noaa::Forecast::TextOnly.(@latitude, @longitude)
     if service_result.success?
       @forecasts = service_result.value["forecasts"]
     else

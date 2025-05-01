@@ -1,0 +1,31 @@
+<div class="mobile_weather_div">
+  <p class="fs-2">Weather Forecast</p>
+  <figcaption class="blockquote-footer">
+    Forecast Data supplied by
+    <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
+    GeoLocation Data supplied by
+    <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+    <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
+  </figcaption>
+</div>
+<div class="row">
+  <!-- Left Column -->
+  <div class="col-md-4">
+    <div class="mobile_weather_div">
+      <p class ="fs-5">
+        <u>Forecast Location:</u>
+        <%= form_with url: mobile_forecast_geo_location_path, method: 'POST', class: 'mobile_forecast_form', data: { turbo_frame: 'location_response'}, id: 'location_form' do %>
+          <%= text_field_tag :location,
+                             params[:location],
+                             placeholder: 'City, state or zip I.E: Salt Lake City, UT or 84101',
+                             class: 'mobile_weather_input' %>
+          <%= submit_tag 'Go', class: 'btn btn-primary' %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+</div>
+<turbo-frame id="location_response">
+</turbo-frame>
+<turbo-frame id="full_response">
+</turbo-frame>

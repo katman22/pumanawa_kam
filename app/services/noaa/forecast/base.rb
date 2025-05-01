@@ -3,14 +3,13 @@
 module Noaa
   module Forecast
     class Base < ApplicationService
-      attr_reader :latitude, :longitude, :zipcode, :from_cache
+      attr_reader :latitude, :longitude, :from_cache
 
       BASE_NOAA_URL = "https://api.weather.gov/points/"
 
-      def initialize(latitude, longitude, zipcode)
+      def initialize(latitude, longitude)
         @latitude = latitude
         @longitude = longitude
-        @zipcode = zipcode
         @from_cache = false
       end
 
