@@ -1,6 +1,6 @@
 class KaingaController < ApplicationController
   def index
-    return mobile unless mobile_device?
+    return mobile if mobile_device?
     render "index"
   end
 
