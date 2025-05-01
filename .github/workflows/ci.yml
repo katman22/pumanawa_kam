@@ -93,7 +93,9 @@ jobs:
           # postgres://postgres:postgres@localhost:5432
           # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: |
+          bin/rails db:drop db:create db:schema:load
+          bin/rails test test:system
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
