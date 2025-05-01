@@ -5,7 +5,7 @@
     <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
     GeoLocation Data supplied by
     <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
+    <br/><%= link_to "Kainga", root_path %> | <%= link_to "Home", root_path %>
   </figcaption>
 </div>
 <div class="row">
@@ -26,6 +26,9 @@
   </div>
 </div>
 <turbo-frame id="location_response">
+  <% if @locations %>
+    <%= render partial: "geo_location" %>
+  <% end %>
 </turbo-frame>
 <turbo-frame id="full_response">
 </turbo-frame>

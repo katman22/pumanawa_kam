@@ -71,8 +71,16 @@ jobs:
       #   ports:
       #     - 6379:6379
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      RAILS_ENV: test
 
     steps:
+      - name: Debug Rails environment
+        run: |
+          echo "ENV RAILS_ENV=$RAILS_ENV"
+        env:
+          RAILS_ENV: test
+
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config google-chrome-stable
 
@@ -88,9 +96,15 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
+          PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          # postgres://postgres:postgres@localhost:5432
+          # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: |
+          RAILS_ENV=test bin/rails db:drop db:create db:schema:load
+          bin/rails test test:system
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
