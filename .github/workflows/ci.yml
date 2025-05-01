@@ -73,6 +73,7 @@ jobs:
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       PUMANAWA_KAM_DEV_PWD: postgres
+      RAILS_ENV: test
 
     steps:
       - name: Install packages

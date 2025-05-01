@@ -63,6 +63,7 @@ test:
   database: pumanawa_kam_test
   username: pumanawa
   password: <%= ENV.fetch("PUMANAWA_KAM_DEV_PWD") %>
+  url: postgresql://pumanawa:mTnP%40%24%2444@localhost:5432/pumanawa_kam_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
