@@ -73,5 +73,4 @@ group :test do
 end
 
 # mobile app gem for sharing resources
-gem 'rack-cors', require: 'rack/cors'
-
+gem "rack-cors", require: "rack/cors"
