@@ -71,3 +71,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# mobile app gem for sharing resources
+gem 'rack-cors', require: 'rack/cors'
+
