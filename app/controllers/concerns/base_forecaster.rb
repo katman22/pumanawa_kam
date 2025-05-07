@@ -17,7 +17,7 @@ module BaseForecaster
       return unless params[:location]
       set_defaults
       @location = params[:location]
-      location_services
+      create_forecasts
     end
 
     def location_services
