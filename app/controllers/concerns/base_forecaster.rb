@@ -8,67 +8,28 @@ module BaseForecaster
 
     def find_locations
       return unless params[:location]
-      set_defaults
-      @location = params[:location]
-      location_services
+      location_context, _recent_locations = set_defaults
+      location_services(location_context.location)
     end
 
-    def find_forecast
-      return unless params[:location]
-      set_defaults
-      @location = params[:location]
-      create_forecasts
+    def location_services(location)
+      location_service_result = OpenCage::GeoLocation::LocationFromInput.(location)
+      [ location_service_result.failure?, location_service_result.value[:locations], location_service_result.value[:total] || 0 ]
     end
 
-    def location_services
-      location_service_result = OpenCage::GeoLocation::LocationFromInput.(@location)
-      @erred = location_service_result.failure?
-      if @erred
-        @locations = location_service_result.value
-        @total = 0
-      else
-        @locations = location_service_result.value[:locations]
-        @total = location_service_result.value[:total]
-      end
+    def summary_forecast_for_location(lat, long)
+      service_result = Noaa::Forecast::Summary.(lat, long)
+      [ service_result.failure?, service_result.value ]
     end
 
-    def summary_forecast_for_location
-      service_result = Noaa::Forecast::Summary.(params[:lat] || @latitude, params[:long] || @longitude)
-      if service_result.failure?
-        @erred = true
-        @summary = service_result.value
-      else
-        @summary = service_result.value
-      end
-      @summary = service_result.value
-    end
-
-    def create_forecasts
-      service_result = Noaa::Forecast::TextOnly.(params[:lat]|| @latitude, params[:long]|| @longitude)
-      if service_result.success?
-        @forecasts = service_result.value["forecasts"]
-      else
-        @erred = true
-        @message = service_result.value
-      end
+    def create_forecasts(latitude: 0, longitude: 0)
+      service_result = Noaa::Forecast::TextOnly.(latitude, longitude)
+      [ service_result.failure?, service_result.value["forecasts"] || service_result.value ]
     end
 
     def set_defaults
-      @location = params[:location]
-      @location_name = params[:location_name]
-      @erred = false
-      @recent_locations = recent_locations
-    end
-
-    def recent_locations
-      session[:recent_locations] = session[:recent_locations] || []
-      session[:recent_locations].unshift(location_data)
-      session[:recent_locations].uniq!
-      session[:recent_locations] = session[:recent_locations].take(12)
-    end
-
-    def location_data
-      { location: @location, location_name: @location_name, latitude: params[:lat], longitude: params[:long] }
+      location_context = LocationContext.new(params)
+      [ location_context, RecentLocations.new(session).add(location_context.to_h) ]
     end
   end
 end

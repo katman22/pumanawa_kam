@@ -1,11 +1,17 @@
 <turbo-frame id="location_response">
   <br/>
+  <%
+    erred         ||= @erred
+    location      ||= @location
+    locations      ||= @locations
+    total      ||= @total
+  %>
   <div class="table_geo_container">
     <div class="summary_div">
-      <% if @erred %>
-        <p class="fs-6">Location Response: <%= @locations %></p>
+      <% if erred %>
+        <p class="fs-6">Location Response: <%= locations %></p>
       <% else %>
-        <p class="fs-6">Location Response from: <%= @location %>, Total Locations: <%= @total %></p>
+        <p class="fs-6">Location Response from: <%= location %>, Total Locations: <%= total %></p>
         <table class="table">
           <thead>
           <tr>
@@ -14,13 +20,13 @@
           </tr>
           </thead>
           <tbody>
-          <% @locations.each do |location_hash| %>
+          <% locations.each do |location_hash| %>
             <tr>
               <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
                 <%= link_to 'Full Forecast', forecast_full_path(
                 lat: location_hash["geometry"]["lat"],
                 long: location_hash["geometry"]["lng"],
-                location: @location,
+                location: location,
                 zip: location_hash["components"]["postcode"],
                 location_name: location_hash["formatted"]
               ), data: { turbo: false } %> |
@@ -28,7 +34,7 @@
                             forecast_text_only_path(
                               lat: location_hash["geometry"]["lat"],
                               long: location_hash["geometry"]["lng"],
-                              location: @location,
+                              location: location,
                               zip: location_hash["components"]["postcode"],
                               location_name: location_hash["formatted"]
                             ), data: { turbo: false }
@@ -37,7 +43,7 @@
                             forecast_dual_path(
                               lat: location_hash["geometry"]["lat"],
                               long: location_hash["geometry"]["lng"],
-                              location: @location,
+                              location: location,
                               zip: location_hash["components"]["postcode"],
                               location_name: location_hash["formatted"]
                             ), data: { turbo: false }
@@ -49,7 +55,7 @@
                               params: {
                                 lat: location_hash["geometry"]["lat"],
                                 long: location_hash["geometry"]["lng"],
-                                location: @location,
+                                location: location,
                                 zip: location_hash["components"]["postcode"],
                                 location_name: location_hash["formatted"]
                               },

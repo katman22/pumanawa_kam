@@ -40,8 +40,8 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
 
     Noaa::Forecast::Summary.stub :new, fake_summary_service do
       post forecast_summary_path, params: { lat: "39.4225192", long: "-111.714358", location_name: "One and Only Utah" }
-      assert_equal "One and Only Utah", assigns(:location_name)
-      assert_equal "Mostly Clear", assigns(:summary)["shortForecast"]
+      assert_match "One and Only Utah", response.body
+      assert_match "Mostly Clear", response.body
       assert_response :success
     end
   end
@@ -53,8 +53,8 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
 
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       post forecast_geo_location_url, params: { location: "Utah" }
-      assert_equal 2, assigns(:total)
-      assert_equal "Utah, United States of America", assigns(:locations).first["formatted"]
+      assert_match "Total Locations: 2", response.body
+      assert_match "Utah, United States of America", response.body
       assert_response :success
     end
   end

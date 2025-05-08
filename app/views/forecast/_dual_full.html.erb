@@ -1,9 +1,8 @@
 <turbo-frame id="<%= turbo_location %>">
 <div class="weather_div">
-  <p class="text-left fs-6">Full Forecast for:<br/><%= @location_name %></p>
-
-  <% if @erred %>
-    <p class="fs-6">Error Response: <%= @message %></p>
+  <p class="text-left fs-6">Full Forecast for:<br/><%= location_context.location_name %></p>
+  <% if erred %>
+    <p class="fs-6">Error Response: <%= forecasts %></p>
   <% else %>
 
     <!-- START ALIGNMENT ROW -->
@@ -11,7 +10,7 @@
         <div class="table_daily_container">
           <table class="table_daily table">
             <tr>
-              <% @forecasts.each do |forecast| %>
+              <% forecasts.each do |forecast| %>
                 <td class="text-right align-top" style="vertical-align: top;">
                   <div class="d-flex flex-column align-items-right" style="min-height: 120px;width: 100px"> <!-- Adjust height as needed -->
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
@@ -35,11 +34,11 @@
 
         </div>
 
-        <% days = @forecasts.size / 2 %>
+        <% days = forecasts.size / 2 %>
         <p class="text-decoration-underline text_only"><i><%= days %> Day Forecast (Day/Night)</i></p>
         <div class="table_weekly_container">
           <table class="table table_aliceblue">
-            <% @forecasts.each do |forecast| %>
+            <% forecasts.each do |forecast| %>
               <% precipitation = forecast["probabilityOfPrecipitation"] %>
               <tr class="table-primary">
                 <td colspan=2><i><%= forecast["name"] %>:</i></td>

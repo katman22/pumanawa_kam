@@ -1,48 +1,54 @@
 <turbo-frame id="summary_response">
   <div class="summary_div">
-    <p class="fs-6">Summary of Current Weather for: <%= @location_name %></p>
+    <%
+      location_name ||= @location_name
+      summary       ||= @summary
+      erred         ||= @erred
+      location      ||= @location
+    %>
+    <p class="fs-6">Summary of Current Weather for: <%= location_name %></p>
 
     <table class="summary_table">
-      <% if @summary["from_cache"] %>
+      <% if summary["from_cache"] %>
         <tr>
           <td colspan="3">Forecast is from cached data</td>
         </tr>
       <% end %>
-      <% if @erred %>
+      <% if erred %>
         <tr>
-          <td><%= @summary %></td>
+          <td><%= summary %></td>
         </tr>
       <% else %>
         <tr>
           <td>
-            <% unless @summary["icon"].nil? %>
-              <%= image_tag(@summary["icon"], title: @summary["detailedForecast"]) %>
+            <% unless summary["icon"].nil? %>
+              <%= image_tag(summary["icon"], title: summary["detailedForecast"]) %>
             <% end %>
           </td>
-          <td><p class="fs-3"><%= sprintf("%.0f", @summary["high"]) %>&deg; <%= @summary["temperatureUnit"] %>
-            / <%= sprintf("%.0f", @summary["low"]) %>&deg;<%= @summary["temperatureUnit"] %></p></td>
-          <td><p class="fs-3"><%= @summary["windDirection"] %> <%= @summary["windSpeed"] %></p></td>
+          <td><p class="fs-3"><%= sprintf("%.0f", summary["high"]) %>&deg; <%= summary["temperatureUnit"] %>
+            / <%= sprintf("%.0f", summary["low"]) %>&deg;<%= summary["temperatureUnit"] %></p></td>
+          <td><p class="fs-3"><%= summary["windDirection"] %> <%= summary["windSpeed"] %></p></td>
         </tr>
         <tr>
-          <td><%= @summary["shortForecast"] %></td>
+          <td><%= summary["shortForecast"] %></td>
           <td>High / Low:</td>
           <td>Wind MPH:</td>
         </tr>
       <% end %>
     </table>
-    <% unless @erred %>
+    <% unless erred %>
       <table class="forecast_btns_table">
         <tr>
           <td>
             <%= button_to "Full Forecast", "full",
                           method: :get,
-                          params: { lat: @summary["latitude"], long: @summary["longitude"], location: @location, zip: @zip, location_name: @location_name },
+                          params: { lat: summary["latitude"], long: summary["longitude"], location: location, location_name: location_name },
                           data: { turbo: false },
                           class: "btn btn-primary"
             %></td>
           <td> <%= button_to "Text Only Forecast", "text_only",
                              method: :get,
-                             params: { lat: @summary["latitude"], long: @summary["longitude"], location: @location, zip: @zip, location_name: @location_name },
+                             params: { lat: summary["latitude"], long: summary["longitude"], location: location, location_name: location_name },
                              data: { turbo: false },
                              class: "btn btn-primary"
           %></td>

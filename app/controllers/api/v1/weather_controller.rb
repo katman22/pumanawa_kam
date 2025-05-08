@@ -3,7 +3,7 @@ class Api::V1::WeatherController < Api::V1::ApiController
   attr_accessor :formatted_results
 
   def index
-    location_services
+    @erred, @locations, @total = location_services
     format_locations
     render json: @formatted_results
   end

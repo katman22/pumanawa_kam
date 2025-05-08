@@ -2,10 +2,10 @@
   <br/>
   <div class="table_geo_container">
     <div class="dual_div">
-      <% if @erred %>
-        <p class="fs-6">Location Response: <%= @locations %></p>
+      <% if erred %>
+        <p class="fs-6">Location Response: <%= locations %></p>
       <% else %>
-        <p class="fs-6">Location Response from: <%= @location %>, Total Locations: <%= @total %></p>
+        <p class="fs-6">Location Response from: <%= location %>, Total Locations: <%= total %></p>
         <table class="table">
           <thead>
           <tr>
@@ -13,7 +13,7 @@
           </tr>
           </thead>
           <tbody>
-          <% @locations.each do |location_hash| %>
+          <% locations.each do |location_hash| %>
             <tr>
               <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
                 <%= form_with url: forecast_dual_full_path, method: :post, local: true do %>
