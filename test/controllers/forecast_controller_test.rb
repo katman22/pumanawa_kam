@@ -4,7 +4,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   test "will get index and return multiple locations" do
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
-    fake_service.expect(:call, service_handler, ["Utah"])
+    fake_service.expect(:call, service_handler, [ "Utah" ])
 
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       get forecast_view_url, params: { location: "Utah" }
@@ -17,11 +17,11 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   test "will get index and return one location with a summary" do
     locale_service_handler = OpenStruct.new(call: single_locale_success)
     fake_service = Minitest::Mock.new
-    fake_service.expect(:call, locale_service_handler, ["Utah"])
+    fake_service.expect(:call, locale_service_handler, [ "Utah" ])
 
     summary_service_handler = OpenStruct.new(call: summary_success)
     fake_summary_service = Minitest::Mock.new
-    fake_summary_service.expect(:call, summary_service_handler, [39.4225192, -111.714358])
+    fake_summary_service.expect(:call, summary_service_handler, [ 39.4225192, -111.714358 ])
 
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       Noaa::Forecast::Summary.stub :new, fake_summary_service do
@@ -49,7 +49,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   test "will get multiple locations from geo location input" do
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
-    fake_service.expect(:call, service_handler, ["Utah"])
+    fake_service.expect(:call, service_handler, [ "Utah" ])
 
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       post forecast_geo_location_url, params: { location: "Utah" }
@@ -90,21 +90,21 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   def multi_locale_success
     OpenStruct.new(
       success?: true,
-      value: { locations: [{
+      value: { locations: [ {
                              "components" => { "postcode" => "84121" },
                              "formatted" => "Utah, United States of America",
                              "geometry" => { "lat" => 39.4225192, "lng" => -111.714358 } },
                            {
                              "components" => { "postcode" => "84121" },
                              "formatted" => "Utah County, Utah, United States of America",
-                             "geometry" => { "lat" => 40.177058, "lng" => -111.6910719 } }],
+                             "geometry" => { "lat" => 40.177058, "lng" => -111.6910719 } } ],
                total: 2 })
   end
 
   def single_locale_success
     OpenStruct.new(
       success?: true,
-      value: { locations: [{
+      value: { locations: [ {
                              "components" => { "postcode" => "84121" },
                              "formatted" => "One and Only Utah",
                              "geometry" => { "lat" => 39.4225192, "lng" => -111.714358 } }

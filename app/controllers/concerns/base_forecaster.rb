@@ -44,7 +44,7 @@ module BaseForecaster
     end
 
     def create_forecasts
-      service_result = Noaa::Forecast::TextOnly.(params[:lat], params[:long])
+      service_result = Noaa::Forecast::TextOnly.(params[:lat]|| @latitude, params[:long]|| @longitude)
       if service_result.success?
         @forecasts = service_result.value["forecasts"]
       else
