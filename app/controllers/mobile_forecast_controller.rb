@@ -22,7 +22,7 @@ class MobileForecastController < ApplicationController
 
   def geo_location
     @location = params[:location]
-    @erred, @locations, @total = location_services
+    @erred, @locations, @total = location_services(@location)
     multi_locations
   end
 
