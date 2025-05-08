@@ -3,7 +3,7 @@ class MobileForecastController < ApplicationController
   FULL_TURBO = "full_response"
 
   def index
-    find_locations
+    @erred, @locations, @total = find_locations
   end
 
   def full
@@ -22,7 +22,7 @@ class MobileForecastController < ApplicationController
 
   def geo_location
     @location = params[:location]
-    location_services
+    @erred, @locations, @total = location_services(@location)
     multi_locations
   end
 

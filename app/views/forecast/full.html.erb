@@ -2,13 +2,15 @@
   <p class="text-left fs-4">Full Forecast for:<br/><%= @location_name %></p>
 
   <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+    Forecast Data supplied by
+    <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
+    GeoLocation Data supplied by
+    <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
     <br/>Full Local forecast : <a href="javascript:window.history.back();">Back to Summary</a>
   </figcaption>
 
   <% if @erred %>
-    <p class="fs-6">Error Response: <%= @message %></p>
+    <p class="fs-6">Error Response: <%= @forecasts %></p>
   <% else %>
 
     <!-- START ALIGNMENT ROW -->
@@ -24,7 +26,9 @@
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
                       <small><b><%= forecast["name"] %></b></small>
                     </div>
-                    <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
+                    <% unless forecast["icon"].nil? %>
+                      <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
+                    <% end %>
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
                       <% temp = forecast["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast["temperature"]}" %>
                       <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
@@ -47,15 +51,20 @@
         <div class="table_weekly_container">
           <table class="table table_aliceblue">
             <% @forecasts.each do |forecast| %>
-              <% precipitation = forecast["probabilityOfPrecipitation"] %>
+              <% precipitation = forecast.with_indifferent_access["probabilityOfPrecipitation"] %>
               <tr class="table-primary">
                 <td colspan=2><i><%= forecast["name"] %>:</i></td>
               </tr>
               <tr>
-                <th rowspan="2"><%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %></th>
+                <th rowspan="2">
+                  <% unless forecast["icon"].nil? %>
+                    <%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %>
+                  <% end %>
+                </th>
                 <td>
                   <p><small>
-                    <b>In Brief:</b> <%= forecast["shortForecast"] %>, <b>Temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
+                    <b>In Brief:</b> <%= forecast["shortForecast"] %>,
+                    <b>Temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
                     <b>Wind Direction:</b> <%= forecast["windDirection"] %>,<br/>
                     <b>Wind Speed:</b> <%= forecast["windSpeed"] %>
                     <b>Chance of Precipitation: </b><%= precipitation["value"] || 0 %>%
@@ -99,7 +108,6 @@
           <p><%= @location_name %></p>
         </div>
       </div>
-
 
 
     </div>

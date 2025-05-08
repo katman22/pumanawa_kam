@@ -30,6 +30,9 @@
       </turbo-frame>
 
       <turbo-frame id="summary_response">
+        <% if @summary %>
+          <%= render partial: "forecast_summary" %>
+        <% end %>
       </turbo-frame>
     </div>
   </div>

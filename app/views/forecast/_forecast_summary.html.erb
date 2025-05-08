@@ -1,5 +1,11 @@
 <turbo-frame id="summary_response">
   <div class="summary_div">
+    <%
+      location_name ||= @location_name
+      summary       ||= @summary
+      erred         ||= @erred
+      location      ||= @location
+    %>
     <p class="fs-6">Summary of Current Weather for: <%= location_name %></p>
 
     <table class="summary_table">
@@ -14,7 +20,11 @@
         </tr>
       <% else %>
         <tr>
-          <td><%= image_tag(summary["icon"], title: summary["detailedForecast"]) %></td>
+          <td>
+            <% unless summary["icon"].nil? %>
+              <%= image_tag(summary["icon"], title: summary["detailedForecast"]) %>
+            <% end %>
+          </td>
           <td><p class="fs-3"><%= sprintf("%.0f", summary["high"]) %>&deg; <%= summary["temperatureUnit"] %>
             / <%= sprintf("%.0f", summary["low"]) %>&deg;<%= summary["temperatureUnit"] %></p></td>
           <td><p class="fs-3"><%= summary["windDirection"] %> <%= summary["windSpeed"] %></p></td>
@@ -32,13 +42,13 @@
           <td>
             <%= button_to "Full Forecast", "full",
                           method: :get,
-                          params: { lat: summary["latitude"], long: summary["longitude"], location: location, zip: zip, location_name: location_name },
+                          params: { lat: summary["latitude"], long: summary["longitude"], location: location, location_name: location_name },
                           data: { turbo: false },
                           class: "btn btn-primary"
             %></td>
           <td> <%= button_to "Text Only Forecast", "text_only",
                              method: :get,
-                             params: { lat: summary["latitude"], long: summary["longitude"], location: location, zip: zip, location_name: location_name },
+                             params: { lat: summary["latitude"], long: summary["longitude"], location: location, location_name: location_name },
                              data: { turbo: false },
                              class: "btn btn-primary"
           %></td>
