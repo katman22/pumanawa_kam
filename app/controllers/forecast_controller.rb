@@ -3,20 +3,16 @@ class ForecastController < ApplicationController
 
   def index
     find_locations
-    find_forecast
+    return unless @locations.size == 1
+
+    location_from_locations
+    summary_forecast_for_location
   end
 
   def geo_location
     @location = params[:location]
     location_services
     multi_locations
-  end
-
-  def multi_locations
-    render turbo_stream: [
-      turbo_stream.replace("summary_response", partial: "clear"),
-      turbo_stream.replace("location_response", partial: "geo_location", locals: { location: @location, locations: @locations, total: @total, erred: @erred })
-    ]
   end
 
   def summary
@@ -28,6 +24,23 @@ class ForecastController < ApplicationController
   def full
     set_defaults
     create_forecasts
+  end
+
+  def dual_full
+    set_defaults
+    create_forecasts
+    render_forecast(params[:turbo_location])
+  end
+
+  def text_only
+    set_defaults
+    create_forecasts
+  end
+  def multi_locations
+    render turbo_stream: [
+      turbo_stream.replace("summary_response", partial: "clear"),
+      turbo_stream.replace("location_response", partial: "geo_location", locals: { location: @location, locations: @locations, total: @total, erred: @erred })
+    ]
   end
 
   def dual
@@ -66,14 +79,11 @@ class ForecastController < ApplicationController
     ]
   end
 
-  def dual_full
-    set_defaults
-    create_forecasts
-    render_forecast(params[:turbo_location])
-  end
-
-  def text_only
-    set_defaults
-    create_forecasts
+  def location_from_locations
+    found_location = @locations.first
+    @latitude = found_location["geometry"]["lat"]
+    @longitude = found_location["geometry"]["lng"]
+    @location = params[:location]
+    @location_name = found_location["formatted"]
   end
 end

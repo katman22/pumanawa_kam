@@ -33,7 +33,7 @@ module BaseForecaster
     end
 
     def summary_forecast_for_location
-      service_result = Noaa::Forecast::Summary.(params[:lat], params[:long])
+      service_result = Noaa::Forecast::Summary.(params[:lat] || @latitude, params[:long] || @longitude)
       if service_result.failure?
         @erred = true
         @summary = service_result.value
