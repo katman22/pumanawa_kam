@@ -1,7 +1,4 @@
 class Api::V1::WeatherController < Api::V1::ApiController
-  include BaseForecaster
-  attr_accessor :formatted_results
-
   def index
     _erred, locations, _total = location_services(params[:location])
     formatted_results = format_locations(locations)
