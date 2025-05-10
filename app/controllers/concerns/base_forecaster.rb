@@ -6,8 +6,8 @@ module BaseForecaster
     SCREEN_A = "Locale A"
     SCREEN_B = "Locale B"
 
-    def find_locations
-      return unless params[:location]
+    def find_locations(location)
+      return unless location
       location_context, _recent_locations = set_defaults
       location_services(location_context.location)
     end

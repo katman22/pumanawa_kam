@@ -75,3 +75,6 @@ end
 
 # mobile app gem for sharing resources
 gem "rack-cors", require: "rack/cors"
+
+# JWT support
+gem "jwt"
