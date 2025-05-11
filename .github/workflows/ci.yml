@@ -99,6 +99,7 @@ jobs:
           PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
           PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
           TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          MOBILE_JWT: ${{ secrets.MOBILE_JWT }}
           # postgres://postgres:postgres@localhost:5432
           # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # REDIS_URL: redis://localhost:6379/0
