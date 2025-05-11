@@ -15,5 +15,4 @@ class LocationContextTest < ActiveSupport::TestCase
     assert_equal @location_context.location_name, "Wellington"
     assert_equal @location_context.location, "Wellington, New Zealand"
   end
-
 end

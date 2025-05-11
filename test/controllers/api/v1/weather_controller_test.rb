@@ -2,7 +2,6 @@ require "test_helper"
 # require_relative "../../../helpers/jwt_test_helper"
 
 class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
-
   test "bad token receive error" do
     get api_v1_weather_index_url(location: "Utah"), headers: erred_auth_headers
 
@@ -12,7 +11,7 @@ class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
   test "will get index and a location" do
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
-    fake_service.expect(:call, service_handler, ["Utah"])
+    fake_service.expect(:call, service_handler, [ "Utah" ])
 
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       get api_v1_weather_index_url(location: "Utah"), headers: auth_headers

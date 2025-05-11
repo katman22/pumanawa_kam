@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module ForecastTestHelper
-
   def multi_locale_success
     OpenStruct.new(
       success?: true,

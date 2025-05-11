@@ -11,26 +11,25 @@ class RecentLocationsTest < ActiveSupport::TestCase
   end
 
   test "it tracks recent locations search" do
-    new_location = {name: "Wellington"}
+    new_location = { name: "Wellington" }
     @recent_locations.add(new_location)
-    assert_equal [new_location], @recent_locations.list
+    assert_equal [ new_location ], @recent_locations.list
   end
 
   test "it adds new location to start list" do
-    new_location = {name: "Wellington"}
+    new_location = { name: "Wellington" }
     @recent_locations.add(new_location)
-    additional_location = {name: "Taupo"}
+    additional_location = { name: "Taupo" }
     @recent_locations.add(additional_location)
-    assert_equal [additional_location, new_location], @recent_locations.list
+    assert_equal [ additional_location, new_location ], @recent_locations.list
   end
 
   test "it removes duplicates from list" do
-    new_location = {name: "Wellington"}
+    new_location = { name: "Wellington" }
     @recent_locations.add(new_location)
-    additional_location = {name: "Taupo"}
+    additional_location = { name: "Taupo" }
     @recent_locations.add(additional_location)
     @recent_locations.add(new_location)
-    assert_equal [new_location, additional_location], @recent_locations.list
+    assert_equal [ new_location, additional_location ], @recent_locations.list
   end
-
 end

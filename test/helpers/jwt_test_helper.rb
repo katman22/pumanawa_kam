@@ -19,5 +19,4 @@ module JwtTestHelper
       "Content-Type" => "application/json"
     }
   end
-
 end
