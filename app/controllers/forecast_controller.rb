@@ -2,7 +2,7 @@ class ForecastController < ApplicationController
   include BaseForecaster
 
   def index
-    @erred, @locations, @total = find_locations
+    @erred, @locations, @total = find_locations(params[:location])
     return unless @locations.size == 1
     locale = @locations.first
     location_context = location_ctx(locale.merge("lat" => locale["geometry"]["lat"], "lng" => locale["geometry"]["lng"]))

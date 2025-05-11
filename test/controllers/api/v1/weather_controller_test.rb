@@ -1,32 +1,28 @@
 require "test_helper"
+# require_relative "../../../helpers/jwt_test_helper"
 
-class MobileForecastControllerTest < ActionDispatch::IntegrationTest
-  test "will get index" do
+class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
+  test "bad token receive error" do
+    get api_v1_weather_index_url(location: "Utah"), headers: erred_auth_headers
+
+    assert_response :unauthorized
+  end
+
+  test "will get index and a location" do
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
     fake_service.expect(:call, service_handler, [ "Utah" ])
-
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
-      get mobile_forecast_index_url, params: { location: "Utah" }
-      assert_match "Utah County, Utah, United States of America", response.body
+      get api_v1_weather_index_url(location: "Utah"), headers: auth_headers
+      locations = JSON.parse(response.body)
+      puts locations
+      first_location = locations.first
+      assert_equal "Utah, United States of America", first_location["name"]
       assert_response :success
     end
   end
 
-  test "will get multi locations" do
-    service_handler = OpenStruct.new(call: multi_locale_success)
-    fake_service = Minitest::Mock.new
-    fake_service.expect(:call, service_handler, [ "Utah" ])
-
-    OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
-      post mobile_forecast_geo_location_path, params: { location: "Utah" }
-      assert_match "Total Locations: 2", response.body
-      assert_match "Utah, United States of America", response.body
-      assert_response :success
-    end
-  end
-
-  test "will get a full forecast for locale" do
+  test "will get forecasts for a location" do
     forecast_service_handler = OpenStruct.new(call: forecast_success)
     fake_forecast_service = Minitest::Mock.new
     fake_forecast_service.expect(:call, forecast_service_handler, %w[39.4225192 -111.714358])

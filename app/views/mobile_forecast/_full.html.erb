@@ -1,29 +1,30 @@
 <turbo-frame id="full_response">
   <div class="mobile_weather_div">
-
-    <% if @erred %>
-      <p class="fs-6">Error Response: <%= @message %></p>
+    <% if erred %>
+      <p class="fs-6">Error Response: <%= forecasts %></p>
     <% else %>
 
       <div class="row">
-        <p><%= @location_name %></p>
+        <p><%= location_name %></p>
         <div class="mobile_daily_container">
           <table class="mobile_daily table">
             <tr>
-              <% @forecasts.each do |forecast| %>
+              <% forecasts.each do |forecast| %>
                 <td class="text-right align-top" style="vertical-align: top;">
                   <div class="d-flex flex-column align-items-right" style="min-height: 120px;width: 100px">
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;">
-                      <small><b><%= forecast["name"] %></b></small>
+                      <small><b><%= forecast.with_indifferent_access["name"] %></b></small>
                     </div>
-                    <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
+                    <% unless forecast["icon"].nil? %>
+                      <%= image_tag(forecast.with_indifferent_access["icon"], title: forecast.with_indifferent_access["detailedForecast"]) %>
+                    <% end %>
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;">
-                      <% temp = forecast["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast["temperature"]}" %>
-                      <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
-                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast["temperatureUnit"] %></b></small><br/>
+                      <% temp = forecast.with_indifferent_access["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast.with_indifferent_access["temperature"]}" %>
+                      <% temp_class = forecast.with_indifferent_access["isDaytime"] ? "text-danger" : "text-info" %>
+                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast.with_indifferent_access["temperatureUnit"] %></b></small><br/>
                       <br/>
                       <small>
-                        <%= forecast["shortForecast"] %>
+                        <%= forecast.with_indifferent_access["shortForecast"] %>
                       </small>
                     </div>
                   </div>
