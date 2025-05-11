@@ -12,7 +12,6 @@ class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
     fake_service.expect(:call, service_handler, [ "Utah" ])
-    puts "Test token #{generate_jwt_token.nil?}"
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       get api_v1_weather_index_url(location: "Utah"), headers: auth_headers
       locations = JSON.parse(response.body)
