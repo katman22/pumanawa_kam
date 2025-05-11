@@ -111,7 +111,7 @@ jobs:
           # postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails test
-          | echo "JWT_TOKEN is set: ${JWT_TOKEN:+yes}"
+#          | echo "JWT_TOKEN is set: ${JWT_TOKEN:+yes}"
 #          RAILS_ENV=test bin/rails db:drop db:create db:schema:load
 
       - name: Keep screenshots from failed system tests
