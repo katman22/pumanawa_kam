@@ -7,7 +7,7 @@ module AuthenticateApi
 
   def authenticate_api_request!
     token = request.headers["Authorization"]&.split(" ")&.last
-    secret = ENV["JWT_SECRET"]
+    secret = ENV["JWT_TOKEN"]
     begin
       decoded = JWT.decode(token, secret, true, algorithm: "HS256")
     rescue JWT::DecodeError => e
