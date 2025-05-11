@@ -16,6 +16,7 @@ class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
     OpenCage::GeoLocation::LocationFromInput.stub :new, fake_service do
       get api_v1_weather_index_url(location: "Utah"), headers: auth_headers
       locations = JSON.parse(response.body)
+      puts locations
       first_location = locations.first
       assert_equal "Utah, United States of America", first_location["name"]
       assert_response :success
