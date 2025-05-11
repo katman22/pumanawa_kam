@@ -94,15 +94,16 @@ jobs:
           bundler-cache: true
       - name: Prepare test database
         run: bin/rails db:drop db:create db:schema:load
+        env:
+          PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
+          PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
 
       - name: Run tests
         env:
           RAILS_ENV: test
           JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-          PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
-          PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
-          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails test
