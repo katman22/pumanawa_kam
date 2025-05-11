@@ -78,6 +78,7 @@ jobs:
       - name: Debug Rails environment
         run: |
           echo "ENV RAILS_ENV=$RAILS_ENV"
+          echo "ENV JWT_TOKEN=$JWT_TOKEN"
         env:
           RAILS_ENV: test
 
@@ -99,6 +100,7 @@ jobs:
           PUMANAWA_TEST_USR: ${{ secrets.PUMANAWA_TEST_USR }}
           PUMANAWA_KAM_TEST_PWD: ${{ secrets.PUMANAWA_KAM_TEST_PWD }}
           TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }} }}
+          JWT_TOKEN: ${{ secrets.JWT_TOKEN }} }}
           # postgres://postgres:postgres@localhost:5432
           # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           # REDIS_URL: redis://localhost:6379/0
