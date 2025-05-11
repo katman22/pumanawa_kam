@@ -81,8 +81,8 @@ jobs:
         env:
           RAILS_ENV: test
 
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config google-chrome-stable
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -92,6 +92,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Prepare test database
+        run: bin/rails db:drop db:create db:schema:load
 
       - name: Run tests
         env:
