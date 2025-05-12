@@ -2,7 +2,7 @@ module AuthenticateApi
   extend ActiveSupport::Concern
 
   included do
-    # before_action :authenticate_api_request!
+    before_action :authenticate_api_request!
   end
 
   def authenticate_api_request!
