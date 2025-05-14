@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "weather/index"
       get "weather/forecasts"
+      get "weather/hourly"
+      get "weather/radar"
     end
   end
 

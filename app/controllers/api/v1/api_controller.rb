@@ -4,7 +4,9 @@ class Api::V1::ApiController < ActionController::API
 
   attr_accessor :formatted_results
 
-  NOT_FOUND ="Not Found"
+  before_action :authenticate_api_request!
+
+  NOT_FOUND = "Not Found"
 
   # protect_from_forgery with: :null_session
 

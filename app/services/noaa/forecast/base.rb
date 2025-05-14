@@ -36,6 +36,10 @@ module Noaa
         JSON.parse(response)
       end
 
+      def all_forecasts(forecast)
+        forecast["properties"]["periods"]
+      end
+
       def noaa_response
         lat_lng_key = "#{@latitude}#{@longitude}".delete(".-")
         cache_key = "noaa_#{lat_lng_key}"
@@ -49,6 +53,11 @@ module Noaa
         response = HTTParty.get(noaa_url, headers: noaa_agent_header)
         Rails.cache.write(cache_key, response, expires_in: 30.minutes)
         response
+      end
+
+      def hourly_data(url)
+        response = HTTParty.get(url, headers: noaa_agent_header)
+        parse_response(response)
       end
 
       def noaa_agent_header

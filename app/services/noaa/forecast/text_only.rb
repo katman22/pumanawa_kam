@@ -16,10 +16,6 @@ module Noaa
         high, low = high_low(forecast, forecasts.first)
         successful({ "forecasts" => forecasts, "latitude" => latitude, "longitude" => longitude, "from_cache" => from_cache, "high" => high, "low" => low })
       end
-
-      def all_forecasts(forecast)
-        forecast["properties"]["periods"]
-      end
     end
   end
 end
