@@ -24,7 +24,7 @@ module Noaa
 
       def high_low(forecast, current)
         next_forecast = forecast["properties"]["periods"].select { |rows| rows["number"] == 2 }.first
-        current["isDaytime"] ? [ current["temperature"], next_forecast["temperature"] ] : [ next_forecast["temperature"], current["temperature"] ]
+        current["isDaytime"] ? [current["temperature"], next_forecast["temperature"]] : [next_forecast["temperature"], current["temperature"]]
       end
 
       def forecast_url(response)
@@ -34,6 +34,10 @@ module Noaa
       def parse_response(response)
         return nil if response.nil? || response["status"] == 404
         JSON.parse(response)
+      end
+
+      def all_forecasts(forecast)
+        forecast["properties"]["periods"]
       end
 
       def noaa_response
@@ -49,6 +53,11 @@ module Noaa
         response = HTTParty.get(noaa_url, headers: noaa_agent_header)
         Rails.cache.write(cache_key, response, expires_in: 30.minutes)
         response
+      end
+
+      def hourly_data(url)
+        response = HTTParty.get(url, headers: noaa_agent_header)
+        parse_response(response)
       end
 
       def noaa_agent_header

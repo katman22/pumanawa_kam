@@ -6,8 +6,20 @@ class Api::V1::WeatherController < Api::V1::ApiController
   end
 
   def forecasts
-    _erred, forecasts = create_forecasts(latitude: params[:lat], longitude: params[:long])
-    render json: { forecasts: forecasts, forecast_locale: params[:name] }
+    set_defaults
+    location_context = LocationContext.new(params)
+    _erred, forecasts = create_forecasts(latitude: location_context.latitude, longitude: location_context.longitude)
+    render json: { forecasts: forecasts, forecast_locale: params[:name], lat: params[:lat], long: params[:long] }
+  end
+
+  def hourly
+    _erred, periods = hourly_forecasts(latitude: params[:lat], longitude: params[:long])
+    render json: { periods: periods }
+  end
+
+  def radar
+    _erred, radar = radar_for_locale(latitude: params[:lat], longitude: params[:long])
+    render json: { radar: radar }
   end
 
   private
