@@ -3,7 +3,6 @@
 module Noaa
   module Forecast
     class HourlyForecast < Base
-
       def call
         response = parse_response(noaa_response)
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
@@ -17,7 +16,6 @@ module Noaa
         hourly["properties"]["periods"][0]["icon"] = hourly["properties"]["periods"][0]["icon"].gsub("size=medium", "size=large")
         successful({ "periods" => hourly["properties"]["periods"][0..23] })
       end
-
     end
   end
 end

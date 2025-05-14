@@ -24,7 +24,7 @@ module Noaa
 
       def high_low(forecast, current)
         next_forecast = forecast["properties"]["periods"].select { |rows| rows["number"] == 2 }.first
-        current["isDaytime"] ? [current["temperature"], next_forecast["temperature"]] : [next_forecast["temperature"], current["temperature"]]
+        current["isDaytime"] ? [ current["temperature"], next_forecast["temperature"] ] : [ next_forecast["temperature"], current["temperature"] ]
       end
 
       def forecast_url(response)
