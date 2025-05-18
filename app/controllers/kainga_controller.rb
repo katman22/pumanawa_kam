@@ -7,4 +7,8 @@ class KaingaController < ApplicationController
   def mobile
     render "mobile"
   end
+
+  def privacy
+    render "privacy"
+  end
 end
