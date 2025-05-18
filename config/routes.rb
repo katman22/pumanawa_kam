@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     get "kainga/index", action: :index
     get "kainga/mobile", action: :mobile
     get "mobile", action: :mobile
+    get "privacy", action: :privacy
   end
 
   controller :mobile_forecast do
