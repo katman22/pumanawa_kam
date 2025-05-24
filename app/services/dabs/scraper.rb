@@ -1,5 +1,5 @@
-require 'selenium-webdriver'
-require 'webdrivers'
+require "selenium-webdriver"
+require "webdrivers"
 
 module Dabs
   class Scraper
@@ -9,16 +9,16 @@ module Dabs
 
     def fetch_results
       options = Selenium::WebDriver::Chrome::Options.new
-      options.add_argument('--headless')
-      options.add_argument('--disable-gpu')
-      options.add_argument('--no-sandbox')
+      options.add_argument("--headless")
+      options.add_argument("--disable-gpu")
+      options.add_argument("--no-sandbox")
 
       driver = Selenium::WebDriver.for :chrome, options: options
       wait = Selenium::WebDriver::Wait.new(timeout: 20)
 
       begin
         puts "[DABS] Navigating to DABS site..."
-        driver.navigate.to 'https://webapps2.abc.utah.gov/ProdApps/ProductLocatorCore'
+        driver.navigate.to "https://webapps2.abc.utah.gov/ProdApps/ProductLocatorCore"
 
         # Step 1: Set the input field's value via JS and trigger change/input events
         js_script = <<~JS
@@ -37,7 +37,7 @@ module Dabs
 
         # Step 3: Wait for new rows
         wait.until do
-          driver.find_elements(css: '#productTable tbody tr').size > 0 rescue false
+          driver.find_elements(css: "#productTable tbody tr").size > 0 rescue false
         end
 
         # Step 4: Extract rows

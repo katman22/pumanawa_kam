@@ -36,7 +36,6 @@ module Noaa
         hourly["properties"]["periods"][0]["icon"] = hourly["properties"]["periods"][0]["icon"].gsub("size=medium", "size=large")
         hourly["properties"]["periods"][0..98]
       end
-
     end
   end
 end

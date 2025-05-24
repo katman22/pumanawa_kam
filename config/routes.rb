@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :dabs, only: [:index]
+  resources :dabs, only: [ :index ]
 
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
