@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "dabs/index"
   root "kainga#index"
 
   controller :kainga do
@@ -37,6 +38,9 @@ Rails.application.routes.draw do
       get "weather/radar"
     end
   end
+
+  resources :dabs, only: [ :index ]
+
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

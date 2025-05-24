@@ -10,18 +10,23 @@ module OpenCage
       attr_reader :location
 
       COUNTRY_CODE = ENV["COUNTRY_CODE"]
+      CACHE_KEY = "open_cage_location"
 
       def initialize(location)
         @location = location
       end
 
       def call
+        cached_response = Rails.cache.read(cache_key(CACHE_KEY))
+        return successful(cached_response) if cached_response.present?
+
         response_geo = open_cage_api_response
         return failed("Unable to find location from #{location}") if response_geo.nil?
 
         result = parse_response(response_geo)
         return failed("no results for location from #{location}") if result.nil? || result[:total].to_i.zero?
 
+        Rails.cache.write(cache_key(CACHE_KEY), result, expires_in: 7.days)
         successful(result)
       end
 
@@ -41,6 +46,10 @@ module OpenCage
             no_annotations: 1
           }
         })
+      end
+
+      def cache_key(key)
+        "#{key}_#{location}"
       end
     end
   end
