@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       get "weather/forecasts"
       get "weather/hourly"
       get "weather/radar"
+      get "weather/period"
     end
   end
 
