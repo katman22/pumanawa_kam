@@ -40,6 +40,10 @@ module Noaa
         forecast["properties"]["periods"]
       end
 
+      def forecast_for_period(forecast, period_number)
+        forecast["properties"]["periods"].select { |period| period["number"] == period_number.to_i }
+      end
+
       def noaa_response
         lat_lng_key = "#{@latitude}#{@longitude}".delete(".-")
         cache_key = "noaa_#{lat_lng_key}"
@@ -66,6 +70,14 @@ module Noaa
 
       def noaa_url
         "#{BASE_NOAA_URL}#{latitude},#{longitude}"
+      end
+
+      def cache_key(key)
+        "#{key}_#{rounded(latitude)}_#{rounded(longitude)}"
+      end
+
+      def rounded(value)
+        value.to_f.round(4)
       end
     end
   end

@@ -17,6 +17,12 @@ class Api::V1::WeatherController < Api::V1::ApiController
     render json: { periods: periods }
   end
 
+
+  def period
+    _erred, period_data = period_forecasts(latitude: params[:lat], longitude: params[:long], period: params[:period])
+    render json: { period: period_data }
+  end
+
   def radar
     _erred, radar = radar_for_locale(latitude: params[:lat], longitude: params[:long])
     render json: { radar: radar }
