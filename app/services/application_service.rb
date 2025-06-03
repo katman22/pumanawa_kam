@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class ApplicationService
-  def self.call(*args)
-    new(*args).call
+  def self.call(*args, **kwargs, &block)
+    new(*args, **kwargs, &block).call
   end
+
   def failed(message)
     ServiceResult.new(success: false, value: message)
   end

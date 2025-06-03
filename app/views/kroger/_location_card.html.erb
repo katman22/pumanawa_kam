@@ -1,0 +1,32 @@
+<div class="card mb-3 shadow-sm" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">
+      <%= location[:name] %>
+    </h5>
+    <p class="card-text mb-1">
+      <strong>Address:</strong><br>
+      <%= location.dig(:address, "addressLine1") %><br>
+      <%= "#{location.dig(:address, "city")}, #{location.dig(:address, "state")} #{location.dig(:address,  "zipCode")}" %>
+    </p>
+
+    <% today = Time.zone.now.strftime("%A").downcase %>
+    <% today_hours = location.dig(:hours, today) %>
+    <% if today_hours %>
+      <p class="card-text">
+        <strong>Today's Hours:</strong><br>
+        <%= "#{today_hours["open"]} - #{today_hours["close"]}" %>
+      </p>
+    <% end %>
+
+    <div class="d-flex justify-content-end">
+      <input
+        type="checkbox"
+        name="store_ids[]"
+        class="btn-check"
+        id="location_id_<%= location[:location_id] %>"
+        value="<%= location[:location_id] %>"
+        autocomplete="off">
+      <label class="btn btn-outline-primary" for="location_id_<%= location[:location_id] %>">Select this Store</label>
+    </div>
+  </div>
+</div>
