@@ -1,0 +1,14 @@
+<h2 class="mb-4">Available Stores</h2>
+
+
+  <%= turbo_frame_tag "location_results" do %>
+    <%= form_with url: kroger_products_path, method: :post, data: { turbo_frame: "product_results" } do %>
+      <%= label_tag :term, "Product name" %>
+      <% @store_ids.each do |id| %>
+        <%= hidden_field_tag "store_ids[]", id %>
+      <% end %>
+      <%= text_field_tag :term, params[:term] %>
+
+      <%= submit_tag "Search" %>
+    <% end %>
+  <% end %>

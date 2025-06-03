@@ -1,0 +1,25 @@
+<div class="weather_div">
+  <p class="text-left fs-2">Kroger Price Compare</p>
+  <figcaption class="blockquote-footer text-left">
+    Kroger Data from Kroger API
+    <cite title="Source Title"><a href="https://developer.kroger.com/api-products" target="_blank">Kroger APIs</a></cite>,
+    GeoLocation Data supplied by Kroger
+    <br/>Price compare with favorite locations | <%= link_to "Kainga", root_path %>
+  </figcaption>
+  <!-- START ALIGNMENT ROW -->
+  <h2>Please select your preferred store or stores</h2>
+
+  <%= form_with url: kroger_locations_path, method: :post, data: { turbo_frame: "location_results" } do %>
+    <%= label_tag :zipcode, "ZIP Code" %>
+    <%= text_field_tag :zipcode, params[:zipcode] %>
+
+    <%= submit_tag "Search" %>
+  <% end %>
+
+  <%= turbo_frame_tag "location_results" do %>
+  <% end %>
+
+  <%= turbo_frame_tag "product_results" do %>
+  <% end %>
+
+</div>

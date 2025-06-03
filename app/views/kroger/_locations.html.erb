@@ -1,0 +1,13 @@
+
+
+<%= turbo_frame_tag "location_results" do %>
+  <h2 class="mb-4">Available Stores</h2>
+
+  <%= form_with url: kroger_store_selections_path, method: 'POST', class: 'store_selection', data: { turbo_frame: "location_results" }, id: 'location_form' do %>
+
+    <% @locations.each do |location| %>
+      <%= render partial: "kroger/location_card", locals: { location: location } %>
+    <% end %>
+    <%= submit_tag "Save Store Selections", class: "btn btn-primary" %>
+  <% end %>
+<% end %>
