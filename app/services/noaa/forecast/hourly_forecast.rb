@@ -6,8 +6,8 @@ module Noaa
       CACHE_KEY = "noaa-forecast-hourly-forecast"
 
       def call
-        cached_response = Rails.cache.read(cache_key(CACHE_KEY))
-        return successful({ "periods" => cached_response }) if cached_response.present?
+        # cached_response = Rails.cache.read(cache_key(CACHE_KEY))
+        # return successful({ "periods" => cached_response }) if cached_response.present?
 
         response = parse_response(noaa_response)
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
@@ -19,7 +19,7 @@ module Noaa
         return failed("Unable to retrieve hourly forecasts for #{latitude}, #{longitude}") if hourly.nil?
         hourly_periods = merge_first_record(forecast, hourly)
 
-        Rails.cache.write(cache_key(CACHE_KEY), hourly_periods, expires_in: 45.minutes)
+        # Rails.cache.write(cache_key(CACHE_KEY), hourly_periods, expires_in: 45.minutes)
         successful({ "periods" => hourly_periods })
       end
 
