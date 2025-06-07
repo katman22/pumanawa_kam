@@ -19,7 +19,17 @@ module Noaa
 
       def forecast_response(response)
         return nil if response.nil? || response["status"] == 404
-        HTTParty.get(forecast_url(response), headers: noaa_agent_header)
+        lat_lng_key = "#{response["geometry"]["coordinates"].first}#{response["geometry"]["coordinates"][1]}".delete(".-")
+        cache_key = "noaa_forecasts_#{lat_lng_key}"
+        cached_response = Rails.cache.read(cache_key)
+        if cached_response
+          @from_cache = true
+          return cached_response
+        end
+
+        forecast_response = HTTParty.get(forecast_url(response), headers: noaa_agent_header)
+        Rails.cache.write(cache_key, forecast_response, expires_in: 30.minutes)
+        forecast_response
       end
 
       def high_low(forecast, current)
@@ -59,9 +69,20 @@ module Noaa
         response
       end
 
-      def hourly_data(url)
+      def hourly_data(url, latitude, longitude)
+        lat_lng_key = "#{latitude}#{longitude}".delete(".-")
+        cache_key = "noaa_hourly#{lat_lng_key}"
+        cached_response = Rails.cache.read(cache_key)
+
+        if cached_response
+          @from_cache = true
+          return cached_response
+        end
+
         response = HTTParty.get(url, headers: noaa_agent_header)
-        parse_response(response)
+        parsed_response = parse_response(response)
+        Rails.cache.write(cache_key, parsed_response, expires_in: 30.minutes)
+        parsed_response
       end
 
       def noaa_agent_header
