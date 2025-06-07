@@ -1,0 +1,18 @@
+<div class="row row-cols-1 row-cols-md-2 g-4">
+  <% translated_results.each do |lang, translation| %>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header">
+          <strong><%= language_name(lang.to_sym)[1] %></strong><%= link_to "Open in new Window",
+                                                                           translator_show_path(lang: lang, text: translation),
+                                                                           onclick: "window.open(this.href, '_blank', 'width=600,height=600'); return false;",
+                                                                           class: "btn btn-sm btn-outline-primary" ,
+        style: "margin-left: 20px; margin-top: -5px"%>
+        </div>
+        <div class="card-body">
+          <%= simple_format(translation) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

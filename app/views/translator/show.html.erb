@@ -1,0 +1,18 @@
+<!-- app/views/translations/show.html.erb -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Translation - <%= @language %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", media: "all" %>
+</head>
+<body style="margin: 2em;">
+<p class="fs-6"><%= language_name(@language.to_sym)[1] %></p>
+<hr/>
+<div style="padding: 1em; border: 1px solid #ccc;">
+  <%= simple_format(@translation) %>
+</div>
+</body>
+</html>

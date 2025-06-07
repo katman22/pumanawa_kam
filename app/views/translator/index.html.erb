@@ -1,0 +1,32 @@
+<!-- app/views/translations/index.html.erb -->
+<div class="weather_div">
+  <p class="text-left fs-2">Translator</p>
+  <figcaption class="blockquote-footer text-left">
+    Translation Data supplied by
+    <cite title="Source Title"><a href="https://www.google.com/" target="_blank">Google Api</a></cite>,
+    <br/>Translation Services | <%= link_to "Kainga", root_path %>
+  </figcaption>
+  <!-- START ALIGNMENT ROW -->
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-md-7">
+      <p class="text_only">
+        <%= form_with url: translator_create_path, method: :get do %>
+        <div>
+          <%= label_tag :text, "Input text (e.g., science lesson)", class: "form-label" %><br>
+          <%= text_area_tag :text, params[:text], rows: 10, cols: 80, class: "form-label" %>
+        </div>
+
+        <div>
+          <%= label_tag :languages, "Select languages", class: "form-label" %><br>
+          <%= select_tag "languages[]", options_for_select(@available_languages), multiple: true, size: 5, class: "form-select" %>
+        </div>
+
+        <div style="margin-top: 10px">
+          <%= submit_tag "Translate", class: "btn btn-primary" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>

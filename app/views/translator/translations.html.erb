@@ -1,0 +1,30 @@
+<div class="weather_div">
+  <p class="text-left fs-2">Translator</p>
+  <figcaption class="blockquote-footer text-left">
+    Translation Data supplied by
+    <cite title="Source Title"><a href="https://www.google.com/" target="_blank">Google Api</a></cite>,
+    <br/><%= link_to "Translation Services", translator_index_path %> | <%= link_to "Kainga", root_path %>
+  </figcaption>
+  <div class="d-flex justify-content-end" style="margin-bottom: 1rem;">
+    <% if @layout_mode == "column" %>
+    <%= link_to "Row Layout", translator_create_path(text: @input_text, languages: @languages, layout: "row") %>
+    <% else %>
+    <%= link_to "Column Layout", translator_create_path(text: @input_text, languages: @languages, layout: "column") %>
+    <% end %>
+  </div>
+  <% if @input_text.present? %>
+    <p class="fs-6">Source Text</p>
+    <div style="border: 1px solid #ccc; padding: 1em; margin-bottom: 1em;">
+      <%= simple_format(@input_text) %>
+    </div>
+    <% if @layout_mode == "column" %>
+      <%= render partial: "language_columns", locals: { translated_results: @translated_results } %>
+    <% else %>
+      <%= render partial: "language_cards", locals: { translated_results: @translated_results } %>
+    <% end %>
+  <% end %>
+</div>
+
+
+
+
