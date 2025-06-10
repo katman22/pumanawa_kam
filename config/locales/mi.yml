@@ -2,7 +2,11 @@
 mi:
   home:
     title: "Tohu Huarere o Aura"
-    description: "Ka tukuna e Aura Weather he matapae huarere tika, tere hoki, nā NOAA me ētahi atu puna whai mana. I hangaia mā te māmā me te tere o te whakamahinga, ka tuku a Aura Weather i ngā āhuatanga o nāianei, ngā whakaahua rāni, me ngā matapae e whitu ngā rā — kāore he whakapōrearea."
+    aura_name: "Aura Weather"
+    description_1: "Ka tū motuhake a <strong>Aura Weather</strong> i waenga i ētahi atu taupānga huarere, mā te āhei ki te whakataurite i ngā <strong>matapae huarere e whitu ngā rā mō ngā wāhi maha — i runga anake i tētahi mata kotahi</strong>. Ahakoa kei te whakamahere koe i tētahi haerenga, e whakahaere ana i ngā huihuinga, e hiahia noa rānei ki te mōhio mō ngā āhuarangi rerekē, he māmā noa iho te whakamahi i a Aura."
+    description_2: "Nā <strong>NOAA me ētahi atu puna whai mana</strong> a Aura i kaha ai, ā, ka tukuna <strong>ngā raraunga huarere tere, tika hoki i runga i tētahi atanga māmā</strong>, mārama hoki. <strong>Tikina ngā āhuatanga o nāianei, ngā matapae e whitu ngā rā, ngā matapae ā-haora, me ngā whakaahua rāni</strong> — kāore he whakararuraru, kāore he parekura."
+    description_3: "<strong>Auahatanga. Māmā. Kaha. Tika.</strong>"
+    description_4: "Koinei te rerekētanga o Aura Weather."
     created_by: "He pūmanawa rorohiko nā te Rōpū Whare Pūmanawa"
     google_play: "Tikina i Google Play"
     ios: "Tikiake i te App Store"
