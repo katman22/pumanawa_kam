@@ -1,8 +1,10 @@
 <div class="weather_div">
   <p class="text-left fs-4">Whare Pumanawa</p>
   <figcaption class="blockquote-footer text-left">
-    Software created by Whare Pumanawa Ropu
+    <%= t("home.created_by") %>
     <br/>Kia ora : Nau Mai Piki Mai<br/>
+    <%= link_to "🇳🇿 Te Reo", url_for(locale: :mi) %> |
+    <%= link_to "🇺🇸 English", url_for(locale: :en) %>
   </figcaption>
 
 </div>
@@ -13,55 +15,49 @@
     <div class="weather_div">
 
       <p class="text-left fs-6"><%= image_tag "aura_logo_v6_512.png", class: "rounded float-start", alt: "Aura Weather", style: "width: 100px; margin-top: 25px;" %>
-        <u class="fs-2">Aura Weather Forecaster</u><br/>
-        Aura Weather delivers accurate and fast weather forecasts using NOAA and other trusted sources.
-        Designed with simplicity and performance in mind, Aura Weather gives you current conditions, radar imagery,
-        and seven-day forecasts — all without the clutter.
+        <u class="fs-2"><%= t("home.title") %></u><br/>
+        <%= t("home.description") %>
       </p>
       <p class="text-left fs-6" style="margin-left: 110px">
-        <%= link_to "▶️ Get it on Google Play", "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank" %> | OR | <%= link_to "📲 Download on the App Store", "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank"%>
+        <%= link_to "▶️ #{t("home.google_play")}", "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank" %>
+        | OR
+        | <%= link_to "📲 #{t("home.ios")}", "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank" %>
       </p>
       <div class="col-md-6" style="margin-left: 150px">
         <ul class="fs-6">
-          <li> Synchronized multi-location view</li>
-          <li> Manage weather in several locations together</li>
-          <li> Tap icons to see short forecasts</li>
-          <li> Tap short forecast to see the days' forecast</li>
-          <li> Tap paint palette to cycle themes</li>
-          <li> 72 Hours of hourly info including Wind, Rain, Humidity and Dew point</li>
-          <li> User History to find recently searched forecasts</li>
-          <li> Pin a forecast, press the cloud and make it sunny</li>
-          <li> Pinned forecasts show on home page</li>
+          <% t("home.features").each do |feature| %>
+            <li><%= feature %></li>
+          <% end %>
         </ul>
       </div>
     </div>
     <figcaption class="blockquote-footer text-left" style="margin-left: 120px">
-      Forecast Data supplied by
+      <%= t("home.noaa") %>
       <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-      GeoLocation Data supplied by
+      <%= t("home.opencage") %>
       <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
     </figcaption>
   </div>
-  <p class="text-left fs-4" style="margin-left: 120px"><u>Android Version</u></p>
-  <%= link_to "▶️ Get it on Google Play", "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank", style: "margin-left: 160px; margin-top: -20px; margin-bottom: 15px"  %>
+  <p class="text-left fs-4" style="margin-left: 120px"><u><%= t("home.android_version") %></u></p>
+  <%= link_to "▶️ #{t("home.google_play")}", "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank", style: "margin-left: 160px; margin-top: -20px; margin-bottom: 15px" %>
   <div style="margin-left: 150px">
     <%= image_tag "Screenshot_20250606-150728_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
-    <%= image_tag "Screenshot_20250606-150745_Aura Weather.jpg", class: "rounded", style: "width: 220px"  %>
-    <%= image_tag "Screenshot_20250606-150805_Aura Weather.jpg", class: "rounded", style: "width: 220px"  %>
-    <%= image_tag "Screenshot_20250606-150911_Aura Weather.jpg", class: "rounded", style: "width: 220px"  %>
+    <%= image_tag "Screenshot_20250606-150745_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+    <%= image_tag "Screenshot_20250606-150805_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+    <%= image_tag "Screenshot_20250606-150911_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
   </div>
-  <p class="text-left fs-4" style="margin-left: 120px; margin-top: 20px"><u>📲 iPhone Version</u></p>
-  <%= link_to "📲 Download on the App Store", "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank", style: "margin-left: 160px; margin-top: -20px; margin-bottom: 15px"  %>
+  <p class="text-left fs-4" style="margin-left: 120px; margin-top: 20px"><u>📲 <%= t("home.ios_version") %></u></p>
+  <%= link_to "📲 #{t("home.ios")}", "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank", style: "margin-left: 160px; margin-top: -20px; margin-bottom: 15px" %>
   <div style="margin-left: 150px">
     <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.47.png", class: "rounded", style: "width: 220px" %>
-    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.24.png", class: "rounded", style: "width: 220px"  %>
-    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.05.png", class: "rounded", style: "width: 220px"  %>
-    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 16.02.49.png", class: "rounded", style: "width: 220px"  %>
+    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.24.png", class: "rounded", style: "width: 220px" %>
+    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.05.png", class: "rounded", style: "width: 220px" %>
+    <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 16.02.49.png", class: "rounded", style: "width: 220px" %>
   </div>
 </div>
 <div class="footer_tag">
   <figcaption class="blockquote-footer text-left" style="margin-top: 100px; margin-bottom: 100px">
-    Software created by Whare Pumanawa Ropu
+    <%= t("home.created_by") %>
     <br/>Kia ora : Nau Mai Piki Mai<br/>
   </figcaption>
 </div>

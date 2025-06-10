@@ -1,0 +1,23 @@
+# config/locales/mi.yml
+mi:
+  home:
+    title: "Tohu Huarere o Aura"
+    description: "Ka tukuna e Aura Weather he matapae huarere tika, tere hoki, nā NOAA me ētahi atu puna whai mana. I hangaia mā te māmā me te tere o te whakamahinga, ka tuku a Aura Weather i ngā āhuatanga o nāianei, ngā whakaahua rāni, me ngā matapae e whitu ngā rā — kāore he whakapōrearea."
+    created_by: "He pūmanawa rorohiko nā te Rōpū Whare Pūmanawa"
+    google_play: "Tikina i Google Play"
+    ios: "Tikiake i te App Store"
+    features:
+      - "Tiro wāhi maha i te wā kotahi"
+      - "Whakahaere matapae mō ngā wāhi maha i te wā kotahi"
+      - "Pāwhiri i te ata hei kite i te matapae poto"
+      - "Pāwhiri i te matapae poto hei kite i te rā katoa"
+      - "Pāwhiri i te pātene peita hei huri i te kaupapa"
+      - "72 hāora o ngā raraunga ā-haora: Hau, Ua, Haumākū, me te Ira Wai"
+      - "Hītori kaiwhakamahi mō ngā wāhi kua rapua inamata"
+      - "Tūtohua he matapae — pāwhiri i te kapua kia whiti te rā"
+      - "Ka whakaatuhia ngā matapae kua tūtohu ki te whārangi kāinga"
+    noaa: "Raraunga matapae nā"
+    opencage: "Raraunga wāhi nā"
+    android_version: "Putanga Android"
+    ios_version: "Putanga iPhone"
+
