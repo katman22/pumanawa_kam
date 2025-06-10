@@ -11,22 +11,35 @@
 
 <div class="row">
   <!-- Left Column -->
-  <div class="col-md-6">
+  <div class="col-md-10">
     <div class="weather_div">
 
-      <p class="text-left fs-6"><%= image_tag "aura_logo_v6_512.png", class: "rounded float-start", alt: "Aura Weather", style: "width: 100px; margin-top: 25px;" %>
+      <p class="text-left fs-6"><%= image_tag "aura_logo_v6_512.png", class: "rounded float-start", alt: "Aura Weather", style: "width: 200px; margin-top: 25px;margin-left:-80px; margin-bottom:100px" %>
         <u class="fs-2"><%= t("home.title") %></u><br/>
-        <%= t("home.description") %>
+        <%= t("home.description_1").html_safe %>
+      </p>
+      <p class="text-left fs-6">
+        <%= t("home.description_2").html_safe %>
+      </p>
+      <p class="text-left fs-6" style="margin-left:120px">
+        <%= t("home.description_3").html_safe %> <%= t("home.description_4").html_safe %>
       </p>
       <p class="text-left fs-6" style="margin-left: 110px">
         <%= link_to "▶️ #{t("home.google_play")}", "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank" %>
         | OR
         | <%= link_to "📲 #{t("home.ios")}", "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank" %>
       </p>
-      <div class="col-md-6" style="margin-left: 150px">
+      <div class="col-md-8" style="margin-left: 150px">
         <ul class="fs-6">
           <% t("home.features").each do |feature| %>
-            <li><%= feature %></li>
+            <li><%= feature.html_safe %></li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="col-md-8" style="margin-left: 130px">
+        <ul class="fs-6 ps-5">
+          <% t("home.features_detailed").each do |feature| %>
+            <li class="mb-4"><%= feature.html_safe %></li>
           <% end %>
         </ul>
       </div>
