@@ -1,31 +1,22 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
+# config/locales/en.yml
 en:
-  hello: "Hello world"
+  home:
+    title: "Aura Weather Forecaster"
+    description: "Aura Weather delivers accurate and fast weather forecasts using NOAA and other trusted sources. Designed with simplicity and performance in mind, Aura Weather gives you current conditions, radar imagery, and seven-day forecasts — all without the clutter."
+    created_by: "Software created by Whare Pumanawa Ropu"
+    google_play: "Get it on Google Play"
+    ios: "Download on the App Store"
+    features:
+      - "Synchronized multi-location view"
+      - "Manage weather in several locations together"
+      - "Tap icons to see short forecasts"
+      - "Tap short forecast to see the days' forecast"
+      - "Tap paint palette to cycle themes"
+      - "72 Hours of hourly info including Wind, Rain, Humidity and Dew point"
+      - "User History to find recently searched forecasts"
+      - "Pin a forecast, press the cloud and make it sunny"
+      - "Pinned forecasts show on home page"
+    noaa: "Forecast Data supplied by"
+    opencage: "GeoLocation Data supplied by"
+    android_version: "Android Version"
+    ios_version: "iPhone Version"
