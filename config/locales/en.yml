@@ -11,13 +11,13 @@ en:
     google_play: "Get it on Google Play"
     ios: "Download on the App Store"
     features:
-      - "<strong>Synchronized multi-location view</strong> — access weather in several locations on one screen"
-      - "<strong>7-day forecasts</strong> — a clear week ahead"
-      - "<strong>Daily forecasts</strong> — every day at a glance"
-      - "<strong>72 hours of hourly forecasts</strong> — including wind, rain, humidity and dew point"
-      - "<strong>User location history</strong> — easily revisit searched areas"
-      - "<strong>Pin favorite forecasts</strong> — show them on your home page"
-      - "<strong>Personalized color themes</strong> — cycle through with a tap"
+      - "<strong>Synchronized multi-location view</strong>"
+      - "<strong>7-day forecasts</strong>"
+      - "<strong>Daily forecasts</strong>"
+      - "<strong>72 hours of hourly forecasts</strong>"
+      - "<strong>User location history</strong>"
+      - "<strong>Pin favorite forecasts</strong>"
+      - "<strong>Personalized color themes</strong>"
     features_detailed:
       - "<strong>Synchronized Multi-Location View:</strong><br/>Track weather conditions in multiple cities or regions simultaneously.<br/>Add multiple locations to a unified dashboard for easy comparison.<br/>Refresh screen for up-to-date details.<br/>Ideal for travelers or users wanting updates across regions."
       - "<strong>7-Day Forecasts:</strong><br/>Get a quick snapshot of the upcoming week."
@@ -27,7 +27,6 @@ en:
       - "<strong>User Location History:</strong><br/>Quickly revisit previously searched locations.<br/>Easily delete or manage locations"
       - "<strong>Pin Favorite Forecasts to Home Page:</strong><br/>Pin forecasts you want to add to your home screen for quick access."
       - "<strong>Personalized Color Themes:</strong><br/>Customize your app’s appearance.<br/>Tap the paint palette icon to explore and select your preferred screen color theme."
-
     noaa: "Forecast Data supplied by"
     opencage: "GeoLocation Data supplied by"
     android_version: "Android Version"
