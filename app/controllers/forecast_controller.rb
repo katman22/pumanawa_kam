@@ -3,7 +3,7 @@ class ForecastController < ApplicationController
 
   def index
     @erred, @locations, @total = find_locations(params[:location])
-    return unless @locations.size == 1
+    return unless @locations&.size == 1
     locale = @locations.first
     location_context = location_ctx(locale.merge("lat" => locale["geometry"]["lat"], "lng" => locale["geometry"]["lng"]))
     @erred, @summary = summary_forecast_for_location(location_context.latitude, location_context.longitude)
