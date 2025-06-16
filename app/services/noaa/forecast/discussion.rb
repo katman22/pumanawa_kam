@@ -67,16 +67,16 @@ module Noaa
       end
 
       def split_short_and_long(discussion)
-        return [nil, nil] unless discussion
+        return [ nil, nil ] unless discussion
 
         start_index = discussion.index(/LONG TERM/i) ||
           discussion.index(/(Friday|This weekend|Extended Forecast|Wednesday and beyond)/i)
-        return [discussion, nil] unless start_index
+        return [ discussion, nil ] unless start_index
 
         short_term = discussion[0...start_index].strip
         long_range = discussion[start_index...discussion.length].strip
 
-        [short_term, long_range]
+        [ short_term, long_range ]
       end
     end
   end
