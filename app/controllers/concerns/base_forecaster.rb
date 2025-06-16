@@ -32,6 +32,16 @@ module BaseForecaster
       [ service_result.failure?, service_result.value["periods"] || service_result.value ]
     end
 
+    def alert_forecasts(latitude: 0, longitude: 0)
+      service_result = Noaa::Forecast::Alerts.(latitude, longitude)
+      [ service_result.failure?, service_result || service_result.value ]
+    end
+
+    def forecast_discussion(latitude: 0, longitude: 0)
+      service_result = Noaa::Forecast::Discussion.(latitude, longitude)
+      [ service_result.failure?, service_result || service_result.value ]
+    end
+
     def period_forecasts(latitude: 0, longitude: 0, period: 0)
       service_result = Noaa::Forecast::Period.(latitude, longitude, period)
       [ service_result.failure?, service_result.value["period"] || service_result.value ]

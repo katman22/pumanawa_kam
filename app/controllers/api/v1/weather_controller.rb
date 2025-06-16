@@ -17,6 +17,16 @@ class Api::V1::WeatherController < Api::V1::ApiController
     render json: { periods: periods }
   end
 
+  def discussion
+    result = forecast_discussion(latitude: params[:lat], longitude: params[:long])
+    render json: { discussion: result[1].value }
+  end
+
+  def alerts
+    _erred, alerts = alert_forecasts(latitude: params[:lat], longitude: params[:long])
+    render json: { alerts: alerts.value["alerts"] }
+  end
+
 
   def period
     _erred, period_data = period_forecasts(latitude: params[:lat], longitude: params[:long], period: params[:period])

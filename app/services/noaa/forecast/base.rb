@@ -86,7 +86,7 @@ module Noaa
       end
 
       def noaa_agent_header
-        { "User-Agent" => "my_weather_forecaster (#{ENV['APPLICATION_EMAIL']})" }
+        { "User-Agent" => "aura_weather (#{ENV['APPLICATION_EMAIL']})" }
       end
 
       def noaa_url

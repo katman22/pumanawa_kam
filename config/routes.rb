@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "canyon_times/show"
+  get "translator/index"
   get "dabs/index"
   root "kainga#index"
 
@@ -16,7 +18,16 @@ Rails.application.routes.draw do
     get "mobile_forecast", action: :index
   end
 
+  controller :translator do
+    get "translator", action: :index
+    get "translator/index", action: :index
+    get "translator/create", action: :create
+    get "translator/show", action: :show
+    get "translator/switch_layout", action: :switch_layout
+  end
+
   controller :forecast do
+    get "forecast", action: :index, as: :forecast
     scope path: "forecast" do
       get "view", action: :index, as: :forecast_view
       get "full", action: :full, as: :forecast_full
@@ -37,6 +48,9 @@ Rails.application.routes.draw do
       get "weather/hourly"
       get "weather/radar"
       get "weather/period"
+      get "weather/alerts"
+      get "canyon_times/times"
+      get "weather/discussion"
     end
   end
 
