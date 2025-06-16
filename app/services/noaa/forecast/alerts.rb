@@ -3,7 +3,6 @@
 module Noaa
   module Forecast
     class Alerts < ApplicationService
-
       attr_reader :url
 
       ALERT_URL = ->(lat, long) { "https://api.weather.gov/alerts/active?point=#{lat.to_f},#{long.to_f}" }
@@ -70,7 +69,7 @@ module Alerts
       uri = URI("#{NOAA_URL}?point=#{lat},#{lon}")
       response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
         request = Net::HTTP::Get.new(uri)
-        request['User-Agent'] = "AuraWeather (support@yourapp.com)"
+        request["User-Agent"] = "AuraWeather (support@yourapp.com)"
         http.request(request)
       end
 
@@ -108,4 +107,3 @@ module Alerts
     end
   end
 end
-

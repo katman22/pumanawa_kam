@@ -3,7 +3,6 @@
 module Noaa
   module Forecast
     class Discussion < Base
-
       WEATHER_PRODUCTS = ->(office) { "https://api.weather.gov/products/types/AFD/locations/#{office}" }
 
       def initialize(latitude, longitude)
@@ -69,23 +68,19 @@ module Noaa
       end
 
       def split_short_and_long(discussion)
-        return [nil, nil] unless discussion
+        return [ nil, nil ] unless discussion
 
         start_index = discussion.index(/LONG TERM/i) ||
           discussion.index(/(Friday|This weekend|Extended Forecast|Wednesday and beyond)/i)
 
         end_index = discussion.index(/\.AVIATION|&&|\z/i)
-        return [discussion, nil] unless start_index
+        return [ discussion, nil ] unless start_index
 
         short_term = discussion[0...start_index].strip
         long_range = discussion[start_index...(end_index || discussion.length)].strip
 
-        [short_term, long_range]
+        [ short_term, long_range ]
       end
-
     end
   end
 end
-
-
-

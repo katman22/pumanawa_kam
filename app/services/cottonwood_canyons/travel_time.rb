@@ -14,7 +14,7 @@ module CottonwoodCanyons
         query: {
           origin: @origin,
           destination: @destination,
-          departure_time: 'now',
+          departure_time: "now",
           key: ENV["GOOGLE_API_KEY"]
         }
       })
@@ -30,5 +30,4 @@ module CottonwoodCanyons
       { error: "Could not fetch travel time" }
     end
   end
-
 end
