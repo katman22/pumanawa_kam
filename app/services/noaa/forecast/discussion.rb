@@ -44,42 +44,39 @@ module Noaa
       def parse_product_text(text)
         sections = {
           synopsis: extract_between(text, ".SYNOPSIS...", "&&") || extract_between(text, ".KEY MESSAGES...", "&&"),
-          discussion: extract_between(text, ".SHORT TERM", "&&") || extract_between(text, ".DISCUSSION...", "&&"),
+          discussion: extract_between(text, ".SHORT TERM", ".AVIATION") || extract_between(text, ".DISCUSSION...", "&&"),
           fire_weather: extract_between(text, ".FIRE WEATHER", "&&"),
           aviation: extract_between(text, ".AVIATION", "&&"),
           watches_warnings: extract_between(text, "WATCHES/WARNINGS/ADVISORIES...", "&&") || "None"
         }
         @short_term, @long_range = split_short_and_long(sections[:discussion])
         {
-          synopsis: sections[:synopsis]&.strip,
-          short_term: @short_term&.strip,
-          long_range: @long_range&.strip,
-          aviation: sections[:aviation]&.strip,
-          fire_weather: sections[:fire_weather]&.strip,
-          watches_warnings: sections[:watches_warnings]&.strip
+          synopsis: sections[:synopsis]&.strip || "No summary available",
+          short_term: @short_term&.strip || "No forecast available",
+          long_range: @long_range&.strip || "No extended forecast available",
+          aviation: sections[:aviation]&.strip || "No aviation forecast available",
+          fire_weather: sections[:fire_weather]&.strip || "No fire forecast available",
+          watches_warnings: sections[:watches_warnings]&.strip || "No watches or warning available"
         }
       end
 
       def extract_between(text, start_marker, end_marker)
         pattern = /#{Regexp.escape(start_marker)}(.*?)#{Regexp.escape(end_marker)}/m
-        # binding.pry
         match = text.match(pattern)
         match ? match[1] : nil
       end
 
       def split_short_and_long(discussion)
-        return [ nil, nil ] unless discussion
+        return [nil, nil] unless discussion
 
         start_index = discussion.index(/LONG TERM/i) ||
           discussion.index(/(Friday|This weekend|Extended Forecast|Wednesday and beyond)/i)
-
-        end_index = discussion.index(/\.AVIATION|&&|\z/i)
-        return [ discussion, nil ] unless start_index
+        return [discussion, nil] unless start_index
 
         short_term = discussion[0...start_index].strip
-        long_range = discussion[start_index...(end_index || discussion.length)].strip
+        long_range = discussion[start_index...discussion.length].strip
 
-        [ short_term, long_range ]
+        [short_term, long_range]
       end
     end
   end
