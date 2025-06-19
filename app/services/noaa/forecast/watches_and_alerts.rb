@@ -22,8 +22,6 @@ module Noaa
 
         successful(watches_and_alerts)
       end
-
-
     end
   end
 end
