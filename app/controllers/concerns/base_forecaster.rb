@@ -37,6 +37,11 @@ module BaseForecaster
       [ service_result.failure?, service_result || service_result.value ]
     end
 
+    def fire_watch_and_alerts(latitude: 0, longitude: 0)
+      service_result = Noaa::Forecast::WatchesAndAlerts.(latitude, longitude)
+      [ service_result.failure?, service_result || service_result.value ]
+    end
+
     def forecast_discussion(latitude: 0, longitude: 0)
       service_result = Noaa::Forecast::Discussion.(latitude, longitude)
       [ service_result.failure?, service_result || service_result.value ]

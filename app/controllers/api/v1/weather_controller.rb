@@ -27,6 +27,11 @@ class Api::V1::WeatherController < Api::V1::ApiController
     render json: { alerts: alerts.value["alerts"] }
   end
 
+  def watches_fire_alerts
+    _erred, watches_response = fire_watch_and_alerts(latitude: params[:lat], longitude: params[:long])
+    render json:  watches_response.value
+  end
+
 
   def period
     _erred, period_data = period_forecasts(latitude: params[:lat], longitude: params[:long], period: params[:period])
