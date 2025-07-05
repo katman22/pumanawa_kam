@@ -51,7 +51,6 @@ module Noaa
       def noaa_response
         lat_lng_key = "#{@latitude}#{@longitude}"
         cache_key = "noaa_#{lat_lng_key}"
-        binding.pry
         Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i) do
           HTTParty.get(noaa_url, headers: noaa_agent_header)
         end
@@ -60,16 +59,13 @@ module Noaa
       def hourly_data(url, latitude, longitude)
         lat_lng_key = "#{latitude}#{longitude}"
         cache_key = "noaa_hourly#{lat_lng_key}"
-        cached_response = Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i)
-        if cached_response
-          @from_cache = true
-          return cached_response
-        end
+        @from_cache = true
 
-        response = HTTParty.get(url, headers: noaa_agent_header)
-        parsed_response = parse_response(response)
-        Rails.cache.write(cache_key, parsed_response, expires_in: 30.minutes)
-        parsed_response
+        Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i) do
+          @from_cache = false
+          response = HTTParty.get(url, headers: noaa_agent_header)
+          parse_response(response)
+        end
       end
 
       def noaa_agent_header
