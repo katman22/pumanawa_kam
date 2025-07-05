@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       get "weather/period"
       get "weather/alerts"
       get "canyon_times/times"
+      get "canyon_times/directions"
       get "weather/discussion"
       get "weather/watches_fire_alerts"
     end
