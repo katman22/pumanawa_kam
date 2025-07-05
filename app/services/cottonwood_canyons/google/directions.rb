@@ -37,7 +37,6 @@ module CottonwoodCanyons
           }
         })
       end
-
     end
   end
 end

@@ -1,6 +1,5 @@
 module CottonwoodCanyons
   class TravelData
-
     attr_reader :resort
 
     DEFAULT_NO_WARNINGS = "No google traffic warnings."
@@ -48,6 +47,5 @@ module CottonwoodCanyons
 
       leg[:duration][:text] rescue "Unknown"
     end
-
   end
 end

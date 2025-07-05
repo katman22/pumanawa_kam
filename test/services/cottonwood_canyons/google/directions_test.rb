@@ -15,11 +15,11 @@ module CottonwoodCanyons
         mock_response = Minitest::Mock.new
         mock_body = {
           status: "OK",
-          routes: [{ summary: "Test Route", legs: [] }]
+          routes: [ { summary: "Test Route", legs: [] } ]
         }.to_json
 
         mock_response.expect :nil?, false
-        mock_response.expect :[], nil, ["status"]
+        mock_response.expect :[], nil, [ "status" ]
         mock_response.expect :body, mock_body
 
         Directions.any_instance.stubs(:google_directions).returns(mock_response)
@@ -37,7 +37,7 @@ module CottonwoodCanyons
       test "returns nil for status 404" do
         mock_response = Minitest::Mock.new
         mock_response.expect :nil?, false
-        mock_response.expect :[], 404, ["status"]
+        mock_response.expect :[], 404, [ "status" ]
 
         Directions.any_instance.stubs(:google_directions).returns(mock_response)
 

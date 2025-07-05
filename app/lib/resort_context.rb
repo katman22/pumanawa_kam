@@ -71,8 +71,4 @@ class ResortContext
                location: "9499 Bypass Rd, Sandy, UT 84092"
              })
   end
-
 end
-
-
-
