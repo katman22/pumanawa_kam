@@ -82,7 +82,7 @@ jobs:
           RAILS_ENV: test
 
       - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
 
       - name: Checkout code
         uses: actions/checkout@v4
