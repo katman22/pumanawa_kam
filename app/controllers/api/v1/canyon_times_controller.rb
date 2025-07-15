@@ -9,6 +9,22 @@ module Api
         render json: result
       end
 
+      def cameras
+        resort_id = params[:resort_id]
+        resort = ResortContext.for(resort_id)
+        result = Udot::Cameras.new(resort: resort).call
+
+        render json: { cameras: result.value }
+      end
+
+      def alerts_events
+        resort_id = params[:resort_id]
+        resort = ResortContext.for(resort_id)
+        result = Udot::Warnings.new(resort: resort).call
+
+        render json: { alerts_events: result.value }
+      end
+
       def directions
         resort_id = params[:resort_id]
         resort = ResortContext.for(resort_id)

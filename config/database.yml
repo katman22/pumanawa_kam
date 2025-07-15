@@ -12,20 +12,20 @@
 # Configure Using Gemfile
 # gem "pg"
 #
-default: &default
-  adapter: postgresql
-  encoding: unicode
+#default: &default
+#  adapter: postgresql
+#  encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#  pool: <%#= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 
-development:
-  <<: *default
-  database: pumanawa_kam_development
-  username: <%= ENV.fetch("PUMANAWA_DEV_USR", 'postgres') %>
-  password: <%= ENV.fetch("PUMANAWA_KAM_DEV_PWD", 'postgres') %>
-  url: <%= ENV.fetch("DATABASE_URL", 'localhost') %>
+#development:
+#  <<: *default
+#  database: pumanawa_kam_development
+#  username: <%#= ENV.fetch("PUMANAWA_DEV_USR", 'postgres') %>
+#  password: <%#= ENV.fetch("PUMANAWA_KAM_DEV_PWD", 'postgres') %>
+#  url: <%#= ENV.fetch("DATABASE_URL", 'localhost') %>
 
 
   # The specified database role being used to connect to PostgreSQL.
@@ -58,12 +58,12 @@ development:
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
-test:
-  <<: *default
-  database: pumanawa_kam_test
-  username: <%= ENV.fetch("PUMANAWA_TEST_USR") %>
-  password: <%= ENV.fetch("PUMANAWA_KAM_TEST_PWD") %>
-  url: <%= ENV["TEST_DATABASE_URL"] %>
+#test:
+#  <<: *default
+#  database: pumanawa_kam_test
+#  username: <%#= ENV.fetch("PUMANAWA_TEST_USR") %>
+#  password: <%#= ENV.fetch("PUMANAWA_KAM_TEST_PWD") %>
+#  url: <%#= ENV["TEST_DATABASE_URL"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -85,13 +85,13 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-production:
-  primary: &primary_production
-    <<: *default
-    database: pumanawa_kam_production
-    username: pumanawa_kam
-    password: <%= ENV["PUMANAWA_KAM_PROD_PWD"] %>
-    url: <%= ENV["DATABASE_URL"] %>
+#production:
+#  primary: &primary_production
+#    <<: *default
+#    database: pumanawa_kam_production
+#    username: pumanawa_kam
+#    password: <%#= ENV["PUMANAWA_KAM_PROD_PWD"] %>
+#    url: <%#= ENV["DATABASE_URL"] %>
 #  cache:
 #    <<: *primary_production
 #    database: pumanawa_kam_production_cache

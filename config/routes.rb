@@ -37,6 +37,8 @@ Rails.application.routes.draw do
       get "dual", action: :dual, as: :forecast_dual
       post "dual_full", action: :dual_full, as: :forecast_dual_full
       post "dual_geo_location", action: :dual_geo_location, as: :forecast_dual_geo_location
+      get "radar_for_locale", action: :radar_for_locale, as: :radar_for_locale
+      get "radar_for_locale_web", action: :radar_for_locale_web, as: :radar_for_locale_web
     end
   end
 
@@ -50,6 +52,8 @@ Rails.application.routes.draw do
       get "weather/period"
       get "weather/alerts"
       get "canyon_times/times"
+      get "canyon_times/cameras"
+      get "canyon_times/alerts_events"
       get "canyon_times/directions"
       get "weather/discussion"
       get "weather/watches_fire_alerts"

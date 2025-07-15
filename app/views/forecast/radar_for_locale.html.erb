@@ -1,0 +1,196 @@
+<div id="map"></div>
+
+<div id="controls">
+  <label for="layerSelect">Choose weather layer:</label>
+  <select id="layerSelect">
+    <option value="precipitation">Precipitation (1h)</option>
+    <option value="temperature">Temperature (2m)</option>
+    <option value="wind">Wind (10m)</option>
+    <option value="radar">Radar Composite</option>
+    <option value="pressure">Pressure (MSL)</option>
+  </select>
+
+  <button id="play-pause-bt">Play 1800x</button>
+  <input type="range" id="time-slider" min="0" max="11" step="1"/>
+  <div id="time-label">—</div>
+  <div id="pointer-data">—</div>
+</div>
+
+<script>
+    maptilersdk.config.apiKey = "<%=ENV['MAP_TILER'] %>";
+    const weatherLayers = {
+        precipitation: { layer: null, value: "value", units: " mm" },
+        pressure: { layer: null, value: "value", units: " hPa" },
+        radar: { layer: null, value: "value", units: " dBZ" },
+        temperature: { layer: null, value: "value", units: "°" },
+        wind: { layer: null, value: "speedMetersPerSecond", units: " m/s" }
+    };
+
+    const map = new maptilersdk.Map({
+        container: 'map',
+        style: maptilersdk.MapStyle.BACKDROP,
+        zoom: 8,
+        center: [<%= lng %>, <%= lat %>],
+        hash: true,
+        projectionControl: true
+    });
+
+    const timeSlider = document.getElementById("time-slider");
+    const playPauseButton = document.getElementById("play-pause-bt");
+    const pointerDataDiv = document.getElementById("pointer-data");
+    let pointerLngLat = null;
+    let activeLayer = null;
+    let isPlaying = false;
+    let currentTime = null;
+
+    map.on('load', () => {
+        map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.4)");
+        changeWeatherLayer("<%= type %>");
+    });
+
+    document.getElementById("layerSelect").addEventListener("change", (e) => {
+        changeWeatherLayer(e.target.value);
+    });
+
+    playPauseButton.addEventListener("click", () => {
+        const weatherLayer = weatherLayers[activeLayer]?.layer;
+        if (!weatherLayer) return;
+        if (isPlaying) {
+            weatherLayer.animateByFactor(0);
+            playPauseButton.innerText = "Play 3600x";
+        } else {
+            weatherLayer.animateByFactor(1800);
+            playPauseButton.innerText = "Pause";
+        }
+        isPlaying = !isPlaying;
+    });
+
+    timeSlider.addEventListener("input", (evt) => {
+        const weatherLayer = weatherLayers[activeLayer]?.layer;
+        if (weatherLayer) {
+            weatherLayer.setAnimationTime(parseInt(timeSlider.value / 1000));
+        }
+    });
+
+    map.on('mousemove', (e) => {
+        pointerLngLat = e.lngLat;
+        const weatherLayer = weatherLayers[activeLayer]?.layer;
+        const valKey = weatherLayers[activeLayer]?.value;
+        const units = weatherLayers[activeLayer]?.units;
+        if (weatherLayer && pointerLngLat) {
+            const value = weatherLayer.pickAt(pointerLngLat.lng, pointerLngLat.lat);
+            pointerDataDiv.innerText = value
+              ? `${value[valKey].toFixed(1)}${units}`
+              : '—';
+        }
+    });
+
+    function changeWeatherLayer(type) {
+        if (type === activeLayer) return;
+
+        if (map.getLayer(activeLayer)) {
+            const oldLayer = weatherLayers[activeLayer]?.layer;
+            if (oldLayer) {
+                currentTime = oldLayer.getAnimationTime();
+                map.setLayoutProperty(activeLayer, 'visibility', 'none');
+            }
+        }
+
+        activeLayer = type;
+        let weatherLayer = weatherLayers[type]?.layer;
+        if (!weatherLayer) {
+            weatherLayer = createWeatherLayer(type);
+            if (weatherLayer) {
+                map.addLayer(weatherLayer, 'Water');
+            }
+        } else {
+            map.setLayoutProperty(type, 'visibility', 'visible');
+        }
+
+        setAnimation(weatherLayer);
+    }
+
+    function createWeatherLayer(type) {
+        let layer;
+        switch (type) {
+            case 'precipitation':
+                layer = new maptilerweather.PrecipitationLayer({ id: 'precipitation' });
+                break;
+            case 'pressure':
+                layer = new maptilerweather.PressureLayer({ id: 'pressure', opacity: 0.8 });
+                break;
+            case 'radar':
+                layer = new maptilerweather.RadarLayer({ id: 'radar', opacity: 0.8 });
+                break;
+            case 'temperature':
+                layer = new maptilerweather.TemperatureLayer({
+                    id: 'temperature',
+                    colorramp: maptilerweather.ColorRamp.builtin.TEMPERATURE_3
+                });
+                break;
+            case 'wind':
+                layer = new maptilerweather.WindLayer({
+                    id: 'wind',
+                    windStyle: 'arrows',
+                    arrowColor: '#ffffff',
+                    arrowSize: 1.2,
+                    particleDensity: 0.5,
+                    particleSpeed: 0
+                });
+                break;
+        }
+
+        if (!layer) return null;
+
+        layer.on("tick", () => {
+            updateTime(layer);
+            updatePointerValue();
+        });
+
+        layer.on("animationTimeSet", () => {
+            updateTime(layer);
+        });
+
+        layer.on("sourceReady", () => {
+            const startDate = layer.getAnimationStartDate();
+            const endDate = layer.getAnimationEndDate();
+            const currentDate = layer.getAnimationTimeDate();
+
+            timeSlider.min = +startDate;
+            timeSlider.max = +endDate;
+            timeSlider.value = +currentDate;
+        });
+
+        weatherLayers[type].layer = layer;
+        return layer;
+    }
+
+    function setAnimation(layer) {
+        if (!layer) return;
+        layer.setAnimationTime(parseInt(timeSlider.value / 1000));
+        if (isPlaying) {
+            layer.animateByFactor(1800);
+        } else {
+            layer.animateByFactor(0);
+        }
+    }
+
+    function updateTime(layer) {
+        const d = layer.getAnimationTimeDate();
+        timeSlider.value = +d;
+
+        const timeLabel = document.getElementById("time-label");
+        if (timeLabel && d instanceof Date) {
+            timeLabel.innerText = d.toLocaleString(); // Local formatted string
+        }
+    }
+
+    function updatePointerValue() {
+        if (!pointerLngLat) return;
+        const layer = weatherLayers[activeLayer]?.layer;
+        const valKey = weatherLayers[activeLayer]?.value;
+        const units = weatherLayers[activeLayer]?.units;
+        const value = layer?.pickAt(pointerLngLat.lng, pointerLngLat.lat);
+        pointerDataDiv.innerText = value ? `${value[valKey].toFixed(1)}${units}` : '—';
+    }
+</script>
