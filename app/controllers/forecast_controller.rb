@@ -1,12 +1,28 @@
 class ForecastController < ApplicationController
   include BaseForecaster
 
+  DEFAULT_LAYER = "precipitation"
+
   def index
     @erred, @locations, @total = find_locations(params[:location])
     return unless @locations&.size == 1
     locale = @locations.first
     location_context = location_ctx(locale.merge("lat" => locale["geometry"]["lat"], "lng" => locale["geometry"]["lng"]))
     @erred, @summary = summary_forecast_for_location(location_context.latitude, location_context.longitude)
+  end
+
+  def radar_for_locale_web
+    @lat = params[:lat]
+    @lng = params[:lng]
+    @type = params[:type] || DEFAULT_LAYER
+    render layout: "map_only", locals: { type: @type, lng: @lng, lat: @lat }
+  end
+
+  def radar_for_locale
+    @lat = params[:lat]
+    @lng = params[:lng]
+    @type = params[:type] || DEFAULT_LAYER
+    render layout: "map_only", locals: { type: @type, lng: @lng, lat: @lat }
   end
 
   def geo_location

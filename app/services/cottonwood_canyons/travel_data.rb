@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 module CottonwoodCanyons
   class TravelData
     attr_reader :resort
 
     DEFAULT_NO_WARNINGS = "No google traffic warnings."
+    WEATHER_ERROR = "No weather data available currently."
+    TRAVEL_ERROR = "No travel data available currently."
 
     def initialize(resort:)
       @origin = resort.departure_point
@@ -12,30 +16,32 @@ module CottonwoodCanyons
 
     def call
       directions_response = Google::Directions.new(origin: @origin, destination: @destination).call
-      warnings = extract_warnings(directions_response)
-      to_resort_time = extract_duration(directions_response)
       from_response = Google::Directions.new(origin: @destination, destination: @origin).call
-      from_resort_time = extract_duration(from_response)
       {
         resort: resort.resort_name,
-        to_resort: to_resort_time,
-        from_resort: from_resort_time,
+        to_resort: extract_duration(directions_response),
+        from_resort: extract_duration(from_response),
         departure_point: resort.departure_point,
         parking: "Parking Open",
-        weather: "Sunny, clear high of 32",
-        traffic: warnings.join(", "),
-        updated_at: DateTime.current.strftime("%a %l:%M") }
+        weather: resort_forecast,
+        traffic: extract_warnings(directions_response),
+        updated_at: DateTime.current.strftime("%a %l:%M")
+      }
     rescue => e
       Rails.logger.error("CanyonTravelTimeService failed: #{e.message}")
-      { error: "Could not fetch travel time" }
+      { error: TRAVEL_ERROR }
     end
 
     private
 
     def extract_warnings(response)
+      udot_information || google_warnings(response)
+    end
+
+    def google_warnings(response)
       return [] unless response.success? && response.value.present?
       route = response.value.first
-      return [ DEFAULT_NO_WARNINGS ] if route.nil? || route[:warnings].nil?
+      return [] if route.nil? || route[:warnings].nil?
       route[:warnings] || []
     end
 
@@ -45,7 +51,21 @@ module CottonwoodCanyons
       leg[:duration_in_traffic].symbolize_keys!
       return leg[:duration_in_traffic][:text].gsub!("mins", "").strip! if leg && leg[:duration_in_traffic]
 
-      leg[:duration][:text] rescue "Unknown"
+      leg[:duration][:text] rescue TRAVEL_ERROR
+    end
+
+    def udot_information
+      udot_response = Udot::Warnings.new(resort: resort).call
+      return UDOT_ERROR if udot_response.failure?
+
+      udot_response.value[:summary]
+    end
+
+    def resort_forecast
+      forecast_response = Noaa::Forecast::TextOnly.(resort.latitude, resort.longitude)
+      return WEATHER_ERROR unless forecast_response.success?
+      forecast = forecast_response.value["forecasts"].first
+      "#{forecast["name"]}: #{forecast["shortForecast"]}, #{forecast["temperature"]} #{forecast["temperatureUnit"]}, #{forecast["windDirection"]} @ #{forecast["windSpeed"]}"
     end
   end
 end
