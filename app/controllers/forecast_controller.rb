@@ -15,14 +15,14 @@ class ForecastController < ApplicationController
     @lat = params[:lat]
     @lng = params[:lng]
     @type = params[:type] || DEFAULT_LAYER
-    render layout: 'map_only', locals: { type: @type, lng: @lng, lat: @lat }
+    render layout: "map_only", locals: { type: @type, lng: @lng, lat: @lat }
   end
 
   def radar_for_locale
     @lat = params[:lat]
     @lng = params[:lng]
     @type = params[:type] || DEFAULT_LAYER
-    render layout: 'map_only', locals: { type: @type, lng: @lng, lat: @lat }
+    render layout: "map_only", locals: { type: @type, lng: @lng, lat: @lat }
   end
 
   def geo_location
