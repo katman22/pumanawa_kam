@@ -3,14 +3,7 @@
   <!-- Left Column -->
   <div class="col-md-6">
     <div class="weather_div">
-      <p class="text-left fs-2">Weather Forecast</p>
-      <figcaption class="blockquote-footer text-left">
-        Forecast Data supplied by
-        <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-        GeoLocation Data supplied by
-        <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-        <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
-      </figcaption>
+      <%= render "header" %>
       <%= form_with url: forecast_dual_geo_location_path, method: 'POST', class: 'dual_forecast_form', id: 'location_form' do %>
         <p class="fs-6"> Enter a city, state & zip or latitude and longitude <br/>I.E. Salt Lake, UT 84101 or 41.00,
           -101.00</p>

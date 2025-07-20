@@ -2,145 +2,146 @@
 
 
   <div class="row">
-  <!-- Left Column -->
-  <div class="col-md-10"> <!-- add offset to center layout -->
-    <div class="weather_div">
-      <!-- Header Row: Logo left, title + language links right -->
-      <div class="d-flex justify-content-between align-items-center my-3 px-3">
+    <!-- Left Column -->
+    <div class="col-md-10"> <!-- add offset to center layout -->
+      <div class="weather_div">
+        <!-- Header Row: Logo left, title + language links right -->
+        <div class="d-flex justify-content-between align-items-center my-3 px-3">
 
-        <!-- Logo Left -->
-        <div>
-          <%= image_tag "aura_logo_v6_512.png", alt: "Aura Weather logo", style: "width: 120px;" %>
-          <u class="fs-2"><%= t("home.title") %></u>
+          <!-- Logo Left -->
+          <div>
+            <%= image_tag "aura_logo_v6_512.png", alt: "Aura Weather logo", style: "width: 120px;" %>
+            <u class="fs-2"><%= t("home.title") %></u>
+          </div>
+
+          <!-- Text Right -->
+          <div class="text-end">
+            <p class="fs-4 mb-1">Whare Pumanawa</p>
+            <figcaption class="blockquote-footer mb-0">
+              <%= t("home.created_by") %><br/>
+              Kia ora : Nau Mai Piki Mai<br/>
+              <%= link_to "🇳🇿 Te Reo", url_for(locale: :mi) %> |
+              <%= link_to "🇺🇸 English", url_for(locale: :en) %>
+            </figcaption>
+            <br/>
+            <div class="d-flex justify-content-end">
+              <%= link_to forecast_view_url, class: "btn btn-primary btn-sm d-flex align-items-center gap-2", target: "_parent" do %>
+                <i data-feather="cloud-rain"></i>
+                <%= t("home.get_weather") %>
+              <% end %>
+            </div>
+            <br/>
+          </div>
         </div>
+        <div style="width: 700px; margin-top: -75px; margin-bottom: 20px; margin-left: 40px">
+          <div class="text-center d-flex justify-content-center gap-3 mt-3">
+            <%= link_to "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank", class: "btn btn-outline-success d-flex align-items-center gap-2" do %>
+              <i data-feather="download-cloud"></i>
+              <%= t("home.google_play") %>
+            <% end %>
 
-        <!-- Text Right -->
-        <div class="text-end">
-          <p class="fs-4 mb-1">Whare Pumanawa</p>
-          <figcaption class="blockquote-footer mb-0">
-            <%= t("home.created_by") %><br/>
-            Kia ora : Nau Mai Piki Mai<br/>
-            <%= link_to "🇳🇿 Te Reo", url_for(locale: :mi) %> |
-            <%= link_to "🇺🇸 English", url_for(locale: :en) %>
-          </figcaption>
-          <br />
-          <div class="d-flex justify-content-end">
-            <%= link_to forecast_view_url, class: "btn btn-primary btn-sm d-flex align-items-center gap-2", target: "_parent" do %>
-              <i data-feather="cloud-rain"></i>
-              <%= t("home.get_weather") %>
+            <span class="align-self-center">|</span>
+
+            <%= link_to "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank", class: "btn btn-outline-dark d-flex align-items-center gap-2" do %>
+              <i data-feather="smartphone"></i>
+              <%= t("home.ios") %>
             <% end %>
           </div>
-          <br/>
         </div>
-      </div>
+        <p class="text-left fs-6">
+          <%= t("home.description_1").html_safe %>
+        </p>
 
-      <p class="text-left fs-6">
-        <%= t("home.description_1").html_safe %>
-      </p>
+        <p class="text-left fs-6">
+          <%= t("home.description_2").html_safe %>
+        </p>
 
-      <p class="text-left fs-6">
-        <%= t("home.description_2").html_safe %>
-      </p>
+        <p class="text-left fs-6">
+          <%= t("home.description_3").html_safe %> <%= t("home.description_4").html_safe %>
+        </p>
 
-      <p class="text-left fs-6">
-        <%= t("home.description_3").html_safe %> <%= t("home.description_4").html_safe %>
-      </p>
+        <!-- Attribution -->
+        <figcaption class="blockquote-footer text-left">
+          <%= t("home.noaa") %>
+          <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>
+          & <cite title="Source Title"><a href="https://www.maptiler.com/" target="_blank">MapTiler.com</a></cite>,
+          <%= t("home.opencage") %>
+          <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
+        </figcaption>
 
-      <!-- Store Buttons -->
-      <div class="text-center d-flex justify-content-center gap-3 mt-3">
-        <%= link_to "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam", target: "_blank", class: "btn btn-outline-success d-flex align-items-center gap-2" do %>
-          <i data-feather="download-cloud"></i>
-          <%= t("home.google_play") %>
-        <% end %>
+        <!-- Android Section -->
+        <div class="row mt-5 mb-2">
+          <div class="col-md-10 offset-md-1 d-flex justify-content-between align-items-center">
+            <p class="fs-4 d-flex align-items-center gap-2 mb-0">
+              <i data-feather="smartphone"></i>
+              <u><%= t("home.android_version") %></u>
+            </p>
 
-        <span class="align-self-center">|</span>
-
-        <%= link_to "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396", target: "_blank", class: "btn btn-outline-dark d-flex align-items-center gap-2" do %>
-          <i data-feather="smartphone"></i>
-          <%= t("home.ios") %>
-        <% end %>
-      </div>
-
-      <!-- Bullet Lists -->
-      <ul class="fs-6 mt-4" style="margin-left: 20px">
-        <% t("home.features").each do |feature| %>
-          <li><%= feature.html_safe %></li>
-        <% end %>
-      </ul>
-
-      <ul class="fs-6 ps-4" style="margin-left: 20px">
-        <% t("home.features_detailed").each do |feature| %>
-          <li class="mb-3"><%= feature.html_safe %></li>
-        <% end %>
-      </ul>
-
-      <!-- Attribution -->
-      <figcaption class="blockquote-footer text-left">
-        <%= t("home.noaa") %>
-        <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-        <%= t("home.opencage") %>
-        <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-      </figcaption>
-
-      <!-- Android Section -->
-      <div class="row mt-5 mb-2">
-        <div class="col-md-10 offset-md-1 d-flex justify-content-between align-items-center">
-          <p class="fs-4 d-flex align-items-center gap-2 mb-0">
-            <i data-feather="smartphone"></i>
-            <u><%= t("home.android_version") %></u>
-          </p>
-
-          <%= link_to "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam",
-                      target: "_blank",
-                      class: "btn btn-outline-success btn-sm d-flex align-items-center gap-2" do %>
-            <i data-feather="download-cloud"></i>
-            <%= t("home.google_play") %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="overflow-auto">
-          <div class="col-md-10 offset-md-1 d-flex gap-3">
-            <%= image_tag "Screenshot_20250606-150728_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Screenshot_20250606-150745_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Screenshot_20250606-150805_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Screenshot_20250606-150911_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+            <%= link_to "https://play.google.com/store/apps/details?id=com.onrender.pumanawa_kam",
+                        target: "_blank",
+                        class: "btn btn-outline-success btn-sm d-flex align-items-center gap-2" do %>
+              <i data-feather="download-cloud"></i>
+              <%= t("home.google_play") %>
+            <% end %>
           </div>
         </div>
-      </div>
 
-      <!-- iOS Section -->
-      <div class="row mt-5 mb-2">
-        <div class="col-md-10 offset-md-1 d-flex justify-content-between align-items-center">
-          <p class="fs-4 d-flex align-items-center gap-2 mb-0">
-            <i data-feather="smartphone"></i>
-            <u><%= t("home.ios_version") %></u>
-          </p>
-
-          <%= link_to "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396",
-                      target: "_blank",
-                      class: "btn btn-outline-dark btn-sm d-flex align-items-center gap-2" do %>
-            <i data-feather="smartphone"></i>
-            <%= t("home.ios") %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="overflow-auto">
-          <div class="col-md-10 offset-md-1 d-flex gap-3">
-            <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.47.png", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.24.png", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.05.png", class: "rounded", style: "width: 220px" %>
-            <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 16.02.49.png", class: "rounded", style: "width: 220px" %>
+        <div class="row">
+          <div class="overflow-auto">
+            <div class="col-md-10 offset-md-1 d-flex gap-3">
+              <%= image_tag "Screenshot_20250606-150728_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Screenshot_20250606-150745_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Screenshot_20250606-150805_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Screenshot_20250606-150911_Aura Weather.jpg", class: "rounded", style: "width: 220px" %>
+            </div>
           </div>
         </div>
-      </div>
 
+        <!-- iOS Section -->
+        <div class="row mt-5 mb-2">
+          <div class="col-md-10 offset-md-1 d-flex justify-content-between align-items-center">
+            <p class="fs-4 d-flex align-items-center gap-2 mb-0">
+              <i data-feather="smartphone"></i>
+              <u><%= t("home.ios_version") %></u>
+            </p>
+
+            <%= link_to "https://apps.apple.com/us/app/aura-weather-forecasts/id6746107396",
+                        target: "_blank",
+                        class: "btn btn-outline-dark btn-sm d-flex align-items-center gap-2" do %>
+              <i data-feather="smartphone"></i>
+              <%= t("home.ios") %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="overflow-auto">
+            <div class="col-md-10 offset-md-1 d-flex gap-3">
+              <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.47.png", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.24.png", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 15.58.05.png", class: "rounded", style: "width: 220px" %>
+              <%= image_tag "Simulator Screenshot - iPhone 16 Pro - 2025-06-06 at 16.02.49.png", class: "rounded", style: "width: 220px" %>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Bullet Lists -->
+  <ul class="fs-6 mt-4" style="margin-left: 20px">
+    <% t("home.features").each do |feature| %>
+      <li><%= feature.html_safe %></li>
+    <% end %>
+  </ul>
+
+  <ul class="fs-6 ps-4" style="margin-left: 20px">
+    <% t("home.features_detailed").each do |feature| %>
+      <li class="mb-3"><%= feature.html_safe %></li>
+    <% end %>
+  </ul>
+
   <div class="footer_tag">
     <figcaption class="blockquote-footer text-left" style="margin-top: 100px; margin-bottom: 100px">
       <%= t("home.created_by") %>
