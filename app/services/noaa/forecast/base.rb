@@ -36,7 +36,7 @@ module Noaa
       end
 
       def parse_response(response)
-        return nil if response.nil? || response["status"] == 404
+        return nil if response.body.nil? || response.body.empty? || response["status"] == 404
         JSON.parse(response)
       end
 

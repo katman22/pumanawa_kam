@@ -1,12 +1,14 @@
 # config/locales/en.yml
 en:
   home:
-    title: "Aura Weather Forecaster"
+    title: "Aura Weather Forecasts"
     aura_name: "Aura Weather"
     description_1: "<strong>Aura Weather</strong> stands out from other weather apps by letting you compare <strong>7-day forecasts across multiple locations—all on one screen</strong>. Whether you're planning a trip, managing events, or just curious about different climates, Aura makes it effortless."
     description_2: "Powered by <strong>NOAA and other trusted sources</strong>, Aura delivers <strong>fast, accurate weather data</strong> in a clean, intuitive interface. Get <strong>current conditions, 7-day forecasts, hourly forecasts and radar imagery</strong> —without the clutter or distractions."
     description_3: "<strong>Ingenuity. Simplicity. Performance. Precision.</strong>"
     description_4: "That’s the Aura Weather difference."
+    try_it: "Try out our web version."
+    get_weather: "Get your local weather"
     created_by: "Software created by Whare Pumanawa Ropu"
     google_play: "Get it on Google Play"
     ios: "Download on the App Store"

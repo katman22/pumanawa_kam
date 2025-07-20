@@ -1,11 +1,12 @@
 <div class="weather_div">
-  <p class="text-left fs-2">Weather Forecast</p>
+  <%= image_tag "aura_logo_v6_512.png", alt: "Aura Weather logo", style: "width: 120px;" %>
+  <u class="fs-2"><%= t("home.title") %></u>
   <figcaption class="blockquote-footer text-left">
     Forecast Data supplied by
     <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
     GeoLocation Data supplied by
     <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Full Local forecast, Text Only and Summary available | <%= link_to "Kainga", root_path %>
+    <br/>Full Local forecast, Text Only and Summary available | <i data-feather="home" style="width: 16px; height: 16px; margin-top: -2px"></i> <%= link_to "Kainga", root_path %>
   </figcaption>
   <!-- START ALIGNMENT ROW -->
   <div class="row">

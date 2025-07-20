@@ -21,8 +21,7 @@ module OpenCage
         return successful(cached_response) if cached_response.present?
 
         response_geo = open_cage_api_response
-        return failed("Unable to find location from #{location}") if response_geo.nil?
-
+        return failed("Unable to find location from #{location}") if response_geo.body.nil? || response_geo.body.empty?
         result = parse_response(response_geo)
         return failed("no results for location from #{location}") if result.nil? || result[:total].to_i.zero?
 

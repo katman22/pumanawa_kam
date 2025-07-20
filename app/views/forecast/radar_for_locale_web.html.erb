@@ -1,196 +1,100 @@
-<div id="map"></div>
+<div class="weather_div" style=" margin-left: 40px;margin-top: 20px">
+  <%= render "header" %>
+  <!-- START ALIGNMENT ROW -->
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-md-7">
 
-<div id="controls">
-  <label for="layerSelect">Choose weather layer:</label>
-  <select id="layerSelect">
-    <option value="precipitation">Precipitation (1h)</option>
-    <option value="temperature">Temperature (2m)</option>
-    <option value="wind">Wind (10m)</option>
-    <option value="radar">Radar Composite</option>
-    <option value="pressure">Pressure (MSL)</option>
-  </select>
+      <div data-controller="weather-map"
+           data-weather-map-api-key="<%= ENV["MAP_TILER"] %>"
+           data-weather-map-lat="<%= lat %>"
+           data-weather-map-lng="<%= lng %>"
+           data-weather-map-type="<%= type %>">
 
-  <button id="play-pause-bt">Play 1800x</button>
-  <input type="range" id="time-slider" min="0" max="11" step="1"/>
-  <div id="time-label">—</div>
-  <div id="pointer-data">—</div>
+        <div id="map" style="height: 500px; min-width: 900px;padding: 40px;"></div>
+
+        <div id="controls" style="margin-top: 20px">
+          <div class="row align-items-start">
+            <!-- Layer dropdown + pointer value -->
+            <div class="col-md-auto">
+              <div class="btn-group mb-2" id="layerSelect">
+                <button type="button"
+                        class="btn btn-primary dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        data-weather-map-target="dropdownButton">
+                  Choose weather layer
+                </button>
+                <ul class="dropdown-menu">
+                  <% [
+                       ['Precipitation (1h)', 'precipitation'],
+                       ['Temperature (2m)', 'temperature'],
+                       ['Wind (10m)', 'wind'],
+                       ['Radar Composite', 'radar'],
+                       ['Pressure (MSL)', 'pressure']
+                     ].each do |label, type| %>
+                    <li>
+                      <a href="#"
+                         class="dropdown-item <%= 'active' if type == @type %>"
+                         data-action="click->weather-map#selectLayer"
+                         data-layer-type="<%= type %>">
+                        <%= label %>
+                      </a>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+              <div class="mt-2" style="margin-left: 0px">
+                <div class="small text-muted mb-1">
+                  Hover your pointer over the map to see local values:
+                </div>
+                <div id="pointer-data"
+                     data-weather-map-target="pointerData"
+                     class="fw-bold">
+                  —
+                </div>
+              </div>
+            </div>
+
+            <!-- Play button + time label -->
+            <div class="col-md-auto text-center">
+              <button id="play-pause-bt"
+                      data-weather-map-target="playPause"
+                      class="btn btn-primary mb-2">
+                Play
+              </button>
+
+              <div id="time-label"
+                   data-weather-map-target="timeLabel"
+                   class="small text-muted" style="width: 200px; margin-top: 17px">
+                —
+              </div>
+            </div>
+
+            <!-- Slider -->
+            <div class="col">
+              <input type="range"
+                     id="time-slider"
+                     data-weather-map-target="timeSlider"
+                     class="form-range"
+                     min="0"
+                     max="11"
+                     step="1"/>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const currentLayer = "<%= @type %>";
+          const currentItem = document.querySelector(`[data-layer-type="${currentLayer}"]`);
+          if (currentItem) {
+              document.querySelector('[data-weather-map-target="dropdownButton"]').innerText = currentItem.innerText.trim();
+          }
+      });
+  </script>
+
 </div>
-
-<script>
-    maptilersdk.config.apiKey = "<%=ENV['MAP_TILER'] %>";
-    const weatherLayers = {
-        precipitation: { layer: null, value: "value", units: " mm" },
-        pressure: { layer: null, value: "value", units: " hPa" },
-        radar: { layer: null, value: "value", units: " dBZ" },
-        temperature: { layer: null, value: "value", units: "°" },
-        wind: { layer: null, value: "speedMetersPerSecond", units: " m/s" }
-    };
-
-    const map = new maptilersdk.Map({
-        container: 'map',
-        style: maptilersdk.MapStyle.BACKDROP,
-        zoom: 8,
-        center: [<%= lng %>, <%= lat %>],
-        hash: true,
-        projectionControl: true
-    });
-
-    const timeSlider = document.getElementById("time-slider");
-    const playPauseButton = document.getElementById("play-pause-bt");
-    const pointerDataDiv = document.getElementById("pointer-data");
-    let pointerLngLat = null;
-    let activeLayer = null;
-    let isPlaying = false;
-    let currentTime = null;
-
-    map.on('load', () => {
-        map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.4)");
-        changeWeatherLayer("<%= type %>");
-    });
-
-    document.getElementById("layerSelect").addEventListener("change", (e) => {
-        changeWeatherLayer(e.target.value);
-    });
-
-    playPauseButton.addEventListener("click", () => {
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        if (!weatherLayer) return;
-        if (isPlaying) {
-            weatherLayer.animateByFactor(0);
-            playPauseButton.innerText = "Play 3600x";
-        } else {
-            weatherLayer.animateByFactor(1800);
-            playPauseButton.innerText = "Pause";
-        }
-        isPlaying = !isPlaying;
-    });
-
-    timeSlider.addEventListener("input", (evt) => {
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        if (weatherLayer) {
-            weatherLayer.setAnimationTime(parseInt(timeSlider.value / 1000));
-        }
-    });
-
-    map.on('mousemove', (e) => {
-        pointerLngLat = e.lngLat;
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        const valKey = weatherLayers[activeLayer]?.value;
-        const units = weatherLayers[activeLayer]?.units;
-        if (weatherLayer && pointerLngLat) {
-            const value = weatherLayer.pickAt(pointerLngLat.lng, pointerLngLat.lat);
-            pointerDataDiv.innerText = value
-              ? `${value[valKey].toFixed(1)}${units}`
-              : '—';
-        }
-    });
-
-    function changeWeatherLayer(type) {
-        if (type === activeLayer) return;
-
-        if (map.getLayer(activeLayer)) {
-            const oldLayer = weatherLayers[activeLayer]?.layer;
-            if (oldLayer) {
-                currentTime = oldLayer.getAnimationTime();
-                map.setLayoutProperty(activeLayer, 'visibility', 'none');
-            }
-        }
-
-        activeLayer = type;
-        let weatherLayer = weatherLayers[type]?.layer;
-        if (!weatherLayer) {
-            weatherLayer = createWeatherLayer(type);
-            if (weatherLayer) {
-                map.addLayer(weatherLayer, 'Water');
-            }
-        } else {
-            map.setLayoutProperty(type, 'visibility', 'visible');
-        }
-
-        setAnimation(weatherLayer);
-    }
-
-    function createWeatherLayer(type) {
-        let layer;
-        switch (type) {
-            case 'precipitation':
-                layer = new maptilerweather.PrecipitationLayer({ id: 'precipitation' });
-                break;
-            case 'pressure':
-                layer = new maptilerweather.PressureLayer({ id: 'pressure', opacity: 0.8 });
-                break;
-            case 'radar':
-                layer = new maptilerweather.RadarLayer({ id: 'radar', opacity: 0.8 });
-                break;
-            case 'temperature':
-                layer = new maptilerweather.TemperatureLayer({
-                    id: 'temperature',
-                    colorramp: maptilerweather.ColorRamp.builtin.TEMPERATURE_3
-                });
-                break;
-            case 'wind':
-                layer = new maptilerweather.WindLayer({
-                    id: 'wind',
-                    windStyle: 'arrows',
-                    arrowColor: '#ffffff',
-                    arrowSize: 1.2,
-                    particleDensity: 0.5,
-                    particleSpeed: 0
-                });
-                break;
-        }
-
-        if (!layer) return null;
-
-        layer.on("tick", () => {
-            updateTime(layer);
-            updatePointerValue();
-        });
-
-        layer.on("animationTimeSet", () => {
-            updateTime(layer);
-        });
-
-        layer.on("sourceReady", () => {
-            const startDate = layer.getAnimationStartDate();
-            const endDate = layer.getAnimationEndDate();
-            const currentDate = layer.getAnimationTimeDate();
-
-            timeSlider.min = +startDate;
-            timeSlider.max = +endDate;
-            timeSlider.value = +currentDate;
-        });
-
-        weatherLayers[type].layer = layer;
-        return layer;
-    }
-
-    function setAnimation(layer) {
-        if (!layer) return;
-        layer.setAnimationTime(parseInt(timeSlider.value / 1000));
-        if (isPlaying) {
-            layer.animateByFactor(1800);
-        } else {
-            layer.animateByFactor(0);
-        }
-    }
-
-    function updateTime(layer) {
-        const d = layer.getAnimationTimeDate();
-        timeSlider.value = +d;
-
-        const timeLabel = document.getElementById("time-label");
-        if (timeLabel && d instanceof Date) {
-            timeLabel.innerText = d.toLocaleString(); // Local formatted string
-        }
-    }
-
-    function updatePointerValue() {
-        if (!pointerLngLat) return;
-        const layer = weatherLayers[activeLayer]?.layer;
-        const valKey = weatherLayers[activeLayer]?.value;
-        const units = weatherLayers[activeLayer]?.units;
-        const value = layer?.pickAt(pointerLngLat.lng, pointerLngLat.lat);
-        pointerDataDiv.innerText = value ? `${value[valKey].toFixed(1)}${units}` : '—';
-    }
-</script>
