@@ -1,8 +1,8 @@
 // Import and register all your controllers from the importmap via controllers/**/*_controller
 import { application } from "controllers/application"
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
-eagerLoadControllersFrom("controllers", application)
 
 import RecentLocationController from "controllers/recent_location_controller"
-
 application.register("recent-location", RecentLocationController)
+
+import WeatherMapController from "controllers/weather_map_controller"
+application.register("weather-map", WeatherMapController)

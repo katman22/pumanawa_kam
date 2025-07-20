@@ -14,7 +14,9 @@ module BaseForecaster
 
     def location_services(location)
       location_service_result = OpenCage::GeoLocation::LocationFromInput.(location)
-      [ location_service_result.failure?, location_service_result.value[:locations], location_service_result.value[:total] || 0 ]
+      locations = location_service_result.failure? ? [] : location_service_result.value[:locations]
+      total = location_service_result.failure? ? 0 : location_service_result.value[:total]
+      [ location_service_result.failure?,  locations, total ]
     end
 
     def summary_forecast_for_location(lat, long)
