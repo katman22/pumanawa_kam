@@ -13,7 +13,7 @@
 
         <div id="map" style="height: 500px; min-width: 900px;padding: 40px;"></div>
 
-        <div id="controls" style="margin-top: 20px">
+        <div id="controls" style="margin-top: 20px; width: 900px">
           <div class="row align-items-start">
             <!-- Layer dropdown + pointer value -->
             <div class="col-md-auto">
@@ -70,8 +70,7 @@
                 —
               </div>
             </div>
-
-            <!-- Slider -->
+            <!-- Forecast Duration and Speed Controls -->
             <div class="col">
               <input type="range"
                      id="time-slider"
@@ -80,7 +79,24 @@
                      min="0"
                      max="11"
                      step="1"/>
+              <div class="d-flex gap-3 mt-3">
+                <!-- Duration buttons -->
+                <div class="btn-group" role="group" data-weather-map-target="forecastButtons">
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="1">1hr</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="6">6hr</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="24">24hr</button>
+                </div>
+
+                <!-- Speed buttons -->
+                <div class="btn-group" role="group" data-weather-map-target="speedButtons">
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="800">8x</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="1200">12x</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="1600">16x</button>
+                </div>
+              </div>
             </div>
+
+
           </div>
         </div>
 

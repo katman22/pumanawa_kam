@@ -1,7 +1,18 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["dropdownButton", "playPause", "timeSlider", "timeLabel", "pointerData"]
+  static targets = [
+    "dropdownButton",
+    "playPause",
+    "timeSlider",
+    "timeLabel",
+    "pointerData",
+    "forecastButtons",
+    "speedButtons"
+  ]
+  forecastDurationHours = 1
+  animationSpeed = 800
+
 
   connect() {
     console.log("🌦️ weather-map Stimulus controller connected")
@@ -37,7 +48,75 @@ export default class extends Controller {
 
     this.playPauseTarget.addEventListener("click", () => this.togglePlayPause())
     this.timeSliderTarget.addEventListener("input", e => this.updateAnimationTime(e))
+    this.setDefaultActiveButtons()
   }
+
+  setDefaultActiveButtons() {
+    const defaultDuration = this.forecastButtonsTarget.querySelector('[data-hours="1"]')
+    const defaultSpeed = this.speedButtonsTarget.querySelector('[data-speed="800"]')
+
+    if (defaultDuration) {
+      this.highlightActiveButton("forecastButtonsTarget", defaultDuration)
+    }
+
+    if (defaultSpeed) {
+      this.highlightActiveButton("speedButtonsTarget", defaultSpeed)
+    }
+  }
+
+  applyForecastWindow(layer) {
+    const now = new Date();
+    const pastWindowMs = 3600000; // Always 1 hour back
+    const futureWindowMs = this.forecastDurationHours * 3600000; // Full future window
+
+    const startDate = layer.getAnimationStartDate();
+    const endDate = layer.getAnimationEndDate();
+    const currentDate = layer.getAnimationTimeDate();
+
+    const clampedMin = new Date(Math.max(+startDate, +now - pastWindowMs));
+    const clampedMax = new Date(Math.min(+endDate, +now + futureWindowMs));
+
+    this.timeSliderTarget.min = +clampedMin;
+    this.timeSliderTarget.max = +clampedMax;
+
+    let initialValue = +currentDate;
+
+    // 🚨 Reset if outside bounds
+    if (initialValue < +clampedMin || initialValue > +clampedMax) {
+      initialValue = +clampedMin;
+      layer.setAnimationTime(initialValue / 1000);
+    }
+
+    this.timeSliderTarget.value = initialValue;
+    this.updateTime(layer);
+  }
+
+
+
+
+
+  setForecastDuration(event) {
+    this.forecastDurationHours = parseInt(event.currentTarget.dataset.hours);
+    this.highlightActiveButton("forecastButtonsTarget", event.currentTarget);
+
+    const layer = this.weatherLayers[this.activeLayer]?.layer;
+    if (layer && layer.getAnimationStartDate) {
+      this.applyForecastWindow(layer);
+    }
+  }
+
+  setSpeed(event) {
+    this.animationSpeed = parseInt(event.currentTarget.dataset.speed);
+    this.highlightActiveButton("speedButtonsTarget", event.currentTarget);
+
+    if (this.isPlaying) {
+      const layer = this.weatherLayers[this.activeLayer]?.layer;
+      if (layer?.animateByFactor) {
+        layer.animateByFactor(this.animationSpeed);
+      }
+    }
+  }
+
 
   handleMouseMove(e) {
     this.pointerLngLat = e.lngLat
@@ -65,7 +144,7 @@ export default class extends Controller {
       layer.animateByFactor(0)
       this.playPauseTarget.innerText = " Play "
     } else {
-      layer.animateByFactor(800)
+      layer.animateByFactor(this.animationSpeed)
       this.playPauseTarget.innerText = " Pause "
     }
 
@@ -141,17 +220,7 @@ export default class extends Controller {
     if (!layer) return null
 
     layer.on("tick", () => {
-      const now = new Date()
-      const hourMs = 3600000
-      const clampedMin = new Date(now.getTime() - hourMs)
-      const clampedMax = new Date(now.getTime() + hourMs)
-      const current = layer.getAnimationTimeDate()
-
-      if (current > clampedMax) {
-        layer.setAnimationTime(clampedMin.getTime() / 1000)
-      }
-
-      this.updateTime(layer)
+      this.applyForecastWindow(layer)
       this.updatePointerValue()
     })
 
@@ -160,26 +229,7 @@ export default class extends Controller {
     })
 
     layer.on("sourceReady", () => {
-      const now = new Date()
-      const hourMs = 3600000
-
-      const startDate = layer.getAnimationStartDate()
-      const endDate = layer.getAnimationEndDate()
-      const currentDate = layer.getAnimationTimeDate()
-
-      const clampedMin = new Date(Math.max(+startDate, +now - hourMs))
-      const clampedMax = new Date(Math.min(+endDate, +now + hourMs))
-
-      this.timeSliderTarget.min = +clampedMin
-      this.timeSliderTarget.max = +clampedMax
-
-      let initialValue = +currentDate
-      if (initialValue < +clampedMin) initialValue = +clampedMin
-      if (initialValue > +clampedMax) initialValue = +clampedMax
-
-      this.timeSliderTarget.value = initialValue
-
-      this.updateTime(layer)
+      this.applyForecastWindow(layer)
     })
 
     this.weatherLayers[type].layer = layer
@@ -229,6 +279,14 @@ export default class extends Controller {
 
     button.textContent = label
     this.changeWeatherLayer(layerType)
+  }
+
+  highlightActiveButton(buttonsTarget, clickedButton) {
+    const buttons = this[buttonsTarget].querySelectorAll("button");
+    buttons.forEach(btn => btn.classList.remove("btn-primary"));
+    buttons.forEach(btn => btn.classList.add("btn-outline-secondary"));
+    clickedButton.classList.remove("btn-outline-secondary");
+    clickedButton.classList.add("btn-primary");
   }
 
 }
