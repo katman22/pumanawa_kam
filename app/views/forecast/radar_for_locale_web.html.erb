@@ -13,7 +13,7 @@
 
         <div id="map" style="height: 500px; min-width: 900px;padding: 40px;"></div>
 
-        <div id="controls" style="margin-top: 20px; width: 900px">
+        <div id="controls" style="margin-top: 20px; width: 940px">
           <div class="row align-items-start">
             <!-- Layer dropdown + pointer value -->
             <div class="col-md-auto">
@@ -90,8 +90,8 @@
                 <!-- Speed buttons -->
                 <div class="btn-group" role="group" data-weather-map-target="speedButtons">
                   <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="800">8x</button>
-                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="1200">12x</button>
                   <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="1600">16x</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setSpeed" data-speed="3200">32x</button>
                 </div>
               </div>
             </div>
@@ -101,6 +101,25 @@
         </div>
 
       </div>
+
+      <!-- Warning Modal -->
+      <div class="modal fade" id="refreshWarningModal" tabindex="-1" aria-labelledby="refreshWarningLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+              <h5 class="modal-title" id="refreshWarningLabel">Heads up!</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              You've refreshed recently. One more refresh will block the map for 1 minute.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Understood</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
   <script>
