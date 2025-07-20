@@ -38,8 +38,8 @@ class ForecastController < ApplicationController
   end
 
   def full
-    location_context, _recent_locations = set_defaults
-    @erred, @forecasts = create_forecasts(latitude: location_context.latitude, longitude: location_context.longitude)
+    @location_context, _recent_locations = set_defaults
+    @erred, @forecasts = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude)
   end
 
   def dual_full
@@ -49,8 +49,8 @@ class ForecastController < ApplicationController
   end
 
   def text_only
-    location_context, _recent_locations = set_defaults
-    @erred, @forecasts = create_forecasts(latitude: location_context.latitude, longitude: location_context.longitude)
+    @location_context, _recent_locations = set_defaults
+    @erred, @forecasts = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude)
   end
 
   def multi_locations(locations:, total:, erred:, location:)

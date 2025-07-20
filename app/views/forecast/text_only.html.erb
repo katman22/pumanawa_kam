@@ -1,10 +1,7 @@
 <div class="weather_div">
-  <p class="text-left fs-4">Text Only Forecast for:<br/><%= @location_name %></p>
-  <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Text Only : <a href="javascript:window.history.back();">Back to Summary</a>
-  </figcaption>
+  <%= render "header" %>
+
+  <p class="text-left fs-4">Text Only Forecast for:<br/><%= @location_context.location_name %></p>
   <% if @erred %>
     <p class="fs-6">Error Response: <%= @message %></p>
   <% else %>
