@@ -41,7 +41,7 @@ module Noaa
       end
 
       def all_forecasts(forecast)
-        forecast["properties"]["periods"]
+        Convert::Weather::Noaa::Forecast.call(forecast)
       end
 
       def forecast_for_period(forecast, period_number)

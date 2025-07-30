@@ -22,36 +22,37 @@
           <tbody>
           <% locations.each do |location_hash| %>
             <tr>
-              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
+              <td><p class="fs-8 geo_formatted"><%= location_hash[:name] %><br/>
                 <%= link_to 'Full Forecast', forecast_full_path(
-                  lat: location_hash["geometry"]["lat"],
-                  long: location_hash["geometry"]["lng"],
+                  lat: location_hash[:lat],
+                  long: location_hash[:lng],
+                  country_code: location_hash[:country_code],
                   location: location,
-                  zip: location_hash["components"]["postcode"],
-                  location_name: location_hash["formatted"]
+                  location_name: location_hash[:name]
                 ), data: { turbo: false } %> |
                 <%= link_to 'Text Only Forecast',
                             forecast_text_only_path(
-                              lat: location_hash["geometry"]["lat"],
-                              long: location_hash["geometry"]["lng"],
+                              lat: location_hash[:lat],
+                              long: location_hash[:lng],
+                              country_code: location_hash[:country_code],
                               location: location,
-                              zip: location_hash["components"]["postcode"],
-                              location_name: location_hash["formatted"]
+                              location_name: location_hash[:name]
                             ), data: { turbo: false }
                 %> |<%= link_to 'Radar Layers',
                                 radar_for_locale_web_path(
-                                  lat: location_hash["geometry"]["lat"],
-                                  lng: location_hash["geometry"]["lng"],
+                                  lat: location_hash[:lat],
+                                  lng: location_hash[:lng],
+                                  country_code: location_hash[:country_code],
                                   type: 'precipitation'
                                 ), data: { turbo: false }
               %> |
                 <%= link_to 'Dual Screen Forecasts',
                             forecast_dual_path(
-                              lat: location_hash["geometry"]["lat"],
-                              long: location_hash["geometry"]["lng"],
+                              lat: location_hash[:lat],
+                              long: location_hash[:lng],
+                              country_code: location_hash[:country_code],
                               location: location,
-                              zip: location_hash["components"]["postcode"],
-                              location_name: location_hash["formatted"]
+                              location_name: location_hash[:name]
                             ), data: { turbo: false }
                 %></p>
               </td>
@@ -59,11 +60,11 @@
                 <%= button_to "Summary", forecast_summary_path,
                               method: :post,
                               params: {
-                                lat: location_hash["geometry"]["lat"],
-                                long: location_hash["geometry"]["lng"],
+                                lat: location_hash[:lat],
+                                long: location_hash[:long],
+                                country_code: location_hash[:country_code],
                                 location: location,
-                                zip: location_hash["components"]["postcode"],
-                                location_name: location_hash["formatted"]
+                                location_name: location_hash[:name]
                               },
                               form: { data: { turbo_frame: "summary_response" } },
                               class: "btn btn-primary"

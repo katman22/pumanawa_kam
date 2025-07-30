@@ -17,18 +17,18 @@
                 <td class="text-right align-top" style="vertical-align: top;">
                   <div class="d-flex flex-column align-items-right" style="min-height: 120px;width: 100px"> <!-- Adjust height as needed -->
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
-                      <small><b><%= forecast["name"] %></b></small>
+                      <small><b><%= forecast[:name] %></b></small>
                     </div>
-                    <% unless forecast["icon"].nil? %>
-                      <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
+                    <% unless forecast[:icon].nil? %>
+                      <%= image_tag(forecast[:icon], title: forecast["detailedForecast"]) %>
                     <% end %>
                     <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
-                      <% temp = forecast["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast["temperature"]}" %>
-                      <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
-                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast["temperatureUnit"] %></b></small><br/>
+                      <% temp = forecast[:isDaytime] ? "High #{forecast[:temperature]}" : "Low #{forecast[:temperature]}" %>
+                      <% temp_class = forecast[:isDaytime] ? "text-danger" : "text-info" %>
+                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast[:temperatureUnit] %></b></small><br/>
                       <br/>
                       <small>
-                        <%= forecast["shortForecast"] %>
+                        <%= forecast[:shortForecast] %>
                       </small>
                     </div>
                   </div>
@@ -44,28 +44,28 @@
         <div class="table_weekly_container">
           <table class="table table_aliceblue">
             <% @forecasts.each do |forecast| %>
-              <% precipitation = forecast.with_indifferent_access["probabilityOfPrecipitation"] %>
+              <% precipitation = forecast.with_indifferent_access[:probabilityOfPrecipitation] %>
               <tr class="table-primary">
-                <td colspan=2><i><%= forecast["name"] %>:</i></td>
+                <td colspan=2><i><%= forecast[:name] %>:</i></td>
               </tr>
               <tr>
                 <th rowspan="2">
-                  <% unless forecast["icon"].nil? %>
-                    <%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %>
+                  <% unless forecast[:icon].nil? %>
+                    <%= image_tag(forecast[:icon], title: forecast[:shortForecast]) %>
                   <% end %>
                 </th>
                 <td>
                   <p><small>
-                    <b>In Brief:</b> <%= forecast["shortForecast"] %>,
-                    <b>Temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
-                    <b>Wind Direction:</b> <%= forecast["windDirection"] %>,<br/>
-                    <b>Wind Speed:</b> <%= forecast["windSpeed"] %>
-                    <b>Chance of Precipitation: </b><%= precipitation["value"] || 0 %>%
+                    <b>In Brief:</b> <%= forecast[:shortForecast] %>,
+                    <b>Temp:</b> <%= forecast[:temperature] %>&deg; <%= forecast[:temperatureUnit] %>,
+                    <b>Wind Direction:</b> <%= forecast[:windDirection] %>,<br/>
+                    <b>Wind Speed:</b> <%= forecast[:windSpeed] %>
+                    <b>Chance of Precipitation: </b><%= precipitation[:value] || 0 %>%
                   </small></p>
                 </td>
               </tr>
               <tr>
-                <td><p><small><%= forecast["detailedForecast"] %></small></p></td>
+                <td><p><small><%= forecast[:detailedForecast] %></small></p></td>
               </tr>
             <% end %>
           </table>

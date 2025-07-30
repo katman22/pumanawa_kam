@@ -1,0 +1,90 @@
+<div class="weather_div container-fluid p-3">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <div data-controller="weather-map-mobile"
+           data-weather-map-mobile-api-key="<%= ENV["MAP_TILER"] %>"
+           data-weather-map-mobile-lat="<%= lat %>"
+           data-weather-map-mobile-lng="<%= lng %>"
+           data-weather-map-mobile-type="<%= type %>">
+
+        <div id="map" class="w-100" style="height: 85vh;"></div>
+
+        <div id="controls" class="position-absolute w-100 px-3 mt-2" style="z-index: 1000; padding-bottom: 20px;">
+          <!-- NEW: First row for dropdown only -->
+          <!-- ROW 1: Dropdown only -->
+          <div class="row mb-2">
+            <div class="col-12">
+              <label for="layerSelect" class="form-label d-md-none">Choose layer</label>
+              <select id="layerSelect"
+                      class="form-select form-select-lg"
+                      data-action="change->weather-map-mobile#selectLayer">
+                <% [
+                     ['Precipitation (1h)', 'precipitation'],
+                     ['Temperature (2m)', 'temperature'],
+                     ['Wind (10m)', 'wind'],
+                     ['Radar Composite', 'radar'],
+                     ['Pressure (MSL)', 'pressure']
+                   ].each do |label, type| %>
+                  <option value="<%= type %>" <%= 'selected' if @type == type %>>
+                    <%= label %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <!-- ROW 4: Time + Pointer Value -->
+          <div class="row mb-2 text-center">
+            <div class="col-6 text-muted display-6">
+              <div id="time-label" data-weather-map-mobile-target="timeLabel">
+                —
+              </div>
+            </div>
+            <div class="col-6 text-muted display-6">
+              <div>
+                Pointer Value: <span data-weather-map-mobile-target="pointerData">—</span>
+              </div>
+            </div>
+          </div>
+          <!-- ROW 2: Slider + Duration + Speed -->
+          <div class="row mb-2">
+            <div class="col-12">
+              <input type="range" id="time-slider" data-weather-map-mobile-target="timeSlider" class="form-range"
+                     min="0" max="11" step="1"/>
+            </div>
+            <div class="col-12 d-flex justify-content-between mt-2">
+              <div class="btn-group" data-weather-map-mobile-target="forecastButtons">
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setForecastDuration" data-hours="1">1hr</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setForecastDuration" data-hours="6">6hr</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setForecastDuration" data-hours="24">24hr</button>
+              </div>
+              <div class="text-center">
+                <button id="play-pause-bt" data-weather-map-mobile-target="playPause" class="btn btn-success btn-lg">
+                  Play
+                </button>
+              </div>
+              <div class="btn-group" data-weather-map-mobile-target="speedButtons">
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setSpeed" data-speed="800">8x</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setSpeed" data-speed="1600">16x</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" data-action="click->weather-map-mobile#setSpeed" data-speed="3200">32x</button>
+              </div>
+            </div>
+          </div>
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Pointer label update -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentLayer = "<%= @type %>";
+        const currentItem = document.querySelector(`[data-layer-type="${currentLayer}"]`);
+        if (currentItem) {
+            document.querySelector('[data-weather-map-mobile-target="dropdownButton"]').innerText = currentItem.innerText.trim();
+        }
+    });
+</script>

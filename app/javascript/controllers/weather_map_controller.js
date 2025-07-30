@@ -2,7 +2,6 @@ import {Controller} from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = [
-        "dropdownButton",
         "playPause",
         "timeSlider",
         "timeLabel",
@@ -216,12 +215,14 @@ export default class extends Controller {
 
     changeWeatherLayer(type) {
         const validTypes = Object.keys(this.weatherLayers);
+        const originalType = type;
         if (!validTypes.includes(type)) {
             console.warn(`Invalid layer type '${type}', defaulting to 'precipitation'`);
             type = 'precipitation';
         }
 
-        if (type === this.activeLayer) return;
+        if (type === this.activeLayer && type === originalType) return;
+
 
         const oldLayer = this.weatherLayers[this.activeLayer]?.layer;
         if (oldLayer) {
@@ -244,11 +245,6 @@ export default class extends Controller {
         this.playPauseTarget.innerText = " Play ";
 
         this.setAnimation(newLayer);
-
-        const item = this.element.querySelector(`[data-layer-type="${type}"]`);
-        if (item && this.dropdownButtonTarget) {
-            this.dropdownButtonTarget.innerText = item.innerText.trim();
-        }
     }
 
 
@@ -348,15 +344,8 @@ export default class extends Controller {
 
     selectLayer(event) {
         event.preventDefault()
-        const button = this.dropdownButtonTarget
         const layerType = event.currentTarget.dataset.layerType
-        const label = event.currentTarget.textContent.trim()
-
-        button.textContent = label
         this.changeWeatherLayer(layerType)
-
-        const dropdown = bootstrap.Dropdown.getInstance(button);
-        if (dropdown) dropdown.hide();
     }
 
     highlightActiveButton(buttonsTarget, clickedButton) {

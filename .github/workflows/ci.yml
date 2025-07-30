@@ -110,6 +110,7 @@ jobs:
           DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
           UDOT_KEY: ${{ secrets.UDOT_KEY }}
           UDOT_API: ${{ secrets.UDOT_API }}
+          OPENWEATHER_ONE_CALL_API: ${{ secrets.OPENWEATHER_ONE_CALL_API }}
           # postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails test

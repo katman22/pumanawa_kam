@@ -15,14 +15,16 @@ module Noaa
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
 
         index_response = product_index(response)
-        return failed("Unable to retrieve detailed forecast location for: #{latitude}, #{longitude}") if index_response.nil?
+        return failed("Unable to retrieve detailed forecast location for: #{latitude}, #{longitude}") if index_response.body.nil? || index_response.body.empty?
 
         current_product_response = current_product(index_response)
-        return failed("Could not retrieve current detailed forecast for: #{latitude}, #{longitude}") if current_product_response.nil?
+        return failed("Could not retrieve current detailed forecast for: #{latitude}, #{longitude}") if current_product_response.body.nil? || current_product_response.body.empty?
 
         discussion_response = JSON.parse(current_product_response.body, symbolize_names: true)
         data = parse_product_text(discussion_response[:productText])
-        successful(data)
+        converted_data = Convert::Weather::Noaa::Discussion.(data)
+
+        successful(converted_data)
       end
 
       def current_product(index_response)

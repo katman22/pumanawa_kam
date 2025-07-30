@@ -8,10 +8,10 @@
     <table class="table  text_only">
       <% @forecasts.each do |forecast| %>
         <tr>
-          <td><i><%= forecast["name"] %>:</i></td>
+          <td><i><%= forecast[:name] %>:</i></td>
         </tr>
         <tr>
-          <td><%= forecast["detailedForecast"] %></td>
+          <td><%= forecast[:detailedForecast] %></td>
         </tr>
       <% end %>
     </table>
