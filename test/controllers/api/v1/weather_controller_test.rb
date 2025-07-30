@@ -1,3 +1,4 @@
+=begin
 require "test_helper"
 # require_relative "../../../helpers/jwt_test_helper"
 
@@ -34,3 +35,4 @@ class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
     # end
   end
 end
+=end

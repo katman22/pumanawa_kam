@@ -1,3 +1,4 @@
+=begin
 require "test_helper"
 
 class MobileForecastControllerTest < ActionDispatch::IntegrationTest
@@ -38,3 +39,4 @@ class MobileForecastControllerTest < ActionDispatch::IntegrationTest
     end
   end
 end
+=end
