@@ -2,6 +2,7 @@ import {Controller} from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = [
+        "dropdownButton",
         "playPause",
         "timeSlider",
         "timeLabel",
@@ -67,11 +68,22 @@ export default class extends Controller {
         this.map = new maptilersdk.Map({
             container: this.element.querySelector("#map"),
             style: maptilersdk.MapStyle.STREETS,
-            zoom: 7,
+            zoom: 5,
             center: [parseFloat(this.data.get("lng")), parseFloat(this.data.get("lat"))],
             hash: true,
-            projectionControl: true
+            projectionControl: true,
+            navigationControl: true,        // Zoom & compass
+            geolocateControl: false,         // "Locate me" button
+            fullscreenControl: false,
+            scaleControl: 'bottom-right',          // Scale bar (metric/imperial config)
+            terrainControl: false
         });
+
+        if (typeof maptilerweather.addColorRampControl === 'function') {
+            this.colorRampControl = maptilerweather.addColorRampControl(this.map, {
+                position: 'bottom-left'
+            });
+        }
 
         this.map.on('load', () => {
             this.map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.4)");
@@ -81,7 +93,6 @@ export default class extends Controller {
         });
 
         this.map.on('mousemove', this.handleMouseMove.bind(this));
-
         this.playPauseTarget.addEventListener("click", () => this.togglePlayPause());
         this.timeSliderTarget.addEventListener("input", e => this.updateAnimationTime(e));
         this.setDefaultActiveButtons();
@@ -215,14 +226,12 @@ export default class extends Controller {
 
     changeWeatherLayer(type) {
         const validTypes = Object.keys(this.weatherLayers);
-        const originalType = type;
         if (!validTypes.includes(type)) {
             console.warn(`Invalid layer type '${type}', defaulting to 'precipitation'`);
             type = 'precipitation';
         }
 
-        if (type === this.activeLayer && type === originalType) return;
-
+        if (type === this.activeLayer) return;
 
         const oldLayer = this.weatherLayers[this.activeLayer]?.layer;
         if (oldLayer) {
@@ -230,6 +239,11 @@ export default class extends Controller {
         }
 
         this.activeLayer = type;
+
+        if (this.colorRampControl?.setLayer) {
+            this.colorRampControl.setLayer(type);
+        }
+
         let newLayer = this.weatherLayers[type]?.layer;
 
         if (!newLayer) {
@@ -245,6 +259,11 @@ export default class extends Controller {
         this.playPauseTarget.innerText = " Play ";
 
         this.setAnimation(newLayer);
+
+        const item = this.element.querySelector(`[data-layer-type="${type}"]`);
+        if (item && this.dropdownButtonTarget) {
+            this.dropdownButtonTarget.innerText = item.innerText.trim();
+        }
     }
 
 
@@ -343,10 +362,16 @@ export default class extends Controller {
     }
 
     selectLayer(event) {
-        event.preventDefault()
-        const layerType = event.currentTarget.dataset.layerType
-        this.changeWeatherLayer(layerType)
+        const type = event.target.value;
+        this.changeWeatherLayer(type);
+
+        // Optional: update label elsewhere if needed
+        if (this.dropdownButtonTarget) {
+            const selectedText = event.target.options[event.target.selectedIndex].text;
+            this.dropdownButtonTarget.innerText = selectedText;
+        }
     }
+
 
     highlightActiveButton(buttonsTarget, clickedButton) {
         const buttons = this[buttonsTarget].querySelectorAll("button");

@@ -7,8 +7,7 @@ class ForecastController < ApplicationController
     @erred, @locations, @total = find_locations(params[:location])
     return unless @locations&.size == 1
     locale = @locations.first
-    location_context = location_ctx(locale.merge("lat" => locale["geometry"]["lat"], "lng" => locale["geometry"]["lng"]))
-    @erred, @summary = summary_forecast_for_location(location_context.latitude, location_context.longitude)
+    @erred, @summary = summary_forecast_for_location(locale.latitude, locale.longitude)
   end
 
   def radar_for_locale_web
@@ -28,7 +27,7 @@ class ForecastController < ApplicationController
   def geo_location
     location = params[:location]
     erred, locations, total = location_services(location)
-    multi_locations(locations: locations, total: total, erred: erred, location: location)
+    multi_locations(locations: format_locations(locations), total: total, erred: erred, location: location)
   end
 
   def summary
@@ -39,18 +38,18 @@ class ForecastController < ApplicationController
 
   def full
     @location_context, _recent_locations = set_defaults
-    @erred, @forecasts = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude)
+    @erred, @forecasts = forecaster
   end
 
   def dual_full
     location_context, _recent_locations = set_defaults
-    erred, forecasts = create_forecasts(latitude: location_context.latitude, longitude: location_context.longitude)
+    erred, forecasts = forecaster
     render_forecast(params[:turbo_location], forecasts, erred, location_context)
   end
 
   def text_only
     @location_context, _recent_locations = set_defaults
-    @erred, @forecasts = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude)
+    @erred, @forecasts = forecaster
   end
 
   def multi_locations(locations:, total:, erred:, location:)
@@ -89,7 +88,7 @@ class ForecastController < ApplicationController
         location_name: found_location["formatted"]
       }
     )
-    erred, forecasts = create_forecasts(latitude: location_context.latitude, longitude: location_context.longitude)
+    erred, forecasts = forecasts
     render_forecast(turbo_location, forecasts, erred, location_context)
   end
 
@@ -105,5 +104,17 @@ class ForecastController < ApplicationController
     LocationContext.new(
       { location: params[:location], location_name: location_data["formatted"], lat: location_data["lat"], long: location_data["lng"] }
     )
+  end
+
+  private
+
+  def forecaster
+    results = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
+    forecasts = params[:country_code] == "us" ? results.last["forecasts"] : results.last
+    [ results.first, forecasts ]
+  end
+
+  def format_locations(locations)
+    Convert::Geolocation::Google.new(raw_data: locations).call
   end
 end

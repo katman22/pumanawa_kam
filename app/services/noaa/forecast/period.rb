@@ -21,7 +21,8 @@ module Noaa
         return failed("Current forecast for #{latitude}, #{longitude} is unavailable") if period_forecast.first.nil?
 
         returned_period = merge_hour_with_period(period_forecast.first)
-        successful({ "period" => returned_period, "latitude" => latitude, "longitude" => longitude, "from_cache" => from_cache })
+        converted = Convert::Weather::Noaa::Hourly.([ returned_period ])
+        successful({ "period" => converted, "latitude" => latitude, "longitude" => longitude, "from_cache" => from_cache })
       end
 
       def merge_hour_with_period(period)

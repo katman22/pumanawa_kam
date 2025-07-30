@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   controller :mobile_forecast do
     get "mobile_forecast/index", action: :index
     post "mobile_forecast/geo_location", action: :geo_location
+    get "mobile_forecast/weather_map", action: :weather_map
     get "mobile_forecast/full", action: :full
     get "mobile_forecast", action: :index
   end

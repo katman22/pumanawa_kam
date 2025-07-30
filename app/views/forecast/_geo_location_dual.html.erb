@@ -17,7 +17,7 @@
             <tr>
               <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
                 <%= form_with url: forecast_dual_full_path, method: :post, local: true do %>
-                  <%= hidden_field_tag :location, "Brighton, UT" %>
+                  <%= hidden_field_tag :location, location_hash["formatted"] %>
                   <%= hidden_field_tag :lat, location_hash["geometry"]["lat"] %>
                   <%= hidden_field_tag :long, location_hash["geometry"]["lng"] %>
                   <%= hidden_field_tag :location_name, location_hash["formatted"] %>

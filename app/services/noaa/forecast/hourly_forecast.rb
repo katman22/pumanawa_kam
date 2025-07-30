@@ -15,7 +15,9 @@ module Noaa
         hourly = hourly_data(response["properties"]["forecastHourly"], latitude, longitude)
         return failed("Unable to retrieve hourly forecasts for #{latitude}, #{longitude}") if hourly.nil?
         hourly_periods = merge_first_record(forecast, hourly)
-        successful({ "periods" => hourly_periods })
+
+        converted = Convert::Weather::Noaa::Hourly.(hourly_periods)
+        successful({ "periods" => converted })
       end
 
       def cache_key(key)

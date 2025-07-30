@@ -15,10 +15,10 @@ module BaseForecaster
     end
 
     def location_services(location)
-      location_service_result = OpenCage::GeoLocation::LocationFromInput.(location)
-      locations = location_service_result.failure? ? [] : location_service_result.value[:locations]
-      total = location_service_result.failure? ? 0 : location_service_result.value[:total]
-      [ location_service_result.failure?,  locations, total ]
+      location_google_result = Google::GeoLocate.(location)
+      locations = location_google_result.failure? ? [] : location_google_result.value
+      total = location_google_result.failure? ? 0 : location_google_result.value.size
+      [ location_google_result.failure?, locations, total ]
     end
 
     def summary_forecast_for_location(lat, long)
@@ -26,33 +26,40 @@ module BaseForecaster
       [ service_result.failure?, service_result.value ]
     end
 
-    def create_forecasts(latitude: 0, longitude: 0)
-      service_result = Noaa::Forecast::TextOnly.(latitude, longitude)
-      [ service_result.failure?, service_result.value["forecasts"] || service_result.value ]
+    def create_forecasts(latitude: 0, longitude: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      forecaster = Weather::Forecaster.(provider, latitude, longitude)
+      [ forecaster.failure?, forecaster.value ]
     end
 
-    def hourly_forecasts(latitude: 0, longitude: 0)
-      service_result = Noaa::Forecast::HourlyForecast.(latitude, longitude)
-      [ service_result.failure?, service_result.value["periods"] || service_result.value ]
+    def create_hourly_forecasts(latitude: 0, longitude: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      forecaster = Weather::HourlyForecaster.(provider, latitude, longitude)
+      [ forecaster.failure?, forecaster.value ]
     end
 
-    def alert_forecasts(latitude: 0, longitude: 0)
-      service_result = Noaa::Forecast::Alerts.(latitude, longitude)
+    def create_alert_forecasts(latitude: 0, longitude: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      service_result = Weather::AlertsForecaster.(provider, latitude, longitude)
       [ service_result.failure?, service_result || service_result.value ]
     end
 
-    def fire_watch_and_alerts(latitude: 0, longitude: 0)
-      service_result = Noaa::Forecast::WatchesAndAlerts.(latitude, longitude)
+    def fire_watch_and_alerts(latitude: 0, longitude: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      service_result =  Weather::WatchesAlertsForecaster.(provider, latitude, longitude)
       [ service_result.failure?, service_result || service_result.value ]
     end
 
-    def forecast_discussion(latitude: 0, longitude: 0)
-      service_result = Noaa::Forecast::Discussion.(latitude, longitude)
+    def forecast_discussion(latitude: 0, longitude: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      service_result = Weather::DiscussionForecaster.(provider, latitude, longitude)
+
       [ service_result.failure?, service_result || service_result.value ]
     end
 
-    def period_forecasts(latitude: 0, longitude: 0, period: 0)
-      service_result = Noaa::Forecast::Period.(latitude, longitude, period)
+    def period_forecasts(latitude: 0, longitude: 0, period: 0, country_code:)
+      provider = country_code == "us" ? "noaa" : "openweather"
+      service_result = Weather::PeriodForecaster.(provider, latitude, longitude, period)
       [ service_result.failure?, service_result.value["period"] || service_result.value ]
     end
 
