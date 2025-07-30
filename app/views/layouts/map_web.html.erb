@@ -62,5 +62,22 @@
 <script>
     feather.replace()
 </script>
+<script>
+    // Only run this if Stimulus hasn't already been initialized
+    (async () => {
+        if (!window.Stimulus) {
+            console.log("⚠️ Stimulus not found. Initializing manually...");
+
+            const { Application } = await import("https://unpkg.com/@hotwired/stimulus/dist/stimulus.js");
+            const WeatherMapMobileController = await import("/javascript/controllers/weather_map_mobile_controller.js");
+
+            const app = Application.start();
+            app.register("weather-map-mobile", WeatherMapMobileController.default);
+
+            window.Stimulus = app;
+        }
+    })();
+</script>
+
 </body>
 </html>
