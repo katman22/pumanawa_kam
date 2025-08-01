@@ -72,5 +72,10 @@ module BaseForecaster
       location_context = LocationContext.new(params)
       [ location_context, RecentLocations.new(session).add(location_context.to_h) ]
     end
+
+    def format_locations(locations)
+      Convert::Geolocation::Google.new(raw_data: locations).call
+    end
+
   end
 end

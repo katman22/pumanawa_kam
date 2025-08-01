@@ -4,26 +4,36 @@ module ForecastTestHelper
   def multi_locale_success
     OpenStruct.new(
       success?: true,
-      value: { locations: [ {
-                              "components" => { "postcode" => "84121" },
-                              "formatted" => "Utah, United States of America",
-                              "geometry" => { "lat" => 39.4225192, "lng" => -111.714358 } },
-                            {
-                              "components" => { "postcode" => "84121" },
-                              "formatted" => "Utah County, Utah, United States of America",
-                              "geometry" => { "lat" => 40.177058, "lng" => -111.6910719 } } ],
-               total: 2 })
+      value: [
+          {
+            "lat": 39.4225192,
+            "lng": -111.714358,
+            "country": "United States of America",
+            "country_code": "us",
+            "name": "Utah, United States of America"
+          },
+          {
+            "lat": 40.177058,
+            "lng": -111.6910719,
+            "country": "United States of America",
+            "country_code": "us",
+            "name": "Utah County, Utah, United States of America"
+          }
+        ])
   end
 
   def single_locale_success
     OpenStruct.new(
       success?: true,
-      value: { locations: [ {
-                              "components" => { "postcode" => "84121" },
-                              "formatted" => "One and Only Utah",
-                              "geometry" => { "lat" => 39.4225192, "lng" => -111.714358 } }
-      ],
-               total: 1 })
+      value: [
+        {
+          "lat": 39.4225192,
+          "lng": -111.714358,
+          "country": "United States of America",
+          "country_code": "us",
+          "name": "One and Only Utah"
+        }]
+    )
   end
 
   def summary_success

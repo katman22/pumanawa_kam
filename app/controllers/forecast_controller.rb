@@ -7,7 +7,7 @@ class ForecastController < ApplicationController
     @erred, @locations, @total = find_locations(params[:location])
     return unless @locations&.size == 1
     locale = @locations.first
-    @erred, @summary = summary_forecast_for_location(locale.latitude, locale.longitude)
+    @erred, @summary = summary_forecast_for_location(locale[:lat], locale[:lng])
   end
 
   def radar_for_locale_web
@@ -27,7 +27,7 @@ class ForecastController < ApplicationController
   def geo_location
     location = params[:location]
     erred, locations, total = location_services(location)
-    multi_locations(locations: format_locations(locations), total: total, erred: erred, location: location)
+    multi_locations(locations: locations, total: total, erred: erred, location: location)
   end
 
   def summary
@@ -111,10 +111,7 @@ class ForecastController < ApplicationController
   def forecaster
     results = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
     forecasts = params[:country_code] == "us" ? results.last["forecasts"] : results.last
-    [ results.first, forecasts ]
+    [results.first, forecasts]
   end
 
-  def format_locations(locations)
-    Convert::Geolocation::Google.new(raw_data: locations).call
-  end
 end

@@ -16,7 +16,7 @@ module CottonwoodCanyons
 
       def call
         response = google_directions
-        return nil if response.nil? || response["status"] == 404
+        return nil if response.body.nil? || response.body.empty? || response["status"] == 404
 
         response = JSON.parse(response.body)
         response.symbolize_keys!
