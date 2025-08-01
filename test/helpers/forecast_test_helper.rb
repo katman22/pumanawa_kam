@@ -32,7 +32,7 @@ module ForecastTestHelper
           "country": "United States of America",
           "country_code": "us",
           "name": "One and Only Utah"
-        }]
+        } ]
     )
   end
 

@@ -76,6 +76,5 @@ module BaseForecaster
     def format_locations(locations)
       Convert::Geolocation::Google.new(raw_data: locations).call
     end
-
   end
 end

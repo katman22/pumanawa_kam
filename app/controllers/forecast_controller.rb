@@ -111,7 +111,6 @@ class ForecastController < ApplicationController
   def forecaster
     results = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
     forecasts = params[:country_code] == "us" ? results.last["forecasts"] : results.last
-    [results.first, forecasts]
+    [ results.first, forecasts ]
   end
-
 end
