@@ -13,10 +13,9 @@ module Weather
     def call
       forecasts = case provider.to_s.downcase
       when "noaa"
-                    Noaa::Forecast::TextOnly.(latitude, longitude)
-      else
-                    "openweather"
-                    OpenWeather::Forecast::Summary.new(latitude: latitude, longitude: longitude).call
+          Noaa::Forecast::TextOnly.(latitude, longitude)
+      else "openweather"
+          OpenWeather::Forecast::Summary.new(latitude: latitude, longitude: longitude).call
       end
       return failed "#{forecasts.value}" if forecasts.failure?
 

@@ -22,7 +22,8 @@ module Google
         })
 
         if response.success?
-          successful(response.parsed_response)
+          locations = format_locations(response.parsed_response)
+          successful(locations)
         else
           failed("Google geocoding failed: #{response.code} - #{response.body}")
         end
@@ -30,6 +31,10 @@ module Google
     end
 
     private
+
+    def format_locations(locations)
+      Convert::Geolocation::Google.new(raw_data: locations).call
+    end
 
     def cache_key
       "google_geocode_#{Digest::SHA256.hexdigest(@location)}"

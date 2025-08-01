@@ -1,8 +1,7 @@
 class Api::V1::WeatherController < Api::V1::ApiController
   def index
     _erred, locations, _total = location_services(params[:location])
-    formatted_results = format_locations(locations)
-    render json: formatted_results
+    render json: locations
   end
 
   def forecasts
@@ -56,9 +55,5 @@ class Api::V1::WeatherController < Api::V1::ApiController
     results = create_hourly_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
     periods = params[:country_code] == "us" ? results.last["periods"] : results.last
     [ results.first, periods ]
-  end
-
-  def format_locations(locations)
-    Convert::Geolocation::Google.new(raw_data: locations).call
   end
 end
