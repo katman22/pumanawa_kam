@@ -47,6 +47,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
       assert_match "Mostly Clear", response.body
       assert_response :success
     end
+
   end
 
   test "will get multiple locations from geo location input" do
