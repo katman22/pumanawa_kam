@@ -18,9 +18,9 @@ module OpenWeather
         }
         url = "#{ENV.fetch("OPENWEATHER_ONE_CALL_API")}"
         response = weather_forecast(url: url, query: query, type: :hourly)
-        return failed("No Alert information available for lat: #{@latitude}, long: #{@longitude}") if response.body.nil? || response.body.empty?
+        return failed("No Alert information available for lat: #{@latitude}, long: #{@longitude}") if response.nil?
 
-        converted = Convert::Weather::OpenWeather::Alerts.call(response.body)
+        converted = Convert::Weather::OpenWeather::Alerts.call(response)
 
         successful({ "alerts" => converted })
       end

@@ -29,10 +29,16 @@ module OpenWeather
         Rails.cache.delete(cache_key) if @clear_cache
 
         Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i) do
-          HTTParty.get(url, {
+          response = HTTParty.get(url, {
             query: query.merge(appid: api_key)
           })
+          parse_response(response)
         end
+      end
+
+      def parse_response(response)
+        return nil if response.body.nil? || response.body.empty? || response["status"] == 404
+        JSON.parse(response.body)
       end
     end
   end

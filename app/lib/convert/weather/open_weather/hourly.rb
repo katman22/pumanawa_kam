@@ -6,8 +6,7 @@ module Convert
     module OpenWeather
       class Hourly < BaseForecast
         def self.call(raw_data, overview)
-          parsed_data = JSON.parse raw_data
-          hourly = parsed_data["hourly"] || []
+          hourly = raw_data["hourly"] || []
 
           hourly.map.with_index do |period, index|
             standard_format(

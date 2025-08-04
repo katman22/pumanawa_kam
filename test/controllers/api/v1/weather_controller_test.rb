@@ -1,7 +1,8 @@
 require "test_helper"
-# require_relative "../../../helpers/jwt_test_helper"
+require_relative "../../../helpers/forecast_test_helper"
 
 class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
+  include ForecastTestHelper
   test "bad token receive error" do
     get api_v1_weather_index_url(location: "Utah"), headers: erred_auth_headers
 

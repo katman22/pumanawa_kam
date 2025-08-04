@@ -1,8 +1,6 @@
 class ForecastController < ApplicationController
   include BaseForecaster
 
-  DEFAULT_LAYER = "precipitation"
-
   def index
     @erred, @locations, @total = find_locations(params[:location])
     return unless @locations&.size == 1
