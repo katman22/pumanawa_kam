@@ -3,7 +3,7 @@ require_relative "../helpers/forecast_test_helper"
 
 class ForecastControllerTest < ActionDispatch::IntegrationTest
   include ForecastTestHelper
-
+  
   test "will get index and return multiple locations" do
     service_handler = OpenStruct.new(call: multi_locale_success)
     fake_service = Minitest::Mock.new
@@ -47,7 +47,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
       assert_match "Mostly Clear", response.body
       assert_response :success
     end
-
+    
   end
 
   test "will get multiple locations from geo location input" do
