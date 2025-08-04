@@ -11,10 +11,10 @@ module Noaa
       end
 
       def call
-        response = parse_response(noaa_response)
+        response = noaa_response
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
 
-        forecast = parse_response(forecast_response(response))
+        forecast = forecast_response(response)
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if forecast.nil?
 
         period_forecast = forecast_for_period(forecast, period)

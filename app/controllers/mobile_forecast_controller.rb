@@ -1,7 +1,6 @@
 class MobileForecastController < ApplicationController
   include BaseForecaster
   FULL_TURBO = "full_response"
-  DEFAULT_LAYER = "precipitation"
 
   def index
     @erred, locations, @total = find_locations(params[:location])

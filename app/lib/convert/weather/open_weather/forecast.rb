@@ -6,8 +6,7 @@ module Convert
     module OpenWeather
       class Forecast < BaseForecast
         def self.call(raw_data, overview)
-          data = JSON.parse raw_data
-          daily = data["daily"] || []
+          daily = raw_data["daily"] || []
 
           daily.map.with_index do |period, index|
             standard_format(

@@ -4,10 +4,10 @@ module Noaa
   module Forecast
     class TextOnly < Base
       def call
-        response = parse_response(noaa_response)
+        response = noaa_response
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
 
-        forecast = parse_response(forecast_response(response))
+        forecast = forecast_response(response)
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if forecast.nil?
 
         forecasts = all_forecasts(forecast)

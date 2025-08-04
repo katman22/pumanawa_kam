@@ -62,7 +62,9 @@ module CottonwoodCanyons
     end
 
     def resort_forecast
+      binding.pry
       forecast_response = Noaa::Forecast::TextOnly.(resort.latitude, resort.longitude)
+      binding.pry
       return WEATHER_ERROR unless forecast_response.success?
       forecast = forecast_response.value["forecasts"].first
       "#{forecast["name"]}: #{forecast["shortForecast"]}, #{forecast["temperature"]} #{forecast["temperatureUnit"]}, #{forecast["windDirection"]} @ #{forecast["windSpeed"]}"

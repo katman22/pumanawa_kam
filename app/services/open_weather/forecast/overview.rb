@@ -19,7 +19,7 @@ module OpenWeather
         }
         url= "#{ENV.fetch("OPENWEATHER_ONE_CALL_API")}/#{SERVICE}"
         response = weather_forecast(url: url, query: query)
-        return failed("No weather information available for lat: #{@latitude}, long: #{@longitude}") if response.body.nil? || response.body.empty?
+        return failed("No weather information available for lat: #{@latitude}, long: #{@longitude}") if response.nil?
 
         successful(response)
       end

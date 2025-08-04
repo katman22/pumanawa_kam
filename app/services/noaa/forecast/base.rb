@@ -22,7 +22,8 @@ module Noaa
         lat_lng_key = "#{response["geometry"]["coordinates"].first}#{response["geometry"]["coordinates"][1]}"
         cache_key = "noaa_forecasts_#{lat_lng_key}"
         Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i) do
-          HTTParty.get(forecast_url(response), headers: noaa_agent_header)
+          response = HTTParty.get(forecast_url(response), headers: noaa_agent_header)
+          parse_response(response)
         end
       end
 
@@ -52,7 +53,8 @@ module Noaa
         lat_lng_key = "#{@latitude}#{@longitude}"
         cache_key = "noaa_#{lat_lng_key}"
         Rails.cache.fetch(cache_key, expires_in: 30.minutes.to_i) do
-          HTTParty.get(noaa_url, headers: noaa_agent_header)
+          response = HTTParty.get(noaa_url, headers: noaa_agent_header)
+          parse_response(response)
         end
       end
 

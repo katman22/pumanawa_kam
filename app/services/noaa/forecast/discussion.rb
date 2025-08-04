@@ -11,7 +11,7 @@ module Noaa
       end
 
       def call
-        response = parse_response(noaa_response)
+        response = noaa_response
         return failed("Unable to retrieve forecast for #{latitude}, #{longitude}") if response.nil?
 
         index_response = product_index(response)

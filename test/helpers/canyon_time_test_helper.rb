@@ -5,21 +5,21 @@ module ForecastTestHelper
     OpenStruct.new(
       success?: true,
       value: [
-        {
-          "lat": 39.4225192,
-          "lng": -111.714358,
-          "country": "United States of America",
-          "country_code": "us",
-          "name": "Utah, United States of America"
-        },
-        {
-          "lat": 40.177058,
-          "lng": -111.6910719,
-          "country": "United States of America",
-          "country_code": "us",
-          "name": "Utah County, Utah, United States of America"
-        }
-      ])
+          {
+            "lat": 39.4225192,
+            "lng": -111.714358,
+            "country": "United States of America",
+            "country_code": "us",
+            "name": "Utah, United States of America"
+          },
+          {
+            "lat": 40.177058,
+            "lng": -111.6910719,
+            "country": "United States of America",
+            "country_code": "us",
+            "name": "Utah County, Utah, United States of America"
+          }
+        ])
   end
 
   def single_locale_success
