@@ -8,7 +8,7 @@ class Api::V1::WeatherController < Api::V1::ApiController
     set_defaults
     @location_context = LocationContext.new(params)
     _erred, forecasts = forecaster
-    render json: { forecasts: forecasts, forecast_locale: params[:name], lat: params[:lat], long: params[:long] }
+    render json: { forecasts: forecasts, forecast_locale: params[:name], lat: params[:lat], long: params[:long], country_code: params[:country_code] }
   end
 
   def hourly
