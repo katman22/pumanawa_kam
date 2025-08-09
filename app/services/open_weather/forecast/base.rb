@@ -10,12 +10,13 @@ module OpenWeather
     class Base < ApplicationService
       include HTTParty
 
-      def initialize(latitude:, longitude:, date: nil, clear_cache: false, period: 0)
+      def initialize(units: "metric", latitude:, longitude:, date: nil, clear_cache: false, period: 0)
         @date = date
         @latitude = latitude
         @longitude = longitude
         @clear_cache = clear_cache
         @period = period
+        @units = units
       end
 
       def call

@@ -2,12 +2,13 @@
 
 module Weather
   class DiscussionForecaster < ApplicationService
-    attr_reader :provider, :longitude, :latitude
+    attr_reader :provider, :longitude, :latitude, :units
 
-    def initialize(provider, latitude, longitude)
+    def initialize(provider, latitude, longitude, units = "metric")
       @provider = provider
       @latitude = latitude
       @longitude = longitude
+      @units = units
     end
 
     def call
@@ -16,7 +17,7 @@ module Weather
                     Noaa::Forecast::Discussion.(latitude, longitude)
       else
                     "openweather"
-                    OpenWeather::Forecast::Discussion.new(latitude: latitude, longitude: longitude).call
+                    OpenWeather::Forecast::Discussion.new(latitude: latitude, longitude: longitude, units: units).call
       end
       return failed "#{forecasts.value}" if forecasts.failure?
 
