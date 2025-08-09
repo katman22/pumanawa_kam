@@ -9,7 +9,7 @@ module OpenWeather
   module Forecast
     class Discussion < Base
       def call
-        overview_response = OpenWeather::Forecast::Overview.new(latitude: @latitude, longitude: @longitude, clear_cache: true).call
+        overview_response = OpenWeather::Forecast::Overview.new(latitude: @latitude, longitude: @longitude, clear_cache: true, units: @units).call
         return failed(overview_response.value) if overview_response.failure?
 
         current_overview = overview_response.value

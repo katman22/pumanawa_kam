@@ -13,7 +13,7 @@ module OpenWeather
       def call
         query = {
           date: @date.nil? ? nil : @date.strftime("%Y-%m-%d"),
-          units: "metric",
+          units: @units,
           lat: @latitude,
           lon: @longitude
         }
