@@ -111,6 +111,8 @@ jobs:
           UDOT_KEY: ${{ secrets.UDOT_KEY }}
           UDOT_API: ${{ secrets.UDOT_API }}
           OPENWEATHER_ONE_CALL_API: ${{ secrets.OPENWEATHER_ONE_CALL_API }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           # postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails test

@@ -9,3 +9,10 @@ application.register("weather-map", WeatherMapController)
 
 import WeatherMapMobileController from "controllers/weather_map_mobile_controller"
 application.register("weather-map-mobile", WeatherMapMobileController)
+
+import NestedController from "controllers/nested_controller"
+application.register("nested", NestedController)
+
+import ParkingProfilesController from "controllers/parking_profiles_controller"
+application.register("parking-profiles", ParkingProfilesController)
+

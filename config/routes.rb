@@ -43,6 +43,18 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    root to: "resorts#index"
+    resources :resorts do
+      resources :resort_filters, only: [ :new, :create ]
+    end
+    resources :resort_filters, only: [ :edit, :update, :destroy, :create, :show ]
+    get "parking_profiles/:resort_id/:season/edit", to: "parking_profiles#edit",  as: :edit_parking_profile
+    get "parking_profiles/:resort_id/:season/create", to: "parking_profiles#create",  as: :create_parking_profile
+    patch "parking_profiles/:resort_id/:season",      to: "parking_profiles#update", as: :update_parking_profile
+    patch "parking_profiles/:resort_id/:season",      to: "parking_profiles#show", as: :show_parking_profile
+  end
+
   # API endpoints
   namespace :api do
     namespace :v1 do

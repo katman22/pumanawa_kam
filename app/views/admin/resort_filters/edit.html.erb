@@ -1,0 +1,33 @@
+<!-- app/views/admin/resort_filters/edit.html.erb -->
+<div style="margin-top: 38px">
+  <h6>Editing: Filter <%= @resort_filter.kind %> for Resort: <%= @resort_filter.resort.resort_name %>&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "Resort Information Page", admin_resort_path(@resort_filter.resort) %></h6>
+  <hr/>
+</div>
+<%= form_with model: [:admin, @resort_filter] do |f| %>
+
+
+<div class="card h-100 w-50">
+  <div class="card-body">
+    <div class="row g-3 align-items-start">
+
+      <!-- Kind select -->
+      <div class="col-md-3">
+        <%= f.label :kind, class: "form-label" %>
+        <%= f.select :kind, ResortFilter::KINDS, {}, class: "form-select" %>
+      </div>
+
+      <!-- Data text area + delete checkbox -->
+      <div class="col d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start">
+          <span><%= f.label :data, "Data (JSON)", class: "form-label mb-0" %></span>
+        </div>
+        <%= f.text_area :data, rows: 2, class: "form-control mt-1" %>
+      </div>
+
+    </div>
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% end %>

@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-between align-items-start">
+  <h3>Parking Profiles </h3>
+
+  <% if @resort&.persisted? %>
+    <div class="ms-2">
+      <% season = "#{ParkingSeason.current}#{SecureRandom.alphanumeric(6)}" %>
+      <%= link_to "Add Parking Profile (#{season})",
+                  admin_create_parking_profile_path(resort_id: @resort.id, season: season),
+                  class: "btn btn-outline-primary" %>
+    </div>
+  <% else %>
+    <div class="ms-2">
+      <button type="button" class="btn btn-outline-secondary" disabled>
+        Add Parking Profile (save resort first)
+      </button>
+    </div>
+  <% end %>
+
+</div>
+<table class="table">
+  <thead class="table-primary">
+  <tr>
+    <th>Profile label</th>
+    <th>Season</th>
+    <th>&nbsp;</th>
+  </tr>
+  </thead>
+  <% @resort.parking_profiles.each do |p| %>
+    <tr id="<%= dom_id(p) %>">
+      <td class="fs-5"><%= p.label %></td>
+      <td class="fs-5">
+        <%= p.season %>
+      </td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", admin_edit_parking_profile_path(resort_id: @resort.id, season: p.season), class: "link-offset-2" %>
+      </td>
+    </tr>
+  <% end %>
+</table>

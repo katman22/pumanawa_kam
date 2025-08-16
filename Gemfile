@@ -16,9 +16,13 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-
+# Validate JSON
+gem "json_schemer"
 # Need to read from environmental variables
 gem "dotenv-rails"
+
+# Data migration gem
+gem "data_migrate"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

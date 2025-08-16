@@ -1,0 +1,34 @@
+<!-- app/views/admin/resorts/show.html.erb -->
+<table class="table">
+  <tr>
+    <td>
+      <span class="fs-3">Resort Name: <%= @resort.resort_name %> &nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <%= link_to "Edit resort Information", edit_admin_resort_path(@resort), class: "link-info" %>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p><strong>Slug:</strong> <span class="badge text-bg-secondary"><%= @resort.slug %></span></p>
+      <p><strong>Lat/Lng:</strong> <%= @resort.latitude %>, <%= @resort.longitude %></p>
+      <p><strong>Departure Point:</strong> <%= @resort.departure_point %></p>
+      <p><strong>Location:</strong> <%= @resort.location %></p>
+      <p><strong>Resort Data is Live:</strong> <%= @resort.live ? "Available and live" : "Data is not production ready" %></p>
+    </td>
+  </tr>
+</table>
+
+
+<div class="w-75" style="min-width: 900px">
+
+  <!-- Filters -->
+  <!-- Parking Profiles -->
+  <%= render "resort_filters", resort: @resort %>
+
+  <!-- Always HR separate -->
+  <hr>
+
+  <!-- Parking Profiles -->
+  <%= render "parking_profiles", resort: @resort %>
+
+
+</div>

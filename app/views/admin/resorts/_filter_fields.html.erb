@@ -1,0 +1,57 @@
+<% if local_assigns[:new_record] %>
+  <div class="card mb-3" data-nested-target="item">
+    <div class="card-body row g-3 align-items-start">
+      <div class="col-md-3">
+        <label class="form-label">Kind</label>
+        <select class="form-select" name="resort[resort_filters_attributes][NEW_ID][kind]">
+          <% ResortFilter::KINDS.each do |k| %>
+            <option value="<%= k %>"><%= k %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-7">
+        <label class="form-label">Data (JSON)</label>
+        <textarea class="form-control" name="resort[resort_filters_attributes][NEW_ID][data]" rows="3">{}</textarea>
+      </div>
+      <div class="col-md-2 d-flex align-items-center">
+        <button type="button" class="btn btn-outline-danger w-100" data-action="nested#remove">Remove</button>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="card h-100">
+    <div class="card-body">
+      <div class="row g-3 align-items-start">
+
+        <!-- Kind select -->
+        <div class="col-md-3">
+          <%= f.label :kind, class: "form-label" %>
+          <%= f.select :kind, ResortFilter::KINDS, {}, class: "form-select" %>
+        </div>
+
+        <!-- Data text area + delete checkbox -->
+        <div class="col-md-7 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start">
+            <span><%= f.label :data, "Data (JSON)", class: "form-label mb-0" %></span>
+            <% if f.object&.persisted? %>
+              <div class="form-check ms-2">
+                <%= f.check_box :_destroy, class: "form-check-input" %>
+                <%= f.label :_destroy, "Delete", class: "form-check-label" %>
+              </div>
+            <% end %>
+          </div>
+          <%= f.text_area :data, rows: 2, class: "form-control mt-1" %>
+        </div>
+
+        <!-- Remove button -->
+        <div class="col-md-2 d-flex align-items-center">
+          <% unless f.object&.persisted? %>
+            <button type="button" class="btn btn-outline-danger btn-sm w-100" data-action="nested#remove">Remove</button>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<% end %>
