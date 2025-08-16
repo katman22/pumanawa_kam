@@ -21,7 +21,7 @@ class AddParkingProfiles < ActiveRecord::Migration[7.2]
       t.string :updated_by, limit: 120
       t.timestamps
     end
-    add_index :parking_profiles, [:resort_id, :season], unique: true
+    add_index :parking_profiles, [ :resort_id, :season ], unique: true
     add_index :parking_profiles, :effective_from
     add_index :parking_profiles, :effective_to
   end

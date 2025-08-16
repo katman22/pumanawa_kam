@@ -3,7 +3,6 @@
 module Resorts
   module ParkingProfiles
     class Update < ApplicationService
-
       JSON_ARRAY_FIELDS = %i[links rules faqs sources].freeze
       JSON_OBJECT_FIELDS = %i[operations highway_parking accessibility media].freeze
 
@@ -57,8 +56,6 @@ module Resorts
         raise JSON::ParserError, "#{key} must be an object" unless val.is_a?(Hash)
         val
       end
-
     end
-
   end
 end

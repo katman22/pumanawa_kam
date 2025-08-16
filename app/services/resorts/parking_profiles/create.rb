@@ -3,7 +3,6 @@
 module Resorts
   module ParkingProfiles
     class Create < ApplicationService
-
       attr_reader :resort, :season
 
       def initialize(resort_id:, season:)

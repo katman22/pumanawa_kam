@@ -7,7 +7,7 @@ class AddResortFilters < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :resort_filters, [:resort_id, :kind], unique: true
+    add_index :resort_filters, [ :resort_id, :kind ], unique: true
     add_index :resort_filters, :kind
     add_index :resort_filters, :data, using: :gin
   end

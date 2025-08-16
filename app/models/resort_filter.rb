@@ -9,4 +9,3 @@ class ResortFilter < ApplicationRecord
 
   scope :by_kind, ->(k) { where(kind: k.to_s) }
 end
-
