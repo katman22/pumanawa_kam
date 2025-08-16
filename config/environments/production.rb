@@ -5,7 +5,7 @@ Rails.application.configure do
   config.require_master_key = true
 
   # Serving up files for turbo to work correctly
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
