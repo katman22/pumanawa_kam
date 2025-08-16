@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import flatpickr from "flatpickr"
+
 
 export default class extends Controller {
     static targets = ["button", "input", "effectiveFrom", "effectiveTo"]
@@ -22,21 +22,6 @@ export default class extends Controller {
             const item = this.element.querySelector(`[data-value="${this.inputTarget.value}"]`)
             if (item) this.buttonTarget.textContent = item.textContent.trim()
         }
-
-        // Init Flatpickr on date fields
-        flatpickr(this.effectiveFromTarget, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            altInput: true,
-            altFormat: "F j, Y h:i K"
-        })
-
-        flatpickr(this.effectiveToTarget, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            altInput: true,
-            altFormat: "F j, Y h:i K"
-        })
     }
 }
 
