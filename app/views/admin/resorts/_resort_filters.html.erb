@@ -1,0 +1,29 @@
+<div class="d-flex justify-content-between align-items-start">
+  <h3>Filters </h3>
+  <div class="ms-2">
+    <%= link_to "Add Filter", new_admin_resort_resort_filter_path(@resort), class: "btn btn-outline-primary" %>
+  </div>
+</div>
+<table class="table">
+  <thead class="table-primary">
+  <tr>
+    <th>Kind</th>
+    <th>Data</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody class="table-light">
+  <% @resort.resort_filters.each do |f| %>
+    <tr id="<%= dom_id(f) %>">
+      <td class="fs-5"><%= f.kind %></td>
+      <td class="fs-5">
+        <%= f.data %>
+      </td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", edit_admin_resort_filter_path(f), class: "link-offset-2" %>&nbsp;&nbsp;&nbsp;&nbsp;
+        <%= link_to "Delete", admin_resort_filter_path(f), data: { turbo_method: :delete, turbo_confirm: "Delete #{f.kind} filter?" }, class: "link-offset-2" %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

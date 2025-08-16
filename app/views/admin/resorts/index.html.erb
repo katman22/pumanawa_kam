@@ -1,0 +1,29 @@
+<!-- app/views/admin/resorts/index.html.erb -->
+<h2>Resorts</h2>
+<div class="w-75" style="min-width: 900px">
+<table class="table">
+  <thead class="table-primary">
+  <tr>
+    <th>Name</th><th>Slug</th><th>Lat</th><th>Lng</th><th>Filters</th><th>&nbsp;&nbsp;</th>
+  </tr>
+  </thead>
+  <tbody class="table-light">
+  <% @resorts.each do |r| %>
+    <tr id="<%= dom_id(r) %>">
+      <td><%= link_to r.resort_name, admin_resort_path(r) %></td>
+      <td><span class="badge text-bg-secondary"><%= r.slug %></span></td>
+      <td><%= r.latitude %></td>
+      <td><%= r.longitude %></td>
+      <td>
+        <% kinds = r.resort_filters.map{|f| f.kind}.join(', ')%>
+        <span><%= kinds %></span>
+      </td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", edit_admin_resort_path(r), class: "link-info" %>&nbsp;&nbsp;
+        <%= link_to "Delete", admin_resort_path(r), data: { turbo_method: :delete, turbo_confirm: "Delete #{r.resort_name}?" }, class: "link-danger" %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+</div>

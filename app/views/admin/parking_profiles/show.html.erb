@@ -1,0 +1,32 @@
+<!-- app/views/admin/resorts/show.html.erb -->
+<h2><%= @resort.resort_name %></h2>
+<p><strong>Slug:</strong> <%= @resort.slug %></p>
+<p><strong>Lat/Lng:</strong> <%= @resort.latitude %>, <%= @resort.longitude %></p>
+<p><strong>Departure Point:</strong> <%= @resort.departure_point %></p>
+
+<h3>Filters</h3>
+<table>
+  <thead><tr><th>Kind</th><th>Data</th><th></th></tr></thead>
+  <tbody>
+  <% @resort.resort_filters.each do |f| %>
+    <tr id="<%= dom_id(f) %>">
+      <td><span class="badge"><%= f.kind %></span></td>
+      <td><pre><%= JSON.pretty_generate(f.data.as_json) %></pre></td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", edit_admin_resort_filter_path(f), class: "btn" %>
+        <%= link_to "Delete", admin_resort_filter_path(f), data: { turbo_method: :delete, turbo_confirm: "Delete #{f.kind} filter?" }, class: "btn" %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<p>
+  <%= link_to "Add Filter", new_admin_resort_resort_filter_path(@resort), class: "btn btn-primary" %>
+</p>
+<h3>Parking</h3>
+
+<% season = ParkingSeason.current %>
+<%= link_to "Add Parking Profile (#{season})",
+            admin_new_parking_profile_path(resort_id: @resort.slug, season: season),
+            class: "btn btn-outline-primary" %>

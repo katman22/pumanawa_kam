@@ -1,0 +1,68 @@
+<table class="table">
+  <tr>
+    <td>
+      <div class="row">
+        <span class="col-sm-2 col-form-label">Resort:</span>
+        <div class="col-sm-4">
+          <%= f.text_field :resort_name, class: "form-control", required: true %>
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <span class="col-sm-2 col-form-label">Slug: </span>
+        <div class="col-sm-4"><%= f.text_field :slug, class: "form-control", required: true %>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="row">
+        <span class="col-sm-2 col-form-label">Latitude:</span>
+        <div class="col-sm-4">
+          <%= f.text_field :latitude, class: "form-control", required: true %>
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <span class="col-sm-2 col-form-label">Longitude: </span>
+        <div class="col-sm-4"><%= f.text_field :longitude, class: "form-control", required: true %>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <div class="row">
+        <span class="col-sm-2 col-form-label"> Departure Point:</span>
+        <div class="col-sm-10">
+          <%= f.text_field :departure_point, class: "form-control", required: true %>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <div class="row">
+        <span class="col-sm-2 col-form-label">Location:</span>
+        <div class="col-sm-10">
+          <%= f.text_field :location, class: "form-control"%>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <div class="row">
+        <label class="col-sm-2 col-form-label">Data Production Ready:</label>
+        <div class="col-sm-10" style="margin-top: 9px">
+          <div class="form-check">
+            <%= f.check_box :live, class: "form-check-input", checked: @resort.live %>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
