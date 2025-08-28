@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Webhooks
   module Apple
     class HandleNotification < ApplicationService

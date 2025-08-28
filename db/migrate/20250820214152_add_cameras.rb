@@ -16,12 +16,12 @@ class AddCameras < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :cameras, [:resort_id, :kind, :position]
+    add_index :cameras, [ :resort_id, :kind, :position ]
     add_index :cameras, :show, where: "show = true"
-    add_index :cameras, [:resort_id, :kind, :show]
-    add_index :cameras, [:resort_id, :kind, :featured], where: "featured = true"
-    add_index :cameras, [:resort_id, :kind, :name], unique: true
-    add_index :cameras, [:latitude, :longitude]
+    add_index :cameras, [ :resort_id, :kind, :show ]
+    add_index :cameras, [ :resort_id, :kind, :featured ], where: "featured = true"
+    add_index :cameras, [ :resort_id, :kind, :name ], unique: true
+    add_index :cameras, [ :latitude, :longitude ]
     add_index :cameras, :bearing
   end
 end

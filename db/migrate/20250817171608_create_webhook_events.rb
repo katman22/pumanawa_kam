@@ -11,7 +11,7 @@ class CreateWebhookEvents < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :webhook_events, [:provider, :idempotency_key], unique: true
+    add_index :webhook_events, [ :provider, :idempotency_key ], unique: true
     add_check_constraint :webhook_events, "provider IN ('apple','google')", name: "webhook_events_provider_check"
   end
 end

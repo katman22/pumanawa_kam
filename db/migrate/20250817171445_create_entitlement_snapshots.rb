@@ -11,6 +11,6 @@ class CreateEntitlementSnapshots < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :entitlement_snapshots, [:user_id, :created_at]
+    add_index :entitlement_snapshots, [ :user_id, :created_at ]
   end
 end

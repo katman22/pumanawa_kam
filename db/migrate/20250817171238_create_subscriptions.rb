@@ -15,7 +15,7 @@ class CreateSubscriptions < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :subscriptions, [:user_id, :platform, :product_id]
+    add_index :subscriptions, [ :user_id, :platform, :product_id ]
     add_index :subscriptions, :latest_transaction_id, unique: true, where: "latest_transaction_id IS NOT NULL"
     add_index :subscriptions, :original_transaction_id
     add_check_constraint :subscriptions, "platform IN ('ios','android')", name: "subscriptions_platform_check"

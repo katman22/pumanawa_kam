@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Entitlements
   class Resolver < ApplicationService
     def initialize(user:)

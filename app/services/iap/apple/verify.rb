@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Iap
   module Apple
     class Verify < ApplicationService

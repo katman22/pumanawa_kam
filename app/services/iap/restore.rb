@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Iap
   class Restore < ApplicationService
     def initialize(user:, platform:, receipts:)

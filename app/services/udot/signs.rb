@@ -31,6 +31,5 @@ module Udot
       filter = resort.resort_filters.select { |filter| filter.kind == kind }.first
       filter.parsed_data
     end
-
   end
 end

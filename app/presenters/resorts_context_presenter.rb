@@ -9,5 +9,4 @@ class ResortsContextPresenter
       ResortContextPresenter.new(resort).as_resorts
     end
   end
-
 end

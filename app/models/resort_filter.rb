@@ -15,5 +15,4 @@ class ResortFilter < ApplicationRecord
   rescue JSON::ParserError
     data # fallback: return raw string if it's not valid JSON
   end
-
 end

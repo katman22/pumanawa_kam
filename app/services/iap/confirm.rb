@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Iap
   class Confirm < ApplicationService
     def initialize(user:, platform:, payload:)

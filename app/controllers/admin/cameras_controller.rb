@@ -1,6 +1,6 @@
 class Admin::CamerasController < Admin::BaseController
   before_action :set_resort
-  before_action :set_camera, only: [:show, :edit, :update, :destroy]
+  before_action :set_camera, only: [ :show, :edit, :update, :destroy ]
 
   def new
     @camera = @resort.cameras.new(kind: params[:kind])

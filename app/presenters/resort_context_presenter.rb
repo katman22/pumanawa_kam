@@ -29,5 +29,4 @@ class ResortContextPresenter
       location: @resort.location
     }
   end
-
 end
