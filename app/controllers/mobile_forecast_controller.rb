@@ -6,7 +6,6 @@ class MobileForecastController < ApplicationController
     @erred, locations, @total = find_locations(params[:location])
     @locations = format_locations(locations)
     return unless @locations.size == 1
-    binding.pry
     locale = @locations.first
     @erred, @summary = summary_forecast_for_location(locale[:lat], locale[:lng])
   end

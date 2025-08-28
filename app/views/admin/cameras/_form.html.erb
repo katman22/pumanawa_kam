@@ -1,0 +1,119 @@
+<%= form_with model: [:admin, @resort, @camera] do |f| %>
+  <div data-controller="cameras" class="w-75">
+    <table class="table">
+
+      <tr>
+        <td>
+          <div class="row">
+            <span class="col-sm-2 col-form-label">Name:</span>
+            <div class="col-sm-6">
+              <%= f.text_field :name, class: "form-control", size: 12 %>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row">
+            <span class="col-sm-2 col-form-label">Kind:</span>
+            <div class="col-sm-4">
+              <%= f.select :kind, Camera::KINDS, {}, class: "form-select", style: "width: 200px" %>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="row">
+            <span class="col-sm-3 col-form-label">Always show:</span>
+            <div class="col form-check" style="margin-top: 8px;">
+              <%= f.check_box :show, class: "form-check-input" %>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row">
+            <span class="col-sm-3 col-form-label">Featured:</span>
+            <div class="col form-check" style="margin-top: 8px;">
+              <%= f.check_box :featured, class: "form-check-input" %>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="row">
+            <span class="col-sm-4 col-form-label">Position (view order)</span>
+            <div class="col-sm-4">
+              <%= f.number_field :position, class: "form-control", size: 10 %>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row">
+            <span class="col-sm-3 col-form-label">Bearing:</span>
+            <div class="col-sm-4">
+              <%= f.number_field :bearing, class: "form-control", step: :any, size: 10 %>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="row">
+            <span class="col-sm-4 col-form-label">Latitude</span>
+            <div class="col-sm-4">
+              <%= f.number_field :latitude, class: "form-control", step: :any, size: 10 %>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row">
+            <span class="col-sm-3 col-form-label">Longitude:</span>
+            <div class="col-sm-4">
+              <%= f.number_field :longitude, class: "form-control", step: :any, size: 10 %>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="row">
+            <span class="col-sm-4 col-form-label">Road</span>
+            <div class="col-sm-8">
+              <%= f.text_field :road, class: "form-control", size: 14 %>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row">
+            <span class="col-sm-3 col-form-label">Jurisdiction:</span>
+            <div class="col-sm-4">
+              <%= f.text_field :jurisdiction, class: "form-control", size: 10 %>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <div class="row g-3 align-items-start" style="margin-top: 20px; padding: 10px">
+            <div class="col-md-3"><%= f.label :data, "Data (JSON)", class: "form-label" %></div>
+            <div class="col d-flex flex-column">
+              <%= f.text_area :data, rows: 6, class: "form-control mt-1", value:JSON.pretty_generate( @camera.data || {}) %>
+              <small class="text-muted mt-1">
+                Example:<br>
+                { "source":"udot","snapshot_url":"https://…/image.jpg","stream_url":"https://…/m3u8","location":"SR-190…","milepost":12.4,"direction":"NB","refresh_seconds":60 }
+              </small>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+    </table>
+
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>

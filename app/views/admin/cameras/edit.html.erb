@@ -1,0 +1,9 @@
+<!-- app/views/admin/cameras/new.html.erb -->
+<div style="margin-top: 38px">
+  <h6>New: <%= @camera.kind.to_s.capitalize %> camera for <%= @resort.resort_name %> Resort&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "Resort Information Page", admin_resort_path(@resort) %>&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "All Cameras", admin_resort_cameras_path(resort_id: @resort.id), class: "link-offset-2" %>&nbsp;&nbsp;&nbsp;&nbsp;
+  </h6>
+  <hr/>
+</div>
+<%= render "form", resort: @resort, new: false %>

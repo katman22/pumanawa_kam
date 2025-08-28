@@ -8,4 +8,11 @@ class ResortFilter < ApplicationRecord
   validates :data, presence: true
 
   scope :by_kind, ->(k) { where(kind: k.to_s) }
+
+  def parsed_data
+    return {} if data.blank?
+    data.is_a?(String) ? JSON.parse(data.gsub("=>", ":")) : data
+  rescue JSON::ParserError
+    data # fallback: return raw string if it's not valid JSON
+  end
 end

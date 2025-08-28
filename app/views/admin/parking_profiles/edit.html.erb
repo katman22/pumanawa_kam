@@ -1,9 +1,9 @@
 <!-- app/views/admin/resort_filters/edit.html.erb -->
 <div style="margin-top: 38px">
   <h6>Editing: Parking Profile <%= @profile.label %> for <%= @resort.resort_name %> Resort&nbsp;&nbsp;&nbsp;&nbsp;
-
-    <%= link_to "Parking Profile Info Page", admin_par(@resort) %></h6>&nbsp;&nbsp;&nbsp;&nbsp;
-    <%= link_to "Resort Information Page", admin_resort_path(@resort) %></h6>
+    <%= link_to "Parking Profile Info Page", admin_show_parking_profile_path(@resort) %>&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "Resort Information Page", admin_resort_path(@resort) %>
+  </h6>
   <hr/>
 </div>
 <%= form_with scope: :parking_profile,
@@ -100,7 +100,27 @@
           <div class="col-md-3"><%= f.label :operations, class: "form-label" %></div>
           <div class="col d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start">
-              <span>{ "facilities_open_at": "08:00", "closing_day_requires_reservation": true, "overnight_service": false }</span>
+              <span>{
+  "operating_days": [
+    {
+      "day": "Friday",
+      "hours": "10 AM - 8 PM",
+      "order": 1
+    },
+    {
+      "day": "Saturday & Sunday",
+      "hours": "10 AM - 5 PM",
+      "order": 2
+    }
+  ],
+  "holiday_open_days": [
+    {
+      "date": "09-1-2025",
+      "label": "Labor Day",
+      "order": 1
+    }
+  ]
+}</span>
             </div>
             <%= f.text_area :operations, rows: 2, class: "form-control mt-1", value: JSON.pretty_generate(@profile.operations || {}) %>
           </div>
