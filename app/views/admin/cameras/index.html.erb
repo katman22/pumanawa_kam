@@ -1,0 +1,37 @@
+<!-- app/views/admin/cameras/show.html.erb -->
+<div style="margin-top: 38px">
+  <h6>Cameras: All cameras for <%= @resort.resort_name %> Resort&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "Resort Information Page", admin_resort_path(@resort) %>
+  </h6>
+  <div class="ms-2 justify-content-between">
+    <%= link_to "Add parking camera",
+                new_admin_resort_camera_path(resort_id: @resort.id, kind: "parking"),
+                class: "btn btn-outline-primary" %>
+    <%= link_to "Add traffic camera",
+                new_admin_resort_camera_path(resort_id: @resort.id, kind: "traffic"),
+                class: "btn btn-outline-primary" %>
+  </div>
+  <hr/>
+</div>
+
+<h3>Cameras</h3>
+<table class="table w-75">
+  <thead class="table-primary">
+  <tr><th>Kind</th><th>Featured</th><th>Name</th><th>Data</th><th></th></tr></thead>
+  <tbody>
+  <% @resort.cameras.each do |f| %>
+    <tr id="<%= dom_id(f) %>">
+      <td><span class="badge text-bg-primary"><%= f.kind %></span></td>
+      <% badge_style = f.featured ? 'badge text-bg-success' : 'badge text-bg-danger' %>
+      <td><span class="<%= badge_style %>"><%= f.featured %></span></td>
+      <td><span class="fs-6"><%= f.name %></span></td>
+      <td><small><%= JSON.pretty_generate(f.data.as_json) %></small></td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", edit_admin_resort_camera_path(resort_id: @resort.id, cameras: @resort.cameras, id: f.id), class: "link-offset-2" %>&nbsp;&nbsp;&nbsp;&nbsp;
+        <%= link_to "Delete", admin_resort_camera_path(resort_id: @resort.id, cameras: @resort.cameras, id: f.id), data: { turbo_method: :delete, turbo_confirm: "Delete #{f.name} camera?" }, class: "link-offset-2" %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+

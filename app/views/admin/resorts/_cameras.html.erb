@@ -1,0 +1,45 @@
+<div class="d-flex justify-content-between align-items-start">
+  <h3>Cameras </h3>
+  <% if @resort&.persisted? %>
+    <div class="ms-2 justify-content-between">
+      <%= link_to "All Cameras", admin_resort_cameras_path(resort_id: @resort.id), class: "link-offset-2" %>&nbsp;&nbsp;&nbsp;&nbsp;
+      <%= link_to "Add parking camera",
+                  new_admin_resort_camera_path(resort_id: @resort.id, kind: "parking"),
+                  class: "btn btn-outline-primary" %>
+      <%= link_to "Add traffic camera",
+                  new_admin_resort_camera_path(resort_id: @resort.id, kind: "traffic"),
+      class: "btn btn-outline-primary" %>
+    </div>
+
+
+
+  <% else %>
+    <div class="ms-2">
+      <button type="button" class="btn btn-outline-secondary" disabled>
+        Add Cameras (save resort first)
+      </button>
+    </div>
+  <% end %>
+
+</div>
+<table class="table">
+  <thead class="table-primary">
+  <tr>
+    <th>Camera name</th>
+    <th>Kind</th>
+    <th>&nbsp;</th>
+  </tr>
+  </thead>
+  <% @resort.cameras.each do |c| %>
+    <tr id="<%= dom_id(c) %>">
+      <td class="fs-5"><%= c.name %></td>
+      <td class="fs-5">
+        <%= c.kind %>
+      </td>
+      <td style="text-align:right;">
+        <%= link_to "Edit", edit_admin_resort_camera_path(resort_id: @resort.id, cameras: @resort.cameras, id: c.id), class: "link-offset-2" %>&nbsp;&nbsp;&nbsp;&nbsp;
+        <%= link_to "Delete", admin_resort_camera_path(resort_id: @resort.id, cameras: @resort.cameras, id: c.id), data: { turbo_method: :delete, turbo_confirm: "Delete #{c.name} camera?" }, class: "link-offset-2" %>
+      </td>
+    </tr>
+  <% end %>
+</table>

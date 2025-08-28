@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Udot
-  class Cameras < ApplicationService
+  class FeaturedCameras < ApplicationService
     attr_reader :resort
 
     UDOT_KEY = ENV.fetch("UDOT_KEY")
@@ -14,20 +14,20 @@ module Udot
     end
 
     def call
-      cameras = udot_cameras
+      cameras = featured_cameras
       successful(cameras)
     end
 
     private
 
-    def udot_cameras
+    def featured_cameras
+      cameras = @resort.cameras.where(featured: true, kind: "traffic").map { |resort| resort.data }
+      return cameras.map unless cameras.empty?
+
       udot_response = Udot::FetchType.new(type: CAMERAS, filter: filter(resort, "camera")).call
       enabled = udot_response.value.select { |camera| camera["Views"].first["Status"] != "Disabled" }
-      cameras = @resort.cameras.where(kind: "traffic").map { |resort| resort.data }
-      unique_cameras = (enabled + cameras).uniq { |camera| camera["Id"] }
       return UDOT_ERROR if udot_response.failure?
-
-      unique_cameras.map
+      (enabled[0..1]).map
     end
 
     def filter(resort, kind)

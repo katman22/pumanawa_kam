@@ -46,13 +46,14 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "resorts#index"
     resources :resorts do
-      resources :resort_filters, only: [ :new, :create ]
+      resources :resort_filters, only: [:new, :create]
+      resources :cameras
     end
-    resources :resort_filters, only: [ :edit, :update, :destroy, :create, :show ]
-    get "parking_profiles/:resort_id/:season/edit", to: "parking_profiles#edit",  as: :edit_parking_profile
-    get "parking_profiles/:resort_id/:season/create", to: "parking_profiles#create",  as: :create_parking_profile
-    patch "parking_profiles/:resort_id/:season",      to: "parking_profiles#update", as: :update_parking_profile
-    patch "parking_profiles/:resort_id/:season",      to: "parking_profiles#show", as: :show_parking_profile
+    resources :resort_filters, only: [:edit, :update, :destroy, :create, :show]
+    get "parking_profiles/:resort_id/:season/edit", to: "parking_profiles#edit", as: :edit_parking_profile
+    get "parking_profiles/:resort_id/:season/create", to: "parking_profiles#create", as: :create_parking_profile
+    patch "parking_profiles/:resort_id/:season", to: "parking_profiles#update", as: :update_parking_profile
+    get "parking_profiles/:resort_id/:season", to: "parking_profiles#show", as: :show_parking_profile
   end
 
   # API endpoints
@@ -65,7 +66,11 @@ Rails.application.routes.draw do
       get "weather/period"
       get "weather/alerts"
       get "canyon_times/times"
+      get "canyon_times/resorts"
       get "canyon_times/cameras"
+      get "canyon_times/featured_cameras"
+      get "canyon_times/parking_cameras"
+      get "canyon_times/parking_profile"
       get "canyon_times/alerts_events"
       get "canyon_times/directions"
       get "canyon_times/signs"
@@ -74,8 +79,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :dabs, only: [ :index ]
-
+  resources :dabs, only: [:index]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

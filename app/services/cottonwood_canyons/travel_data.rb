@@ -22,7 +22,7 @@ module CottonwoodCanyons
         to_resort: extract_duration(directions_response),
         from_resort: extract_duration(from_response),
         departure_point: resort.departure_point,
-        parking: "Parking Open",
+        parking: parking_data,
         weather: resort_forecast,
         traffic: extract_warnings(directions_response),
         updated_at: DateTime.current.strftime("%a %l:%M")
@@ -61,13 +61,28 @@ module CottonwoodCanyons
       udot_response.value[:summary]
     end
 
+    def parking_data
+      {
+        operations: operation_hours
+      }
+    end
+
+    def operation_hours
+      parking_profile = resort.parking_profiles.where(live: true).first
+      return { operating_days: [], holiday_open_days: []  } if parking_profile.nil?
+
+      parking_profile.operations
+    end
+
     def resort_forecast
-      provider = "openweather"
+      provider = "noaa"
       forecaster = Weather::DiscussionForecaster.(provider, resort.latitude, resort.longitude, "imperial")
+      hourly_forecaster = Weather::HourlyForecaster.(provider, resort.latitude, resort.longitude)
       return WEATHER_ERROR unless forecaster.success?
 
       forecast = forecaster.value
-      "#{forecast[:short_term]}"
+      hourly_forecast = hourly_forecaster.value
+      { summary: "#{forecast[:short_term]}", hourly: hourly_forecast["periods"][..6] }
     end
   end
 end

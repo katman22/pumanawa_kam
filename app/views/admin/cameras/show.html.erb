@@ -1,0 +1,121 @@
+<!-- app/views/admin/cameras/show.html.erb -->
+<div style="margin-top: 38px">
+  <h6>Showing: <%= @camera.kind.to_s.capitalize %> camera for <%= @resort.resort_name %> Resort&nbsp;&nbsp;&nbsp;&nbsp;
+    <%= link_to "Resort Information Page", admin_resort_path(@resort) %>
+  </h6>
+  <hr/>
+</div>
+
+<h3>Camera</h3>
+<div data-controller="cameras" class="w-75">
+  <table class="table">
+
+    <tr>
+      <td>
+        <div class="row">
+          <span class="col-sm-2 col-form-label">Name:</span>
+          <div class="col-sm-6">
+            <%= @camera.name %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <span class="col-sm-2 col-form-label">Kind:</span>
+          <div class="col-sm-4">
+            <span class="badge"><%= @camera.kind %></span>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div class="row">
+          <span class="col-sm-3 col-form-label">Always show:</span>
+          <div class="col form-check" style="margin-top: 8px;">
+            <%= @camera.show %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <span class="col-sm-3 col-form-label">Featured:</span>
+          <div class="col form-check" style="margin-top: 8px;">
+            <%= @camera.featured %>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div class="row">
+          <span class="col-sm-4 col-form-label">Position (view order)</span>
+          <div class="col-sm-4">
+            <%=@camera.position %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <span class="col-sm-3 col-form-label">Bearing:</span>
+          <div class="col-sm-4">
+            <%= @camera.bearing %>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div class="row">
+          <span class="col-sm-4 col-form-label">Latitude</span>
+          <div class="col-sm-4">
+            <%= @camera.latitude %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <span class="col-sm-3 col-form-label">Longitude:</span>
+          <div class="col-sm-4">
+            <%= @camera.longitude %>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div class="row">
+          <span class="col-sm-4 col-form-label">Road</span>
+          <div class="col-sm-8">
+            <%= @camera.road %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <span class="col-sm-3 col-form-label">Jurisdiction:</span>
+          <div class="col-sm-4">
+            <%= @camera.jurisdiction %>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">
+        <div class="row g-3 align-items-start" style="margin-top: 20px; padding: 10px">
+          <div class="col-md-3"><%= f.label :data, "Data (JSON)", class: "form-label" %></div>
+          <div class="col d-flex flex-column">
+            <%= @camera.data %>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+</div>
+

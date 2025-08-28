@@ -16,3 +16,6 @@ application.register("nested", NestedController)
 import ParkingProfilesController from "controllers/parking_profiles_controller"
 application.register("parking-profiles", ParkingProfilesController)
 
+import CamerasController from "controllers/cameras_controller"
+application.register("cameras", CamerasController)
+

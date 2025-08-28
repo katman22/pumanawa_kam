@@ -10,18 +10,60 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_16_063322) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "cameras", force: :cascade do |t|
     t.bigint "resort_id", null: false
-    t.boolean "always_show", default: false
-    t.string "name"
-    t.string "type", null: false
-    t.string "uri", null: false
-    t.integer "type_id", null: false
+    t.string "name", null: false
+    t.string "kind", limit: 32, null: false
+    t.boolean "show", default: false, null: false
+    t.boolean "featured", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.jsonb "data", default: {}, null: false
+    t.decimal "latitude", precision: 9, scale: 6
+    t.decimal "longitude", precision: 9, scale: 6
+    t.integer "bearing"
+    t.string "road"
+    t.string "jurisdiction"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bearing"], name: "index_cameras_on_bearing"
+    t.index ["latitude", "longitude"], name: "index_cameras_on_latitude_and_longitude"
+    t.index ["resort_id", "kind", "featured"], name: "index_cameras_on_resort_id_and_kind_and_featured", where: "(featured = true)"
+    t.index ["resort_id", "kind", "name"], name: "index_cameras_on_resort_id_and_kind_and_name", unique: true
+    t.index ["resort_id", "kind", "position"], name: "index_cameras_on_resort_id_and_kind_and_position"
+    t.index ["resort_id", "kind", "show"], name: "index_cameras_on_resort_id_and_kind_and_show"
     t.index ["resort_id"], name: "index_cameras_on_resort_id"
+    t.index ["show"], name: "index_cameras_on_show", where: "(show = true)"
+  end
+
+  create_table "entitlement_snapshots", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "version", default: 1, null: false
+    t.boolean "active", default: false, null: false
+    t.string "tier", default: "free", null: false
+    t.datetime "valid_until"
+    t.jsonb "features", default: [], null: false
+    t.jsonb "source", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_entitlement_snapshots_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_entitlement_snapshots_on_user_id"
+  end
+
+  create_table "identities", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "provider", null: false
+    t.string "uid", null: false
+    t.string "email"
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_identities_on_email"
+    t.index ["provider", "uid"], name: "index_identities_on_provider_and_uid", unique: true
+    t.index ["user_id"], name: "index_identities_on_user_id"
   end
 
   create_table "parking_profiles", force: :cascade do |t|
@@ -52,6 +94,37 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_16_063322) do
     t.index ["resort_id"], name: "index_parking_profiles_on_resort_id"
   end
 
+  create_table "product_catalogs", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "tier", default: "premium", null: false
+    t.string "external_id_ios"
+    t.string "external_id_android"
+    t.boolean "is_addon", default: false, null: false
+    t.jsonb "feature_flags", default: [], null: false
+    t.string "status", default: "active", null: false
+    t.datetime "valid_from"
+    t.datetime "valid_to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_id_android"], name: "index_product_catalogs_on_external_id_android", unique: true, where: "(external_id_android IS NOT NULL)"
+    t.index ["external_id_ios"], name: "index_product_catalogs_on_external_id_ios", unique: true, where: "(external_id_ios IS NOT NULL)"
+    t.index ["name"], name: "index_product_catalogs_on_name", unique: true
+  end
+
+  create_table "receipts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "platform", null: false
+    t.string "product_id", null: false
+    t.string "transaction_id", null: false
+    t.text "token", null: false
+    t.jsonb "raw_json", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["transaction_id"], name: "index_receipts_on_transaction_id", unique: true
+    t.index ["user_id"], name: "index_receipts_on_user_id"
+    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying, 'android'::character varying]::text[])", name: "receipts_platform_check"
+  end
+
   create_table "resort_filters", force: :cascade do |t|
     t.bigint "resort_id", null: false
     t.string "kind", limit: 32, null: false
@@ -78,7 +151,63 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_16_063322) do
     t.index ["slug"], name: "index_resorts_on_slug", unique: true
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "platform", null: false
+    t.string "product_id", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "started_at"
+    t.datetime "expires_at"
+    t.datetime "revoked_at"
+    t.string "latest_transaction_id"
+    t.string "original_transaction_id"
+    t.boolean "auto_renew", default: true
+    t.jsonb "raw_status", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["latest_transaction_id"], name: "index_subscriptions_on_latest_transaction_id", unique: true, where: "(latest_transaction_id IS NOT NULL)"
+    t.index ["original_transaction_id"], name: "index_subscriptions_on_original_transaction_id"
+    t.index ["user_id", "platform", "product_id"], name: "index_subscriptions_on_user_id_and_platform_and_product_id"
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying, 'android'::character varying]::text[])", name: "subscriptions_platform_check"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "display_name"
+    t.string "locale", default: "en", null: false
+    t.string "time_zone", default: "America/Denver", null: false
+    t.string "role", default: "user", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "last_sign_in_at"
+    t.datetime "deleted_at"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true, where: "(email IS NOT NULL)"
+    t.index ["role"], name: "index_users_on_role"
+    t.index ["status"], name: "index_users_on_status"
+  end
+
+  create_table "webhook_events", force: :cascade do |t|
+    t.string "provider", null: false
+    t.string "event_type", null: false
+    t.string "idempotency_key", null: false
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "processed_at"
+    t.string "status", default: "pending", null: false
+    t.text "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider", "idempotency_key"], name: "index_webhook_events_on_provider_and_idempotency_key", unique: true
+    t.check_constraint "provider::text = ANY (ARRAY['apple'::character varying, 'google'::character varying]::text[])", name: "webhook_events_provider_check"
+  end
+
   add_foreign_key "cameras", "resorts"
+  add_foreign_key "entitlement_snapshots", "users"
+  add_foreign_key "identities", "users"
   add_foreign_key "parking_profiles", "resorts"
+  add_foreign_key "receipts", "users"
   add_foreign_key "resort_filters", "resorts"
+  add_foreign_key "subscriptions", "users"
 end

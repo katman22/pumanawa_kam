@@ -43,19 +43,19 @@ module Udot
     end
 
     def udot_conditions
-      udot_response = Udot::FetchType.new(type: ROAD_CONDITIONS, filter: resort.roadway_filter).call
+      udot_response = Udot::FetchType.new(type: ROAD_CONDITIONS, filter: filter(resort, "roadway")).call
       return UDOT_ERROR if udot_response.failure?
       udot_response.value.map { |entry| entry.except(EXCLUSIONS) }
     end
 
     def udot_alerts
-      udot_response = Udot::FetchType.new(type: ALERTS, filter: resort.alerts).call
+      udot_response = Udot::FetchType.new(type: ALERTS, filter: filter(resort, "alerts")).call
       return UDOT_ERROR if udot_response.failure?
       udot_response.value
     end
 
     def udot_events
-      udot_response = Udot::FetchType.new(type: EVENT, filter: resort.event).call
+      udot_response = Udot::FetchType.new(type: EVENT, filter: filter(resort, "event")).call
       return UDOT_ERROR if udot_response.failure?
       udot_response.value.map { |entry|
         {
@@ -70,6 +70,11 @@ module Udot
           "MPEnd": entry["MPEnd"]
         }
       }
+    end
+
+    def filter(resort, kind)
+      filter = resort.resort_filters.select { |filter| filter.kind == kind }.first
+      filter.parsed_data
     end
   end
 end
