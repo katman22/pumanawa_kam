@@ -33,10 +33,13 @@ class Admin::CamerasController < Admin::BaseController
   end
 
   def update
-    saved = @camera.update(camera_params)
-    return render :index, resort: @resort, flash: "Camera updated." if saved
-
-    render :edit, status: :unprocessable_entity
+    if @camera.update(camera_params)
+      redirect_to admin_resort_cameras_path(@resort),
+                  notice: "Camera updated.",
+                  status: :see_other  # 303 for Turbo friendliness
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private
