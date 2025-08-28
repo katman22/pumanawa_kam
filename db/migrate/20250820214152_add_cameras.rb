@@ -1,5 +1,6 @@
 class AddCameras < ActiveRecord::Migration[8.0]
   def change
+    drop_table :cameras, if_exists: true
     create_table :cameras do |t|
       t.references :resort, null: false, foreign_key: true
       t.string  :name, null: false
