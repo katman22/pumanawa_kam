@@ -21,7 +21,6 @@ class Admin::ParkingProfilesController < Admin::BaseController
                          resort_id: service_response.value.resort_id,
                          season: service_response.value.season),
                        notice: "Updated." if service_response.success
-    binding.pry
     @profile = ParkingProfile.find_by!(resort: @resort, season: params[:season])
     flash.now[:alert] = "Error updating parking profile.#{service_response.value}"
     render :edit, status: :conflict

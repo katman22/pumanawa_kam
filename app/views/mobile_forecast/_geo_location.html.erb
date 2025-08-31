@@ -19,7 +19,6 @@
           </thead>
           <tbody>
           <% locations.each do |location_hash| %>
-          <% binding.pry %>
             <tr>
               <td><p class="fs-8 geo_formatted"><%= location_hash[:name] %><br/>
                 <%= link_to 'Full Forecast', forecast_full_path(
