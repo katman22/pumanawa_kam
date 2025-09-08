@@ -66,6 +66,7 @@ Rails.application.routes.draw do
       get "weather/period"
       get "weather/alerts"
       get "canyon_times/times"
+      get "canyon_times/travel_times"
       get "canyon_times/resorts"
       get "canyon_times/cameras"
       get "canyon_times/featured_cameras"

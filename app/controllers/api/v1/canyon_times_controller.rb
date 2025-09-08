@@ -15,6 +15,14 @@ module Api
         render json: result
       end
 
+      def travel_times
+        resort_id = params[:resort_id]
+        resort = Resort.find_by(slug: resort_id)
+        result = CottonwoodCanyons::TravelTimes.new(resort: resort).call
+
+        render json: result
+      end
+
       def cameras
         resort_id = params[:resort_id]
         resort = Resort.find_by(slug: resort_id)
