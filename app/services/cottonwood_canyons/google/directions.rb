@@ -1,3 +1,4 @@
+# app/services/cottonwood_canyons/google/directions.rb
 # frozen_string_literal: true
 
 module CottonwoodCanyons
@@ -15,27 +16,53 @@ module CottonwoodCanyons
       end
 
       def call
-        response = google_directions
-        return nil if response.body.nil? || response.body.empty? || response["status"] == 404
+        key = cache_key_for(@origin, @destination)
+        if (cached = Rails.cache.read(key))
+          Rails.logger.info("[#{SERVICE_TYPE}] Cache hit for #{key}")
+          return parse_and_success(cached)
+        end
 
-        response = JSON.parse(response.body)
-        response.symbolize_keys!
-        successful(response[:routes])
+        Rails.logger.info("[#{SERVICE_TYPE}] Cache miss for #{key}, calling Google API…")
+        response_body = Rails.cache.fetch(
+          key,
+          expires_in: 70.seconds,
+          race_condition_ttl: 10.seconds,
+          skip_nil: true
+        ) do
+          google_directions.body
+        end
+
+        return nil if response_body.blank?
+        parse_and_success(response_body)
       rescue => e
-        Rails.logger.error("Google Directions Service failed: #{e.message}")
+        Rails.logger.error("[#{SERVICE_TYPE}] Request failed: #{e.message}")
         failed(FAILED_MESSAGE.call(e.message))
       end
 
+      private
+
+      def parse_and_success(response_body)
+        parsed = JSON.parse(response_body)
+        parsed.symbolize_keys!
+        successful(parsed[:routes])
+      end
+
       def google_directions
-        HTTParty.get(GOOGLE_DIRECTIONS_URL, {
-          query: {
-            origin: @origin,
-            destination: @destination,
-            departure_time: DEPARTURE_TIME,
-            traffic_model: TRAFFIC_MODEL,
-            key: ENV["GOOGLE_API_KEY"]
-          }
+        HTTParty.get(GOOGLE_DIRECTIONS_URL, query: {
+          origin: @origin,
+          destination: @destination,
+          departure_time: DEPARTURE_TIME,
+          traffic_model: TRAFFIC_MODEL,
+          key: ENV["GOOGLE_API_KEY"]
         })
+      end
+
+      # === Time-bucketed key: one cache key per minute per O/D pair ===
+      def cache_key_for(origin, destination)
+        bucket = Time.now.utc.to_i / 60 # changes once per minute (UTC for consistency)
+        o = origin.to_s.strip
+        d = destination.to_s.strip
+        "google_directions:#{o}:#{d}:#{bucket}"
       end
     end
   end
