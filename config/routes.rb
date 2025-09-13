@@ -11,6 +11,13 @@ Rails.application.routes.draw do
     get "privacy", action: :privacy
   end
 
+  controller :kroger do
+    get "kroger/index", action: :index
+    post "kroger/locations", action: :locations
+    post "kroger/products", action: :products
+    post "kroger/store_selections", action: :store_selections
+  end
+
   controller :mobile_forecast do
     get "mobile_forecast/index", action: :index
     post "mobile_forecast/geo_location", action: :geo_location

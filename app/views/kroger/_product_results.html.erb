@@ -1,0 +1,16 @@
+<% if @products.any? %>
+  <ul>
+    <% @products.each do |product| %>
+      <li>
+        <strong><%= product["description"] %></strong><br>
+        <% item = product["items"]&.first %>
+        <% if item && item["price"] %>
+          <span>Price: $<%= item["price"]["regular"] %></span>
+          <span>Promotional Price: $<%= item["price"]["promo"] %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No products found.</p>
+<% end %>
