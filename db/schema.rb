@@ -13,6 +13,8 @@
 ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
+  enable_extension "uuid-ossp"
 
   create_table "cameras", force: :cascade do |t|
     t.bigint "resort_id", null: false
@@ -122,7 +124,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.datetime "updated_at", null: false
     t.index ["transaction_id"], name: "index_receipts_on_transaction_id", unique: true
     t.index ["user_id"], name: "index_receipts_on_user_id"
-    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying, 'android'::character varying]::text[])", name: "receipts_platform_check"
+    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying::text, 'android'::character varying::text])", name: "receipts_platform_check"
   end
 
   create_table "resort_filters", force: :cascade do |t|
@@ -169,7 +171,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.index ["original_transaction_id"], name: "index_subscriptions_on_original_transaction_id"
     t.index ["user_id", "platform", "product_id"], name: "index_subscriptions_on_user_id_and_platform_and_product_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
-    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying, 'android'::character varying]::text[])", name: "subscriptions_platform_check"
+    t.check_constraint "platform::text = ANY (ARRAY['ios'::character varying::text, 'android'::character varying::text])", name: "subscriptions_platform_check"
   end
 
   create_table "users", force: :cascade do |t|
@@ -200,7 +202,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider", "idempotency_key"], name: "index_webhook_events_on_provider_and_idempotency_key", unique: true
-    t.check_constraint "provider::text = ANY (ARRAY['apple'::character varying, 'google'::character varying]::text[])", name: "webhook_events_provider_check"
+    t.check_constraint "provider::text = ANY (ARRAY['apple'::character varying::text, 'google'::character varying::text])", name: "webhook_events_provider_check"
   end
 
   add_foreign_key "cameras", "resorts"

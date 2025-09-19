@@ -56,6 +56,9 @@ Rails.application.routes.draw do
     get "parking_profiles/:resort_id/:season", to: "parking_profiles#show", as: :show_parking_profile
   end
 
+  post "/webhooks/apple",  to: "webhooks/apple#create"
+  post "/webhooks/google", to: "webhooks/google#create"
+
   # API endpoints
   namespace :api do
     namespace :v1 do
@@ -65,6 +68,7 @@ Rails.application.routes.draw do
       get "weather/radar"
       get "weather/period"
       get "weather/alerts"
+      get "weather/sunrise_sunset"
       get "canyon_times/times"
       get "canyon_times/travel_times"
       get "canyon_times/resorts"
@@ -77,6 +81,11 @@ Rails.application.routes.draw do
       get "canyon_times/signs"
       get "weather/discussion"
       get "weather/watches_fire_alerts"
+      resource :entitlements, only: [ :show ]
+      namespace :iap do
+        post :confirm, to: "/api/v1/iap#confirm"
+        post :restore, to: "/api/v1/iap#restore"
+      end
     end
   end
 
