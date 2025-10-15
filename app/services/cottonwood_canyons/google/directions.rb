@@ -9,6 +9,7 @@ module CottonwoodCanyons
       TRAFFIC_MODEL = "best_guess"
       SERVICE_TYPE = "Google Directions Service"
       FAILED_MESSAGE = ->(message) { " #{message}" }
+      CACHE_SECONDS = 180
 
       def initialize(origin:, destination:)
         @origin = origin
@@ -25,7 +26,7 @@ module CottonwoodCanyons
         Rails.logger.info("[#{SERVICE_TYPE}] Cache miss for #{key}, calling Google API…")
         response_body = Rails.cache.fetch(
           key,
-          expires_in: 70.seconds,
+          expires_in: 180.seconds,
           race_condition_ttl: 10.seconds,
           skip_nil: true
         ) do
@@ -59,11 +60,16 @@ module CottonwoodCanyons
 
       # === Time-bucketed key: one cache key per minute per O/D pair ===
       def cache_key_for(origin, destination)
-        bucket = Time.now.utc.to_i / 60 # changes once per minute (UTC for consistency)
-        o = origin.to_s.strip
-        d = destination.to_s.strip
-        "google_directions:#{o}:#{d}:#{bucket}"
+        bucket = (Time.now.utc.to_i / CACHE_SECONDS) # rotates every 180s
+        o = normalize(origin)
+        d = normalize(destination)
+        %W[google_directions o:#{o} d:#{d} dep:#{DEPARTURE_TIME} tm:#{TRAFFIC_MODEL} b:#{bucket}].join(":")
       end
+
+      def normalize(value)
+        value.to_s.strip.downcase.gsub(/\s+/, " ")
+      end
+
     end
   end
 end
