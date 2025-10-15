@@ -69,7 +69,6 @@ module CottonwoodCanyons
       def normalize(value)
         value.to_s.strip.downcase.gsub(/\s+/, " ")
       end
-
     end
   end
 end
