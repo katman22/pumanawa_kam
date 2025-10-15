@@ -8,19 +8,20 @@ module CottonwoodCanyons
     WEATHER_ERROR = "No weather data available currently."
     TRAVEL_ERROR = "No travel data available currently."
 
-    def initialize(resort:)
+    def initialize(resort:, type: "all")
       @origin = resort.departure_point
       @destination = resort.location
       @resort = resort
+      @type = type
     end
 
     def call
-      directions_response = Google::Directions.new(origin: @origin, destination: @destination).call
-      from_response = Google::Directions.new(origin: @destination, destination: @origin).call
+      directions_response = Google::Directions.new(origin: @origin, destination: @destination).call if get_to?
+      from_response = Google::Directions.new(origin: @destination, destination: @origin).call if get_from?
       {
         resort: resort.resort_name,
-        to_resort: extract_duration(directions_response),
-        from_resort: extract_duration(from_response),
+        to_resort:  get_to? ? extract_duration(directions_response) : "N/A",
+        from_resort:  get_from? ? extract_duration(from_response): "N/A",
         departure_point: resort.departure_point,
         parking: parking_data,
         weather: resort_forecast,
@@ -33,6 +34,14 @@ module CottonwoodCanyons
     end
 
     private
+
+    def get_from?
+      %w[all from].include?(@type)
+    end
+
+    def get_to?
+      %w[all from].include?(@type)
+    end
 
     def extract_warnings(response)
       udot_information || google_warnings(response)
@@ -69,7 +78,7 @@ module CottonwoodCanyons
 
     def operation_hours
       parking_profile = resort.parking_profiles.where(live: true).first
-      return { operating_days: [], holiday_open_days: []  } if parking_profile.nil?
+      return { operating_days: [], holiday_open_days: [] } if parking_profile.nil?
 
       parking_profile.operations
     end
