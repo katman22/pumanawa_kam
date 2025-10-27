@@ -23,7 +23,7 @@ module CottonwoodCanyons
         from_resort:      extract_duration(from_resp),
         departure_point:  resort.departure_point,
         overview_polyline: extract_polyline(to_resp), # use the "to" route for the map
-        updated_at:       Time.current.strftime("%a %l:%M"),
+        updated_at:       Time.current.strftime("%a %l:%M")
       }
     rescue => e
       Rails.logger.error("CanyonTravelTimeService failed: #{e.class}: #{e.message}")
