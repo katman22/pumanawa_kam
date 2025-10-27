@@ -16,16 +16,19 @@ module CottonwoodCanyons
     end
 
     def call
-      directions_response = Google::Directions.new(origin: @origin, destination: @destination).call if get_to?
-      from_response = Google::Directions.new(origin: @destination, destination: @origin).call if get_from?
+      # one or both calls depending on @type
+      to_resp   = get_to?   ? Google::DirectionsFetcher.call(origin: @origin, destination: @destination) : nil
+      from_resp = get_from? ? Google::DirectionsFetcher.call(origin: @destination, destination: @origin) : nil
+
       {
         resort: resort.resort_name,
-        to_resort:  get_to? ? extract_duration(directions_response) : "N/A",
-        from_resort:  get_from? ? extract_duration(from_response): "N/A",
+        to_resort:   get_to?   ? extract_duration(to_resp)   : "N/A",
+        from_resort: get_from? ? extract_duration(from_resp) : "N/A",
         departure_point: resort.departure_point,
         parking: parking_data,
         weather: resort_forecast,
-        traffic: extract_warnings(directions_response),
+        traffic: extract_warnings(to_resp),
+        overview_polyline: extract_polyline(to_resp), # ← add polyline (from the “to” route)
         updated_at: DateTime.current.strftime("%a %l:%M")
       }
     rescue => e
@@ -40,7 +43,7 @@ module CottonwoodCanyons
     end
 
     def get_to?
-      %w[all to].include?(@type)
+      %w[all to].include?(@type)   # ← fix (was 'from')
     end
 
     def extract_warnings(response)
@@ -48,19 +51,26 @@ module CottonwoodCanyons
     end
 
     def google_warnings(response)
-      return [] unless response.success? && response.value.present?
+      return [] unless response&.success? && response.value.present?
       route = response.value.first
-      return [] if route.nil? || route[:warnings].nil?
-      route[:warnings] || []
+      route && route["warnings"] || route && route[:warnings] || []
     end
 
     def extract_duration(response)
-      return "N/A" unless response.success? && response.value.present?
+      return "N/A" unless response&.success? && response.value.present?
       leg = response.value.first["legs"].first.symbolize_keys
-      leg[:duration_in_traffic].symbolize_keys!
-      return leg[:duration_in_traffic][:text].gsub!("mins", "").strip! if leg && leg[:duration_in_traffic]
+      if leg[:duration_in_traffic]
+        leg[:duration_in_traffic] = leg[:duration_in_traffic].symbolize_keys
+        txt = leg[:duration_in_traffic][:text].to_s
+        return txt.gsub("mins", "").strip
+      end
+      leg.dig(:duration, :text) || TRAVEL_ERROR
+    end
 
-      leg[:duration][:text] rescue TRAVEL_ERROR
+    def extract_polyline(response)
+      return nil unless response&.success? && response.value.present?
+      route = response.value.first
+      route.dig("overview_polyline", "points") || route.dig(:overview_polyline, :points)
     end
 
     def udot_information
