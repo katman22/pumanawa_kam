@@ -40,7 +40,7 @@ module CottonwoodCanyons
     end
 
     def get_to?
-      %w[all from].include?(@type)
+      %w[all to].include?(@type)
     end
 
     def extract_warnings(response)

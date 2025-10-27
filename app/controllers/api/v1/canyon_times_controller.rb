@@ -8,10 +8,9 @@ module Api
       end
 
       def times
-        resort_id = params[:resort_id]
-        resort = Resort.find_by(slug: resort_id)
-        result = CottonwoodCanyons::TravelData.new(resort: resort).call
-
+        resort = Resort.find_by(slug: params[:resort_id])
+        type   = params[:type].presence || "all"
+        result = CottonwoodCanyons::TravelData.new(resort: resort, type: type).call
         render json: result
       end
 
