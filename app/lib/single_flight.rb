@@ -15,4 +15,3 @@ class SingleFlight
     @locks.compute(key) { |_, current| current.equal?(lock) ? nil : current }
   end
 end
-
