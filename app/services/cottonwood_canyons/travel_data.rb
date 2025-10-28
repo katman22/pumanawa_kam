@@ -58,19 +58,26 @@ module CottonwoodCanyons
 
     def extract_duration(response)
       return "N/A" unless response&.success? && response.value.present?
-      leg = response.value.first["legs"].first.symbolize_keys
+
+      route = response.value.first
+      legs  = route && (route["legs"] || route[:legs])
+      leg   = legs&.first
+      return "N/A" unless leg
+
+      leg = leg.symbolize_keys
       if leg[:duration_in_traffic]
-        leg[:duration_in_traffic] = leg[:duration_in_traffic].symbolize_keys
-        txt = leg[:duration_in_traffic][:text].to_s
-        return txt.gsub("mins", "").strip
+        dit = leg[:duration_in_traffic].symbolize_keys
+        return dit[:text].to_s.gsub("mins", "").strip
       end
+
       leg.dig(:duration, :text) || TRAVEL_ERROR
     end
 
     def extract_polyline(response)
       return nil unless response&.success? && response.value.present?
       route = response.value.first
-      route.dig("overview_polyline", "points") || route.dig(:overview_polyline, :points)
+      poly  = route && (route["overview_polyline"] || route[:overview_polyline])
+      poly && (poly["points"] || poly[:points])
     end
 
     def udot_information

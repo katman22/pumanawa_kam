@@ -35,16 +35,15 @@ module CottonwoodCanyons
     def extract_duration(response)
       return "N/A" unless response&.success? && response.value.present?
 
-      leg = response.value.first.dig("legs", 0)
+      route = response.value.first
+      legs  = route && (route["legs"] || route[:legs])
+      leg   = legs&.first
       return "N/A" unless leg
 
-      # normalize to symbols without mutating in place
       leg = leg.transform_keys { |k| k.to_s.to_sym }
-
       if leg[:duration_in_traffic].is_a?(Hash)
         dit = leg[:duration_in_traffic].transform_keys { |k| k.to_s.to_sym }
         txt = dit[:text].to_s
-        # do not use bang methods (they can return nil)
         return txt.gsub("mins", "").strip
       end
 
@@ -54,7 +53,8 @@ module CottonwoodCanyons
     def extract_polyline(response)
       return nil unless response&.success? && response.value.present?
       route = response.value.first
-      route.dig("overview_polyline", "points") || route.dig(:overview_polyline, :points)
+      poly  = route && (route["overview_polyline"] || route[:overview_polyline])
+      poly && (poly["points"] || poly[:points])
     end
 
     def resort
