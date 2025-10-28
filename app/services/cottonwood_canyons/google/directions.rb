@@ -72,12 +72,12 @@ module CottonwoodCanyons
         case status
         when "OK"
           routes = parsed[:routes] || []
-          return successful(routes)
+          successful(routes)
         when "ZERO_RESULTS"
-          return successful([])  # treat as success (no route)
+          successful([])  # treat as success (no route)
         else
           msg = parsed.dig(:error_message) || status
-          return failed(" Google status #{status}: #{msg}")
+          failed(" Google status #{status}: #{msg}")
         end
       end
 
