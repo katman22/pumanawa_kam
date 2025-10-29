@@ -1,15 +1,13 @@
 # app/services/cottonwood_canyons/google/directions.rb
-# frozen_string_literal: true
-
 module CottonwoodCanyons
   module Google
     class Directions < ApplicationService
       GOOGLE_DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions/json"
       DEPARTURE_TIME = "now"
       TRAFFIC_MODEL  = "best_guess"
+      MODE           = "driving"
       SERVICE_TYPE   = "Google Directions Service"
       CACHE_SECONDS  = 300 # 5 minutes
-      MODE = "driving"
 
       def initialize(origin:, destination:)
         @origin = origin
@@ -17,7 +15,7 @@ module CottonwoodCanyons
       end
 
       def call
-        key = cache_key_for(@origin, @destination)
+        key = DirectionsKey.key_for(@origin, @destination, traffic_model: TRAFFIC_MODEL, mode: MODE)
 
         if (cached = Rails.cache.read(key))
           Rails.logger.info("[#{SERVICE_TYPE}] Cache hit for #{key}")
@@ -52,22 +50,11 @@ module CottonwoodCanyons
         HTTParty.get(GOOGLE_DIRECTIONS_URL, query: {
           origin: @origin,
           destination: @destination,
-          mode: MODE,
           departure_time: DEPARTURE_TIME,
           traffic_model: TRAFFIC_MODEL,
+          mode: MODE,
           key: ENV["GOOGLE_API_KEY"]
         })
-      end
-
-      # === Stable key: origin + destination only ===
-      def cache_key_for(origin, destination)
-        o = normalize(origin)
-        d = normalize(destination)
-        "google_directions:o:#{o}:d:#{d}:tm:#{TRAFFIC_MODEL}:m:#{MODE}"
-      end
-
-      def normalize(value)
-        value.to_s.strip.downcase.gsub(/\s+/, " ")
       end
     end
   end
