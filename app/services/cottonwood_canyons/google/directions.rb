@@ -9,6 +9,7 @@ module CottonwoodCanyons
       TRAFFIC_MODEL  = "best_guess"
       SERVICE_TYPE   = "Google Directions Service"
       CACHE_SECONDS  = 300 # 5 minutes
+      MODE = "driving"
 
       def initialize(origin:, destination:)
         @origin = origin
@@ -51,6 +52,7 @@ module CottonwoodCanyons
         HTTParty.get(GOOGLE_DIRECTIONS_URL, query: {
           origin: @origin,
           destination: @destination,
+          mode: MODE,
           departure_time: DEPARTURE_TIME,
           traffic_model: TRAFFIC_MODEL,
           key: ENV["GOOGLE_API_KEY"]
@@ -61,7 +63,7 @@ module CottonwoodCanyons
       def cache_key_for(origin, destination)
         o = normalize(origin)
         d = normalize(destination)
-        "google_directions:o:#{o}:d:#{d}:tm:#{TRAFFIC_MODEL}"
+        "google_directions:o:#{o}:d:#{d}:tm:#{TRAFFIC_MODEL}:m:#{MODE}"
       end
 
       def normalize(value)
