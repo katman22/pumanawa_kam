@@ -90,4 +90,17 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.action_controller.perform_caching = true
+  config.cache_store = :redis_cache_store, {
+    url: ENV.fetch("REDIS_URL"),              # use rediss://… if TLS on Render
+    namespace: "ct:cache:v1",
+    compress: true,
+    connect_timeout: 2,        # seconds
+    read_timeout: 1,           # keep snappy
+    write_timeout: 1,
+    pool: { size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)), timeout: 5 },
+    error_handler: ->(method:, returning:, exception:) {
+      Rails.logger.warn("[RedisCache] #{method} failed: #{exception.class}: #{exception.message}")
+    }
+  }
 end
