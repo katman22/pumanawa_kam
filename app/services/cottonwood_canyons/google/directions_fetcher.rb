@@ -18,7 +18,7 @@ module CottonwoodCanyons
       end
 
       def call
-        key     = stable_key(@origin, @destination)       
+        key     = stable_key(@origin, @destination)
         lastkey = last_good_key(@origin, @destination)
 
         Rails.cache.fetch(key, expires_in: @expires_in, race_condition_ttl: 10.seconds, skip_nil: true) do
