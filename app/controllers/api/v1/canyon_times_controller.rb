@@ -1,7 +1,7 @@
 # app/controllers/api/v1/canyon_times_controller.rb
 module Api
   module V1
-    class CanyonTimesController < Api::V1::ApiController
+    class CanyonTimesController < Api::V1::MobileApiController
       def resorts
         resorts = Resort.active
         json_resorts = ResortsContextPresenter.new(resorts).all_resorts
