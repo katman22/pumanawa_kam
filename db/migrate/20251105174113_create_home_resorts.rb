@@ -4,7 +4,6 @@ class CreateHomeResorts < ActiveRecord::Migration[8.0]
     create_table :home_resorts, id: :uuid do |t|
       t.references :user, null: false, foreign_key: true
       t.references :resort, null: false, foreign_key: true
-      t.integer :kind, null: false, default: 0
       t.timestamps
     end
     add_index :home_resorts, [ :user_id, :resort_id ], unique: true
