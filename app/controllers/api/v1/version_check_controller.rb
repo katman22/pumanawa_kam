@@ -41,5 +41,4 @@ class Api::V1::MobileApiController < ActionController::API
       "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel"
     end
   end
-
 end

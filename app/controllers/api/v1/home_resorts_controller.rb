@@ -26,8 +26,8 @@ class Api::V1::HomeResortsController < Api::V1::MobileApiController
         free: free_cap
       },
       remaining: {
-        subscribed: subs_cap == :all ? "all" : [subs_cap - subs.size, 0].max,
-        free: [free_cap - free.size, 0].max
+        subscribed: subs_cap == :all ? "all" : [ subs_cap - subs.size, 0 ].max,
+        free: [ free_cap - free.size, 0 ].max
       },
       change_window: {
         remaining_changes: cw[:remaining] == Float::INFINITY ? "unlimited" : cw[:remaining],

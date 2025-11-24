@@ -9,6 +9,6 @@ class AddHomeResortChangeWindows < ActiveRecord::Migration[8.0]
       t.datetime :last_action_at
       t.timestamps
     end
-    add_index :home_resort_change_windows, [:user_id, :window_start], unique: true
+    add_index :home_resort_change_windows, [ :user_id, :window_start ], unique: true
   end
 end

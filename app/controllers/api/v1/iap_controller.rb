@@ -1,5 +1,4 @@
 class Api::V1::IapController < Api::V1::MobileApiController
-
   def sync
     entitlements = params.fetch(:entitlements, {})
 
@@ -14,5 +13,4 @@ class Api::V1::IapController < Api::V1::MobileApiController
   end
 
   private
-
 end

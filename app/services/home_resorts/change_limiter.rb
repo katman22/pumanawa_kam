@@ -44,7 +44,7 @@ module HomeResorts
       ensure_window!(user, current_tier)
       return Float::INFINITY if allowed_for(current_tier) == Float::INFINITY
 
-      new_val = [user.home_resort_changes_remaining.to_i - by, 0].max
+      new_val = [ user.home_resort_changes_remaining.to_i - by, 0 ].max
       user.update_columns(home_resort_changes_remaining: new_val)
       new_val
     end
@@ -60,6 +60,5 @@ module HomeResorts
         home_resort_changes_remaining: (allowed.finite? ? allowed.to_i : nil)
       )
     end
-
   end
 end

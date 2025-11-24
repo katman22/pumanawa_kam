@@ -11,12 +11,10 @@ module Iap
       end
 
       def call
-
         ActiveRecord::Base.transaction do
           save_store_subscriptions!
           deactivate_stale_subscriptions!
         end
-
       end
 
       def save_store_subscriptions!
@@ -79,9 +77,6 @@ module Iap
         return "android" if which_store == "play_store"
         "unknown"
       end
-
     end
   end
 end
-
-

@@ -9,7 +9,7 @@ module HomeResorts
       # wday: 0=Sunday ... 6=Saturday
       days_from_sunday = now.wday # Sunday==0 (already our anchor)
       start_of_week = (now - days_from_sunday.days).beginning_of_day
-      [start_of_week.to_date, (start_of_week + 1.week)]
+      [ start_of_week.to_date, (start_of_week + 1.week) ]
     end
   end
 end
