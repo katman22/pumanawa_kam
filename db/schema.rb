@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_13_041834) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -41,6 +41,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.index ["show"], name: "index_cameras_on_show", where: "(show = true)"
   end
 
+  create_table "entitlement_overrides", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "entitlement", null: false
+    t.datetime "starts_at", null: false
+    t.datetime "ends_at"
+    t.string "reason"
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_entitlement_overrides_on_created_by_id"
+    t.index ["user_id", "starts_at"], name: "index_entitlement_overrides_on_user_id_and_starts_at"
+    t.index ["user_id"], name: "index_entitlement_overrides_on_user_id"
+  end
+
   create_table "entitlement_snapshots", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "version", default: 1, null: false
@@ -51,8 +65,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.jsonb "source", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "fingerprint"
     t.index ["user_id", "created_at"], name: "index_entitlement_snapshots_on_user_id_and_created_at"
+    t.index ["user_id", "fingerprint"], name: "idx_unique_entitlement_snapshots_user_fp", unique: true, where: "(fingerprint IS NOT NULL)"
     t.index ["user_id"], name: "index_entitlement_snapshots_on_user_id"
+  end
+
+  create_table "home_resort_change_windows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "window_start", null: false
+    t.integer "changes_used", default: 0, null: false
+    t.datetime "last_action_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "window_start"], name: "index_home_resort_change_windows_on_user_id_and_window_start", unique: true
+    t.index ["user_id"], name: "index_home_resort_change_windows_on_user_id"
+  end
+
+  create_table "home_resorts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "resort_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "kind", default: 1, null: false
+    t.index ["resort_id"], name: "index_home_resorts_on_resort_id"
+    t.index ["user_id", "kind"], name: "index_home_resorts_on_user_id_and_kind"
+    t.index ["user_id", "resort_id"], name: "index_home_resorts_on_user_id_and_resort_id", unique: true
+    t.index ["user_id"], name: "index_home_resorts_on_user_id"
+    t.check_constraint "kind = ANY (ARRAY[0, 1])", name: "home_resorts_kind_check"
   end
 
   create_table "identities", force: :cascade do |t|
@@ -167,6 +207,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.jsonb "raw_status", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "purchased_at"
+    t.boolean "will_renew"
+    t.string "source", default: "revenue_cat", null: false
     t.index ["latest_transaction_id"], name: "index_subscriptions_on_latest_transaction_id", unique: true, where: "(latest_transaction_id IS NOT NULL)"
     t.index ["original_transaction_id"], name: "index_subscriptions_on_original_transaction_id"
     t.index ["user_id", "platform", "product_id"], name: "index_subscriptions_on_user_id_and_platform_and_product_id"
@@ -186,7 +229,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "public_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "home_resort_window_start"
+    t.integer "home_resort_changes_remaining"
     t.index ["email"], name: "index_users_on_email", unique: true, where: "(email IS NOT NULL)"
+    t.index ["public_id"], name: "index_users_on_public_id", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["status"], name: "index_users_on_status"
   end
@@ -206,7 +253,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_214152) do
   end
 
   add_foreign_key "cameras", "resorts"
+  add_foreign_key "entitlement_overrides", "users"
+  add_foreign_key "entitlement_overrides", "users", column: "created_by_id"
   add_foreign_key "entitlement_snapshots", "users"
+  add_foreign_key "home_resort_change_windows", "users"
+  add_foreign_key "home_resorts", "resorts"
+  add_foreign_key "home_resorts", "users"
   add_foreign_key "identities", "users"
   add_foreign_key "parking_profiles", "resorts"
   add_foreign_key "receipts", "users"

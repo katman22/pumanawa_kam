@@ -12,7 +12,7 @@ class Api::V1::WeatherController < Api::V1::ApiController
   end
 
   def sunrise_sunset
-    @resort = Resort.find_by(slug: params[:slug])
+    @resort = Resort.find_by(slug: params[:resort_id])
     response = SunriseSunset::Times.new(
       timezone: "us",
       latitude: @resort.latitude,

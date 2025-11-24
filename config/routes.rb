@@ -62,6 +62,7 @@ Rails.application.routes.draw do
   # API endpoints
   namespace :api do
     namespace :v1 do
+      get "version-check", to: "mobile_api#version_check"
       get "weather/index"
       get "weather/forecasts"
       get "weather/hourly"
@@ -81,10 +82,14 @@ Rails.application.routes.draw do
       get "canyon_times/signs"
       get "weather/discussion"
       get "weather/watches_fire_alerts"
+      put "home_resorts", to: "home_resorts#update"
+      get "home_resorts", to: "home_resorts#index"
       resource :entitlements, only: [ :show ]
       namespace :iap do
-        post :confirm, to: "/api/v1/iap#confirm"
-        post :restore, to: "/api/v1/iap#restore"
+        post :sync, to: "/api/v1/iap#sync"
+      end
+      namespace :auth do
+        post :device, action: :device
       end
     end
   end
