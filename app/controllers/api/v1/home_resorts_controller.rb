@@ -1,6 +1,5 @@
 # app/controllers/api/v1/home_resorts_controller.rb
 class Api::V1::HomeResortsController < Api::V1::MobileApiController
-
   # Caps per tier (no weekly limits, just selection caps)
   CAPS = {
     "free"     => { subscribed: 0,     free: 2 },
@@ -153,7 +152,6 @@ class Api::V1::HomeResortsController < Api::V1::MobileApiController
           kind:      :free
         )
       end
-
     end
 
     render json: {
@@ -163,5 +161,4 @@ class Api::V1::HomeResortsController < Api::V1::MobileApiController
       remaining:        caps
     }
   end
-
 end
