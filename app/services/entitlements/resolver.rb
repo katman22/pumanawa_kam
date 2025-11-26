@@ -68,25 +68,20 @@ module Entitlements
       end
 
       begin
-        EntitlementSnapshot.create!(
-          user: @user,
-          version: payload[:version],
-          active: payload[:active],
-          tier: payload[:tier],
-          valid_until: payload[:valid_until],
-          features: payload[:features],
-          source: payload[:sources],
-          fingerprint: fp
-        )
+        EntitlementSnapshot.transaction(requires_new: true) do
+          EntitlementSnapshot.create!(
+            user: @user,
+            version: payload[:version],
+            active: payload[:active],
+            tier: payload[:tier],
+            valid_until: payload[:valid_until],
+            features: payload[:features],
+            source: payload[:sources],
+            fingerprint: fp
+          )
+        end
       rescue ActiveRecord::RecordNotUnique
-        # Another request wrote the same state concurrently
-      end
-
-      previous_tier = last_before&.tier || "free"
-      current_tier  = eff_tier
-
-      if TIERS[current_tier] > TIERS[previous_tier]
-        HomeResorts::ChangeLimiter.reset!(@user, current_tier)
+        # Snapshot for this fingerprint already exists
       end
 
       successful(payload)

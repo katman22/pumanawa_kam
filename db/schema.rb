@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_13_041834) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_26_030941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -67,7 +67,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_041834) do
     t.datetime "updated_at", null: false
     t.string "fingerprint"
     t.index ["user_id", "created_at"], name: "index_entitlement_snapshots_on_user_id_and_created_at"
-    t.index ["user_id", "fingerprint"], name: "idx_unique_entitlement_snapshots_user_fp", unique: true, where: "(fingerprint IS NOT NULL)"
+    t.index ["user_id", "fingerprint"], name: "index_entitlement_snapshots_on_user_id_and_fingerprint"
     t.index ["user_id"], name: "index_entitlement_snapshots_on_user_id"
   end
 
