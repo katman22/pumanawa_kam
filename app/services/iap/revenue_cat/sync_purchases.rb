@@ -15,6 +15,25 @@ module Iap
           save_store_subscriptions!
           deactivate_stale_subscriptions!
         end
+
+        enforce_home_resorts_for_current_tier!
+      end
+
+      private
+
+      def enforce_home_resorts_for_current_tier!
+        eff = Entitlements::Resolver.call(user: user)
+        tier = eff.value[:tier] || "free"
+        active = eff.value[:active]
+
+        # --- DOWNGRADE expired or free user
+        return unless tier == "free" && !active
+
+        subs = HomeResort.for_user(user).subscribed
+        return unless subs.exists?
+
+        Rails.logger.info("[IAP Sync] Removing subscribed homes for free user=#{user.id}")
+        subs.delete_all
       end
 
       def save_store_subscriptions!
@@ -26,10 +45,6 @@ module Iap
           purchase_date = attrs["latestPurchaseDate"]
 
           sub = Subscription.find_or_initialize_by(user: user, product_id: product_id)
-          # Infer previous state
-          was_active = sub.persisted? && sub.expires_at && sub.expires_at > Time.current
-          was_renewing = sub.will_renew != false
-
           # Cancelled subscription (still active, but will not renew)
           if is_active && !will_renew
             sub.purchased_at = purchase_date

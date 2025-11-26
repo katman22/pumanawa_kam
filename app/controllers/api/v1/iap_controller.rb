@@ -8,7 +8,6 @@ class Api::V1::IapController < Api::V1::MobileApiController
 
     # Recompute current effective entitlements
     result = Entitlements::Resolver.new(user: current_user).call
-
     render json: { status: "ok", entitlements: result.value }, status: :ok
   end
 

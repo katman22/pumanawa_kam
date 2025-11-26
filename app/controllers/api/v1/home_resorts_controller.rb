@@ -1,145 +1,167 @@
 # app/controllers/api/v1/home_resorts_controller.rb
 class Api::V1::HomeResortsController < Api::V1::MobileApiController
-  SUBSCRIBED_CAP = { "free" => 0, "standard" => 2, "pro" => 4, "premium" => :all }.freeze
-  FREE_CAP = { "free" => 2, "standard" => 2, "pro" => 2, "premium" => 2 }.freeze
 
+  # Caps per tier (no weekly limits, just selection caps)
+  CAPS = {
+    "free"     => { subscribed: 0,     free: 2 },
+    "standard" => { subscribed: 2,     free: 2 },
+    "pro"      => { subscribed: 4,     free: 2 },
+    "premium"  => { subscribed: "all", free: 2 } # or free: "all" later if you like
+  }.freeze
+
+  # GET /api/v1/home_resorts
   def index
-    eff = resolve_entitlements!
+    eff  = Entitlements::Resolver.call(user: current_user)
+    tier = eff.value[:tier] || "free"
+    caps = CAPS.fetch(tier, CAPS["free"])
+    homes = HomeResort.for_user(current_user).includes(:resort)
 
-    # 👇 Add this before reading any existing home resort selections
-    maybe_clear_expired_home_resorts!(eff)
+    subscribed_slugs = []
+    free_slugs       = []
 
-    # ensure/change window info (does NOT change any selections)
-    cw = HomeResorts::ChangeLimiter.remaining_for(current_user, eff.value[:tier])
+    homes.each do |hr|
+      slug = hr.resort&.slug
+      next unless slug
 
-    subs = HomeResort.for_user(current_user).subscribed_only.joins(:resort).pluck("resorts.slug")
-    free = HomeResort.for_user(current_user).free_only.joins(:resort).pluck("resorts.slug")
+      case hr.kind.to_s
+      when "subscribed"
+        subscribed_slugs << slug
+      when "free"
+        free_slugs << slug
+      end
+    end
 
-    subs_cap = cap_for(SUBSCRIBED_CAP, eff.value[:tier])
-    free_cap = cap_for(FREE_CAP, eff.value[:tier])
+    subscribed_slugs.uniq!
+    free_slugs.uniq!
 
     render json: {
-      subscribed_slugs: subs,
-      free_slugs: free,
-      limits: {
-        subscribed: subs_cap == :all ? "all" : subs_cap,
-        free: free_cap
-      },
-      remaining: {
-        subscribed: subs_cap == :all ? "all" : [ subs_cap - subs.size, 0 ].max,
-        free: [ free_cap - free.size, 0 ].max
-      },
-      change_window: {
-        remaining_changes: cw[:remaining] == Float::INFINITY ? "unlimited" : cw[:remaining],
-        next_reset_at_mst_iso: cw[:next_reset_at_mst].iso8601
-      }
+      subscribed_slugs: subscribed_slugs,
+      free_slugs:       free_slugs,
+      limits:           caps,
+      # No weekly gating: "remaining" == caps
+      remaining:        caps
     }
   end
 
+  # PUT /api/v1/home_resorts
   def update
-    eff = resolve_entitlements!
+    eff     = Entitlements::Resolver.call(user: current_user)
+    tier    = eff.value[:tier] || "free"
+    active  = eff.value[:active]
+    caps    = CAPS.fetch(tier, CAPS["free"])
 
-    subs_slugs = Array(params[:subscribed_slugs]).map!(&:to_s).uniq
-    free_slugs = Array(params[:free_slugs]).map!(&:to_s).uniq
+    # Has this user ever had a paid subscription?
+    was_paid_before = Subscription.where(user_id: current_user.id)
+                                  .where(status: %w[active in_grace on_hold expired])
+                                  .where.not(product_id: nil)
+                                  .exists?
 
-    overlap = subs_slugs & free_slugs
-    if overlap.any?
-      return render json: { error: "A resort cannot be both subscribed and free: #{overlap.join(', ')}" },
-                    status: :unprocessable_entity
+    # If user was paid before, and is now effectively "free + inactive", wipe
+    if was_paid_before && tier == "free" && !active
+      HomeResort.for_user(current_user).delete_all
+      return render json: {
+        subscribed_slugs: [],
+        free_slugs: [],
+        limits: CAPS["free"],
+        remaining: CAPS["free"]
+      }
     end
 
-    subs_ids = Resort.where(slug: subs_slugs).pluck(:id, :slug)
-    free_ids = Resort.where(slug: free_slugs).pluck(:id, :slug)
+    # Arrays of slugs from the client
+    subs  = Array(params[:subscribed_slugs]).map(&:to_s).uniq
+    frees = Array(params[:free_slugs]).map(&:to_s).uniq
 
-    missing = (subs_slugs - subs_ids.map(&:last)) + (free_slugs - free_ids.map(&:last))
-    if missing.any?
-      return render json: { error: "Unknown resort slugs: #{missing.uniq.join(', ')}" },
-                    status: :unprocessable_entity
-    end
+    # Load current state to detect no-op updates
+    current_homes = HomeResort.for_user(current_user).includes(:resort)
 
-    subs_cap = cap_for(SUBSCRIBED_CAP, eff.value[:tier])
-    free_cap = cap_for(FREE_CAP, eff.value[:tier])
+    current_subs = []
+    current_frees = []
 
-    if subs_cap != :all && subs_ids.size > subs_cap
-      return render json: { error: "Too many subscribed home resorts for your plan" },
-                    status: :unprocessable_entity
-    end
-    if free_ids.size > free_cap
-      return render json: { error: "Too many free home resorts for your plan" },
-                    status: :unprocessable_entity
-    end
-
-    current_subs = HomeResort.for_user(current_user).subscribed_only.joins(:resort).pluck("resorts.slug").sort
-    current_free = HomeResort.for_user(current_user).free_only.joins(:resort).pluck("resorts.slug").sort
-    requested_subs = subs_ids.map(&:last).sort
-    requested_free = free_ids.map(&:last).sort
-
-    changed = (current_subs != requested_subs) || (current_free != requested_free)
-
-    if changed
-      cw = HomeResorts::ChangeLimiter.remaining_for(current_user, eff.value[:tier])
-      if cw[:remaining] != Float::INFINITY && cw[:remaining] <= 0
-        return render json: {
-          error: "No changes remaining until #{cw[:next_reset_at_mst].iso8601} MST"
-        }, status: :unprocessable_entity
+    current_homes.each do |hr|
+      case hr.kind.to_s
+      when "subscribed" then current_subs << hr.resort.slug
+      when "free"       then current_frees << hr.resort.slug
       end
+    end
+
+    # ✨ EARLY RETURN for no-op updates
+    if current_subs.sort == subs.sort && current_frees.sort == frees.sort
+      return render json: {
+        subscribed_slugs: current_subs,
+        free_slugs:       current_frees,
+        limits:           caps,
+        remaining:        caps
+      }
+    end
+
+    # Cannot be both favorite and free
+    overlap = subs & frees
+    if overlap.any?
+      return render json: { error: "A resort cannot be both favorite and free." },
+                    status: :unprocessable_entity
+    end
+
+    # Cap checks (only if data actually changed)
+    unless caps[:subscribed] == "all" || subs.size <= caps[:subscribed].to_i
+      return render json: { error: "Too many favorite resorts for your tier." },
+                    status: :unprocessable_entity
+    end
+
+    unless frees.size <= caps[:free].to_i
+      return render json: { error: "Too many free resorts for your tier." },
+                    status: :unprocessable_entity
+    end
+
+    # Map slugs -> IDs
+    slugs = (subs + frees).uniq
+    resorts_by_slug = Resort.where(slug: slugs).pluck(:slug, :id).to_h
+
+    missing = slugs - resorts_by_slug.keys
+    if missing.any?
+      return render json: { error: "Unknown resort slugs: #{missing.join(', ')}" },
+                    status: :unprocessable_entity
+    end
+
+    subs_ids = subs.map  { |slug| resorts_by_slug[slug] }
+    free_ids = frees.map { |slug| resorts_by_slug[slug] }
+
+    if subs.empty? && frees.empty?
+      # Do NOT clear the user’s homes unless explicitly sent by user action
+      return render json: {
+        subscribed_slugs: current_subs,
+        free_slugs: current_frees,
+        limits: caps,
+        remaining: caps
+      }
     end
 
     ActiveRecord::Base.transaction do
       HomeResort.for_user(current_user).delete_all
-      subs_ids.each { |rid, _| HomeResort.create!(user_id: current_user.id, resort_id: rid, kind: :subscribed) }
-      free_ids.each { |rid, _| HomeResort.create!(user_id: current_user.id, resort_id: rid, kind: :free) }
 
-      HomeResorts::ChangeLimiter.consume!(current_user, eff.value[:tier], by: 1) if changed
+      subs_ids.each do |rid|
+        HomeResort.create!(
+          user_id:   current_user.id,
+          resort_id: rid,
+          kind:      :subscribed
+        )
+      end
+
+      free_ids.each do |rid|
+        HomeResort.create!(
+          user_id:   current_user.id,
+          resort_id: rid,
+          kind:      :free
+        )
+      end
+
     end
 
-    head :no_content
-  rescue => e
-    Rails.logger.error("HomeResorts#update error: #{e.class}: #{e.message}")
-    render json: { error: "Internal error" }, status: :internal_server_error
+    render json: {
+      subscribed_slugs: subs,
+      free_slugs:       frees,
+      limits:           caps,
+      remaining:        caps
+    }
   end
 
-  private
-
-  # -----------------------------------------------------
-  # NEW: Auto-clear home resorts after subscription loss
-  # -----------------------------------------------------
-  def maybe_clear_expired_home_resorts!(eff)
-    # If user still has an active subscription tier, leave everything as-is
-    return if eff.value[:tier] != "free"
-
-    # Last time the user changed home resorts
-    last_change = HomeResort.for_user(current_user).maximum(:updated_at)
-
-    # Last time any subscription became inactive
-    last_expired = current_user.subscriptions.where(status: "inactive").maximum(:updated_at)
-
-    # Nothing to compare → skip
-    return unless last_expired && last_change
-
-    # Only clear if subscription expired *after* last resort selection
-    return unless last_expired > last_change
-
-    Rails.logger.info(
-      "[HomeResorts] Auto-clearing home resorts for user=#{current_user.id} " \
-        "due to subscription expiry @ #{last_expired}"
-    )
-
-    HomeResort.for_user(current_user).delete_all
-    HomeResorts::ChangeLimiter.reset!(current_user, eff.value[:tier])
-  end
-
-  def resolve_entitlements!
-    eff = Entitlements::Resolver.call(user: current_user)
-    unless eff.success?
-      Rails.logger.warn("Entitlements resolver failed for user #{current_user.id}: #{eff.error}")
-      render json: { error: "Entitlements unavailable" }, status: :service_unavailable
-      throw :halt
-    end
-    eff
-  end
-
-  def cap_for(map, tier)
-    map.fetch(tier) { 0 }
-  end
 end
