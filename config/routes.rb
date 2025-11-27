@@ -84,7 +84,7 @@ Rails.application.routes.draw do
       get "weather/watches_fire_alerts"
       put "home_resorts", to: "home_resorts#update"
       get "home_resorts", to: "home_resorts#index"
-      resource :entitlements, only: [ :show ]
+      get "entitlements/index", to: "entitlements#index"
       namespace :iap do
         post :sync, to: "/api/v1/iap#sync"
       end

@@ -5,85 +5,120 @@ module Iap
     class SyncPurchases < ApplicationService
       attr_reader :user, :entitlements
 
+      # entitlements is a hash:
+      # { "pro" => { "productIdentifier" => "...", "isActive" => true, ... }, ... }
       def initialize(user:, entitlements:)
-        @user = user
-        @entitlements = entitlements
+        @user         = user
+        @entitlements = entitlements || {}
       end
 
+      # MAIN ENTRY
       def call
         ActiveRecord::Base.transaction do
           save_store_subscriptions!
           deactivate_stale_subscriptions!
         end
 
-        enforce_home_resorts_for_current_tier!
+        # Instead of calling resolver (which reads old snapshot),
+        # we build normalized entitlements directly from Subscription rows.
+        successful(compute_current_entitlements!)
       end
 
       private
 
-      def enforce_home_resorts_for_current_tier!
-        eff = Entitlements::Resolver.call(user: user)
-        tier = eff.value[:tier] || "free"
-        active = eff.value[:active]
-
-        # --- DOWNGRADE expired or free user
-        return unless tier == "free" && !active
-
-        subs = HomeResort.for_user(user).subscribed
-        return unless subs.exists?
-
-        Rails.logger.info("[IAP Sync] Removing subscribed homes for free user=#{user.id}")
-        subs.delete_all
-      end
-
+      #
+      # STEP 1: Write/update Subscription rows from RevenueCat data
+      #
       def save_store_subscriptions!
-        entitlements.each do |_entitlement_id, attrs|
-          product_id = attrs["productIdentifier"]
-          is_active = attrs["isActive"]
-          will_renew = attrs["willRenew"]
-          expiration = attrs["expirationDate"]
-          purchase_date = attrs["latestPurchaseDate"]
+        entitlements.each do |_id, attrs|
+          product_id   = attrs["productIdentifier"]
+          is_active    = attrs["isActive"]
+          will_renew   = attrs["willRenew"]
+          expires_at   = parse_time(attrs["expirationDate"])
+          purchased_at = parse_time(attrs["latestPurchaseDate"])
+          platform     = map_platform(attrs)
 
           sub = Subscription.find_or_initialize_by(user: user, product_id: product_id)
-          # Cancelled subscription (still active, but will not renew)
-          if is_active && !will_renew
-            sub.purchased_at = purchase_date
-            sub.expires_at = expiration
-            sub.will_renew = false
-            sub.platform = map_platform(attrs)
-            sub.source = "revenue_cat"
-            sub.save!
-            next
-          end
+          sub.purchased_at = purchased_at
+          sub.expires_at   = expires_at
+          sub.will_renew   = !!will_renew
+          sub.platform     = platform
+          sub.source       = "revenue_cat"
 
-          # Active and still renewing → update or create
-          if is_active && will_renew
-            sub.purchased_at = purchase_date
-            sub.expires_at = expiration
-            sub.will_renew = true
-            sub.platform = map_platform(attrs)
-            sub.source = "revenue_cat"
-            sub.save!
-            next
-          end
+          # Status based purely on RevenueCat's isActive
+          sub.status = is_active ? "active" : "inactive"
 
-          # Now inactive → mark as expired
-          unless is_active
-            sub.expires_at = expiration
-            sub.will_renew = false
-            sub.platform = map_platform(attrs)
-            sub.source = "revenue_cat"
-            sub.save!
-            next
-          end
+          sub.save!
         end
       end
 
+      #
+      # STEP 2: Mark stale subscriptions inactive (NOT present in RevenueCat response)
+      #
       def deactivate_stale_subscriptions!
-        not_active_products = entitlements.values.select { |e| !e["isActive"] }.map { |e| e["productIdentifier"] }
+        active_ids = entitlements.values.select { |e| e["isActive"] }.map { |e| e["productIdentifier"] }
+
+        # Any subscription that USED to be active, but is not in the incoming active_ids, becomes inactive
         user.subscriptions.active_ish
-            .where(product_id: not_active_products)
+            .where.not(product_id: active_ids)
             .update_all(status: "inactive", updated_at: Time.current)
+      end
+
+      #
+      # STEP 3: Build *normalized entitlement hash* directly from Subscription rows
+      #
+      def compute_current_entitlements!
+        subs = user.subscriptions
+
+        active_sub = subs.where(status: "active")
+                         .where("expires_at IS NULL OR expires_at > ?", Time.current)
+                         .order(expires_at: :desc)
+                         .first
+
+        if active_sub.nil?
+          # free user
+          return {
+            version: 2,
+            active: false,
+            tier: "free",
+            valid_until: nil,
+            features: [],
+            source_of_truth: "store",
+            sources: {
+              store:    { tier: "free", expires: nil, products: [], platforms: [] },
+              override: { tier: "free", ends_at: nil, id: nil, reason: nil }
+            }
+          }
+        end
+
+        # User HAS an active subscription (standard/pro/premium)
+        tier = derive_tier_from_product(active_sub.product_id)
+
+        {
+          version: 2,
+          active: true,
+          tier: tier,
+          valid_until: active_sub.expires_at,
+          features: features_for_tier(tier),
+          source_of_truth: "store",
+          sources: {
+            store: {
+              tier: tier,
+              expires: active_sub.expires_at,
+              products: subs.map(&:product_id),
+              platforms: subs.map(&:platform)
+            },
+            override: { tier: tier, ends_at: nil, id: nil, reason: nil }
+          }
+        }
+      end
+
+      #
+      # Helpers
+      #
+      def parse_time(t)
+        return nil if t.blank?
+        Time.parse(t) rescue nil
       end
 
       def map_platform(attrs)
@@ -91,6 +126,23 @@ module Iap
         return "ios" if %w[app_store mac_app_store].include?(which_store)
         return "android" if which_store == "play_store"
         "unknown"
+      end
+
+      # map product id → tier
+      def derive_tier_from_product(pid)
+        return "standard" if pid.include?("standard")
+        return "pro"      if pid.include?("pro")
+        return "premium"  if pid.include?("premium")
+        "free"
+      end
+
+      def features_for_tier(tier)
+        case tier
+        when "standard" then %w[home_resorts:2 cameras:unlimited]
+        when "pro"      then %w[home_resorts:4 cameras:unlimited traffic:premium]
+        when "premium"  then %w[home_resorts:6 cameras:unlimited everything]
+        else []
+        end
       end
     end
   end
