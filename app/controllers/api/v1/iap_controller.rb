@@ -36,12 +36,12 @@ class Api::V1::IapController < Api::V1::MobileApiController
     # STEP 5 — If DOWNGRADE → enforce new limits
     if is_downgrade
       allowed = case new_tier
-                when "free"     then 1
-                when "standard" then 2
-                when "pro"      then 4
-                when "premium"  then 4
-                else 1
-                end
+      when "free"     then 1
+      when "standard" then 2
+      when "pro"      then 4
+      when "premium"  then 4
+      else 1
+      end
 
       resorts = HomeResort.where(user_id: current_user.id).order(:id)
 
