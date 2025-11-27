@@ -1,7 +1,7 @@
 class Api::V1::EntitlementsController < Api::V1::MobileApiController
-  def show
-    payload = Entitlements::Resolver.call(user: current_user).value
+  def index
+    eff = Entitlements::Resolver.call(user: current_user)
 
-    render json: payload.merge(user_id: current_user.public_id)
+    render json: eff.value
   end
 end
