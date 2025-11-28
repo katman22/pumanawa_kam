@@ -21,8 +21,12 @@ module Api
 
       # DEPRECATED: keep endpoint but delegate to #times so we never do extra work.
       def travel_times
-        params[:type] = "all"
-        times
+        resort_id = params[:resort_id]
+        resort = Resort.find_by(slug: resort_id)
+        resort = Resort.find_by(slug: params[:resort_id])
+        result = CottonwoodCanyons::TravelTimes.new(resort: resort).call
+
+        render json: result
       end
 
       def cameras
