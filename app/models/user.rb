@@ -27,5 +27,4 @@ class User < ApplicationRecord
       .order(Arel.sql("ends_at IS NULL DESC"), starts_at: :desc)
       .first
   end
-
 end
