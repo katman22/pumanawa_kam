@@ -62,6 +62,7 @@ Rails.application.routes.draw do
   # API endpoints
   namespace :api do
     namespace :v1 do
+      post "auth/device", to: "auth#device"
       get "version-check", to: "mobile_api#version_check"
       get "weather/index"
       get "weather/forecasts"
@@ -85,12 +86,11 @@ Rails.application.routes.draw do
       put "home_resorts", to: "home_resorts#update"
       get "home_resorts", to: "home_resorts#index"
       get "entitlements/index", to: "entitlements#index"
-      namespace :iap do
-        post :sync, to: "/api/v1/iap#sync"
-      end
-      namespace :auth do
-        post :device, action: :device
-      end
+      post "iap/sync", to: "/api/v1/iap#sync"
+
+      match "*unmatched",
+            to: "base_mobile_api#render_not_found",
+            via: :all
     end
   end
 

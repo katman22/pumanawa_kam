@@ -75,40 +75,107 @@ module Iap
                          .order(expires_at: :desc)
                          .first
 
+        # Read manual override (if present)
+        override = EntitlementOverride.where(user_id: user.id)
+                                      .where("starts_at <= ?", Time.current)
+                                      .where("ends_at IS NULL OR ends_at > ?", Time.current)
+                                      .order("ends_at NULLS LAST, starts_at DESC")
+                                      .first
+
+        #
+        # CASE 1 — No store subscription
+        #
         if active_sub.nil?
-          # free user
+          if override
+            # override beats free
+            return {
+              version: 2,
+              active: true,
+              tier: override.entitlement,
+              valid_until: override.ends_at,
+              features: features_for_tier(override.entitlement),
+              source_of_truth: "override",
+              sources: {
+                store:    { tier: "free", expires: nil, products: [], platforms: [] },
+                override: {
+                  tier:    override.entitlement,
+                  ends_at: override.ends_at,
+                  id:      override.id,
+                  reason:  override.reason
+                }
+              }
+            }
+          else
+            # regular free user
+            return {
+              version: 2,
+              active: false,
+              tier: "free",
+              valid_until: nil,
+              features: [],
+              source_of_truth: "store",
+              sources: {
+                store:    { tier: "free", expires: nil, products: [], platforms: [] },
+                override: { tier: "free", ends_at: nil, id: nil, reason: nil }
+              }
+            }
+          end
+        end
+
+        #
+        # CASE 2 — User has store subscription (standard/pro/premium)
+        #
+        store_tier = derive_tier_from_product(active_sub.product_id)
+
+        # If override exists AND it is higher
+        if override && TIERS[override.entitlement] > TIERS[store_tier]
           return {
             version: 2,
-            active: false,
-            tier: "free",
-            valid_until: nil,
-            features: [],
-            source_of_truth: "store",
+            active: true,
+            tier: override.entitlement,
+            valid_until: override.ends_at || active_sub.expires_at,
+            features: features_for_tier(override.entitlement),
+            source_of_truth: "override",
             sources: {
-              store:    { tier: "free", expires: nil, products: [], platforms: [] },
-              override: { tier: "free", ends_at: nil, id: nil, reason: nil }
+              store: {
+                tier: store_tier,
+                expires: active_sub.expires_at,
+                products: subs.map(&:product_id),
+                platforms: subs.map(&:platform)
+              },
+              override: {
+                tier: override.entitlement,
+                ends_at: override.ends_at,
+                id: override.id,
+                reason: override.reason
+              }
             }
           }
         end
 
-        # User HAS an active subscription (standard/pro/premium)
-        tier = derive_tier_from_product(active_sub.product_id)
-
+        #
+        # OTHERWISE store subscription wins
+        #
         {
           version: 2,
           active: true,
-          tier: tier,
+          tier: store_tier,
           valid_until: active_sub.expires_at,
-          features: features_for_tier(tier),
+          features: features_for_tier(store_tier),
           source_of_truth: "store",
           sources: {
             store: {
-              tier: tier,
+              tier: store_tier,
               expires: active_sub.expires_at,
               products: subs.map(&:product_id),
               platforms: subs.map(&:platform)
             },
-            override: { tier: tier, ends_at: nil, id: nil, reason: nil }
+            override: {
+              tier: override ? override.entitlement : store_tier,
+              ends_at: override&.ends_at,
+              id: override&.id,
+              reason: override&.reason
+            }
           }
         }
       end

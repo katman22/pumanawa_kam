@@ -22,6 +22,7 @@ class ResortContextPresenter
     {
       id: @resort.id,
       resort_id: @resort.slug,
+      slug: @resort.slug,
       resort_name: @resort.resort_name,
       departure_point: @resort.departure_point,
       latitude: @resort.latitude,
