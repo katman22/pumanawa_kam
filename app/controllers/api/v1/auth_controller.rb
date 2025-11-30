@@ -1,5 +1,5 @@
 # app/controllers/api/v1/auth_controller.rb
-class Api::V1::AuthController < ActionController::API
+class Api::V1::AuthController < Api::V1::BaseMobileApiController
   def device
     public_id = params.dig(:auth, :user_id).presence || params[:user_id].presence
 

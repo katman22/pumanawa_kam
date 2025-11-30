@@ -1,4 +1,4 @@
-class Api::V1::MobileApiController < ActionController::API
+class Api::V1::MobileApiController < Api::V1::BaseMobileApiController
   include AuthenticateMobileApi
   attr_accessor :formatted_results
 
