@@ -2,7 +2,6 @@
 
 module CottonwoodCanyons
   class TravelTimes < CottonwoodCanyons::TravelBase
-
     TRAVEL_ERROR = "No travel data available currently."
 
     def initialize(resort:)
@@ -21,7 +20,7 @@ module CottonwoodCanyons
         from_resort:      extract_duration(from_resp),
         departure_point:  @resort.departure_point,
         overview_polyline: extract_polyline(to_resp),
-        updated_at:       Time.current.strftime("%a %l:%M"),
+        updated_at:       Time.current.strftime("%a %l:%M")
       }
 
       successful(result)
@@ -29,6 +28,5 @@ module CottonwoodCanyons
       Rails.logger.error("CanyonTravelTimeService failed: #{e.class}: #{e.message}")
       failed(TRAVEL_ERROR)
     end
-
   end
 end
