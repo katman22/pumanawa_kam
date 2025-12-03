@@ -7,7 +7,6 @@ module CottonwoodCanyons
       TRAFFIC_MODEL  = "best_guess"
       MODE           = "driving"
       SERVICE_TYPE   = "Google Directions Service"
-      CACHE_SECONDS  = 300 # 5 minutes
 
       def initialize(origin:, destination:)
         @origin = origin
@@ -15,27 +14,16 @@ module CottonwoodCanyons
       end
 
       def call
-        key = DirectionsKey.key_for(@origin, @destination, traffic_model: TRAFFIC_MODEL, mode: MODE)
+        response = google_directions
+        body = response.body
+        return failed("Empty response body") if body.blank?
 
-        if (cached = Rails.cache.read(key))
-          Rails.logger.info("[#{SERVICE_TYPE}] Cache hit for #{key}")
-          return parse_and_success(cached)
-        end
-
-        Rails.logger.info("[#{SERVICE_TYPE}] Cache miss for #{key}, calling Google API…")
-
-        response_body = Rails.cache.fetch(
-          key,
-          expires_in: CACHE_SECONDS.seconds,
-          race_condition_ttl: 10.seconds,
-          skip_nil: true
-        ) { google_directions.body }
-
-        return nil if response_body.blank?
-        parse_and_success(response_body)
+        parsed = JSON.parse(body)
+        parsed.symbolize_keys!
+        successful(parsed[:routes])
       rescue => e
         Rails.logger.error("[#{SERVICE_TYPE}] Request failed: #{e.message}")
-        failed(" #{e.message}")
+        failed(e.message)
       end
 
       private

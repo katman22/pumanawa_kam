@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CottonwoodCanyons
-  class TravelData
+  class TravelData < CottonwoodCanyons::TravelBase
     attr_reader :resort
 
     DEFAULT_NO_WARNINGS = "No google traffic warnings."
@@ -17,10 +17,10 @@ module CottonwoodCanyons
 
     def call
       # one or both calls depending on @type
-      to_resp   = get_to?   ? Google::DirectionsFetcher.call(origin: @origin, destination: @destination) : nil
-      from_resp = get_from? ? Google::DirectionsFetcher.call(origin: @destination, destination: @origin) : nil
+      to_resp   = get_to?   ? Google::DirectionsFetcher.call(origin: @origin, destination: @destination, expires_in: dynamic_ttl) : nil
+      from_resp = get_from? ? Google::DirectionsFetcher.call(origin: @destination, destination: @origin, expires_in: dynamic_ttl) : nil
 
-      {
+      result = {
         resort: resort.resort_name,
         to_resort:   get_to?   ? extract_duration(to_resp)   : "N/A",
         from_resort: get_from? ? extract_duration(from_resp) : "N/A",
@@ -31,9 +31,10 @@ module CottonwoodCanyons
         overview_polyline: extract_polyline(to_resp), # ← add polyline (from the “to” route)
         updated_at: DateTime.current.strftime("%a %l:%M")
       }
+      successful(result)
     rescue => e
       Rails.logger.error("CanyonTravelTimeService failed: #{e.message}")
-      { error: TRAVEL_ERROR }
+      failed(e.message)
     end
 
     private
@@ -43,7 +44,7 @@ module CottonwoodCanyons
     end
 
     def get_to?
-      %w[all to].include?(@type)   # ← fix (was 'from')
+      %w[all to].include?(@type)
     end
 
     def extract_warnings(response)
@@ -54,30 +55,6 @@ module CottonwoodCanyons
       return [] unless response&.success? && response.value.present?
       route = response.value.first
       route && route["warnings"] || route && route[:warnings] || []
-    end
-
-    def extract_duration(response)
-      return "N/A" unless response&.success? && response.value.present?
-
-      route = response.value.first
-      legs  = route && (route["legs"] || route[:legs])
-      leg   = legs&.first
-      return "N/A" unless leg
-
-      leg = leg.symbolize_keys
-      if leg[:duration_in_traffic]
-        dit = leg[:duration_in_traffic].symbolize_keys
-        return dit[:text].to_s.gsub("mins", "").strip
-      end
-
-      leg.dig(:duration, :text) || TRAVEL_ERROR
-    end
-
-    def extract_polyline(response)
-      return nil unless response&.success? && response.value.present?
-      route = response.value.first
-      poly  = route && (route["overview_polyline"] || route[:overview_polyline])
-      poly && (poly["points"] || poly[:points])
     end
 
     def udot_information
