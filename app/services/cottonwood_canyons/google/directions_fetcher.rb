@@ -16,7 +16,7 @@ module CottonwoodCanyons
 
       def call
         key     = DirectionsKey.key_for(@origin, @destination) # unified key!
-        lastkey = last_good_key
+        last_key = last_good_key
 
         Rails.cache.fetch(key, expires_in: @expires_in, race_condition_ttl: 10) do
           SINGLE_FLIGHT.do(key) do
@@ -29,11 +29,11 @@ module CottonwoodCanyons
                 raise "Directions not OK (success?=#{resp.respond_to?(:success?) && resp.success?}, routes=#{resp.respond_to?(:value) ? resp.value&.size : 'n/a'})"
               end
 
-              Rails.cache.write(lastkey, resp, expires_in: 24.hours)
+              Rails.cache.write(last_key, resp, expires_in: 24.hours)
               resp
             rescue => e
               Rails.logger.warn("[DirectionsFetcher] live fetch failed (#{e.class}: #{e.message}); serving stale if present")
-              stale = Rails.cache.read(lastkey)
+              stale = Rails.cache.read(last_key)
               raise e if stale.nil?
               stale
             end

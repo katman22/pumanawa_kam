@@ -16,17 +16,17 @@ module Api
 
         type   = params[:type].presence_in(%w[all to from]) || "all"
         result = CottonwoodCanyons::TravelData.new(resort: resort, type: type).call
-        render json: result
+
+        return render json: result.value if result.success?
+        render json: { error: result.value }, status: :service_unavailable
       end
 
-      # DEPRECATED: keep endpoint but delegate to #times so we never do extra work.
       def travel_times
-        resort_id = params[:resort_id]
-        resort = Resort.find_by(slug: resort_id)
         resort = Resort.find_by(slug: params[:resort_id])
         result = CottonwoodCanyons::TravelTimes.new(resort: resort).call
 
-        render json: result
+        return render json: result.value if result.success?
+        render json: { error: result.value }, status: :service_unavailable
       end
 
       def cameras
