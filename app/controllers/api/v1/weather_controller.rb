@@ -33,7 +33,8 @@ class Api::V1::WeatherController < Api::V1::ApiController
   end
 
   def alerts
-    _erred, alerts = create_alert_forecasts(latitude: params[:lat], longitude: params[:long], country_code: params[:country_code])
+    country_code = params["country_code"] || "us"
+    _erred, alerts = create_alert_forecasts(latitude: params[:lat], longitude: params[:long], country_code: country_code)
     render json: { alerts: alerts.value["alerts"] }
   end
 
