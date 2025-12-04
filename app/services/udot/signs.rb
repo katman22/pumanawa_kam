@@ -22,7 +22,7 @@ module Udot
     private
 
     def udot_signs
-      udot_response = Udot::FetchType.new(type: SIGNS, filter: filter(resort, "camera")).call
+      udot_response = Udot::FetchType.new(type: SIGNS, filter: filter(resort, "signs")).call
       return UDOT_ERROR if udot_response.failure?
       udot_response.value.map { |entry| entry.except(EXCLUSIONS) }
     end
