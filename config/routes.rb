@@ -31,7 +31,7 @@ Rails.application.routes.draw do
 
   # === Aura Weather frontend (www.auraweatherforecasts.com) ===
   constraints(host: "www.auraweatherforecasts.com") do
-    root "kainga#index", as: :auraweatherforecasts_root
+    root "kainga#index", as: :aura_weather_forecasts_root
 
     controller :kainga do
       get "kainga/index",  action: :index
