@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   # === Canyon Traveller frontend (www.canyontraveller.com) ===
   constraints(host: "www.canyontraveller.com") do
-    root "canyon_traveller#index" , as: :canyon_traveller_root
+    root "canyon_traveller#index", as: :canyon_traveller_root
 
     controller :canyon_traveller do
       get "/",         action: :index
@@ -98,16 +98,16 @@ Rails.application.routes.draw do
     root to: "resorts#index"
 
     resources :resorts do
-      resources :resort_filters, only: [:new, :create]
+      resources :resort_filters, only: [ :new, :create ]
       resources :cameras
     end
 
-    resources :resort_filters, only: [:edit, :update, :destroy, :create, :show]
+    resources :resort_filters, only: [ :edit, :update, :destroy, :create, :show ]
 
     get  "parking_profiles/:resort_id/:season/edit",    to: "parking_profiles#edit",   as: :edit_parking_profile
     get  "parking_profiles/:resort_id/:season/create",  to: "parking_profiles#create", as: :create_parking_profile
     patch "parking_profiles/:resort_id/:season",        to: "parking_profiles#update", as: :update_parking_profile
-    get  "parking_profiles/:resort_id/:season",         to: "parking_profiles#show",   as: :show_parking_profile
+    get "parking_profiles/:resort_id/:season",         to: "parking_profiles#show",   as: :show_parking_profile
   end
 
   # --------------------------------------------------------
@@ -161,7 +161,7 @@ Rails.application.routes.draw do
   # --------------------------------------------------------
   # MISC
   # --------------------------------------------------------
-  resources :dabs, only: [:index]
+  resources :dabs, only: [ :index ]
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
