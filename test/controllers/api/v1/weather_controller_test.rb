@@ -27,7 +27,7 @@ class Api::V1::WeatherControllerTest < ActionDispatch::IntegrationTest
     forecast_service_handler = OpenStruct.new(call: forecast_success)
     fake_forecast_service = Minitest::Mock.new
     fake_forecast_service.expect(:call, forecast_service_handler, %w[39.4225192 -111.714358])
-
+    host! "www.auraweatherforecasts.com"
     Noaa::Forecast::TextOnly.stub :new, fake_forecast_service do
       get mobile_forecast_full_path, params: { lat: "39.4225192", long: "-111.714358", location_name: "One and Only Utah", country_code: "us" }
       assert_match "Chance Showers And Thunderstorms", response.body
