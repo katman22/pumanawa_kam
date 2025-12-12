@@ -108,5 +108,4 @@ class Resort < ApplicationRecord
       nil
     end
   end
-
 end

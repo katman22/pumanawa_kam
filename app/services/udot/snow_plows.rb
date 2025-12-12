@@ -57,6 +57,5 @@ module Udot
           p[:longitude].between?(bounds[:min_lng], bounds[:max_lng])
       end
     end
-
   end
 end
