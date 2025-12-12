@@ -64,7 +64,7 @@ module Api
         warnings = Udot::Warnings.new(resort: resort).call
         # plows    = Udot::SnowPlows.new(resort: resort).call
         # combined = Array(warnings.value) + Array(plows.value)
-        render json: { alerts_events: result.value }
+        render json: { alerts_events: warnings.value }
       end
 
       def mountain_passes
