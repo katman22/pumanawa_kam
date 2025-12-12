@@ -11,4 +11,8 @@ class KaingaController < ApplicationController
   def privacy
     render "privacy"
   end
+
+  def terms
+    render "terms"
+  end
 end
