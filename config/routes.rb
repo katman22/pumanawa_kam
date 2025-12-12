@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get "kainga/mobile", action: :mobile
       get "mobile",        action: :mobile
       get "privacy",       action: :privacy
+      get "terms",       action: :terms
     end
 
     controller :mobile_forecast do
@@ -59,6 +60,7 @@ Rails.application.routes.draw do
   # --------------------------------------------------------
   controller :kainga do
     get "privacy", action: :privacy
+    get "terms", action: :terms
   end
 
   controller :translator do
@@ -140,6 +142,7 @@ Rails.application.routes.draw do
       get "canyon_times/alerts_events"
       get "canyon_times/directions"
       get "canyon_times/signs"
+      get "canyon_times/mountain_passes"
 
       # Home Resorts
       put "home_resorts",    to: "home_resorts#update"
