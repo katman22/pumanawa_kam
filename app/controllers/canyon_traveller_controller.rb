@@ -3,6 +3,9 @@ class CanyonTravellerController < ApplicationController
     render "index"
   end
 
+  def support
+  end
+
   def privacy
     render "privacy"
   end
