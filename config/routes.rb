@@ -10,9 +10,7 @@ Rails.application.routes.draw do
     controller :canyon_traveller do
       get "/",         action: :index
       get "index",     action: :index
-      get "mobile",    action: :mobile
-      get "traffic",   action: :traffic
-      get "cameras",   action: :cameras
+      get "support",     action: :support
     end
   end
 
@@ -23,9 +21,7 @@ Rails.application.routes.draw do
     controller :canyon_traveller do
       get "/",         action: :index
       get "index",     action: :index
-      get "mobile",    action: :mobile
-      get "traffic",   action: :traffic
-      get "cameras",   action: :cameras
+      get "support",     action: :support
     end
   end
 
@@ -74,6 +70,7 @@ Rails.application.routes.draw do
   controller :canyon_traveller do
     get "canyon_traveller",            action: :index
     get "canyon_traveller/index",      action: :index
+    get "canyon_traveller/support",     action: :support
   end
 
   # Forecast web UI
