@@ -69,7 +69,7 @@
             console.log("⚠️ Stimulus not found. Initializing manually...");
 
             const { Application } = await import("https://unpkg.com/@hotwired/stimulus/dist/stimulus.js");
-            const WeatherMapMobileController = await import("/javascript/controllers/weather_map_mobile_controller.js");
+            const WeatherMapMobileController = await import("controllers/weather_map_mobile_controller");
 
             const app = Application.start();
             app.register("weather-map-mobile", WeatherMapMobileController.default);
