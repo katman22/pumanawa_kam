@@ -109,6 +109,9 @@ Rails.application.routes.draw do
     get "parking_profiles/:resort_id/:season",         to: "parking_profiles#show",   as: :show_parking_profile
   end
 
+  get "mobile_forecast/weather_map", to: "mobile_forecast#weather_map"
+
+
   # --------------------------------------------------------
   # API v1 (mobile apps)
   # --------------------------------------------------------
