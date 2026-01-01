@@ -63,7 +63,7 @@ module Api
         resort = Resort.find_by(slug: params[:resort_id])
         warnings = Udot::Warnings.new(resort: resort).call
         plows    = Udot::SnowPlows.new(resort: resort).call
-        render json: { alerts_events: warnings.value, plows:  normalize_plows(plows)}
+        render json: { alerts_events: warnings.value, plows:  normalize_plows(plows) }
       end
 
       def mountain_passes
