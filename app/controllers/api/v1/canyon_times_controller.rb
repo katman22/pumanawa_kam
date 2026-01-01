@@ -62,9 +62,8 @@ module Api
       def alerts_events
         resort = Resort.find_by(slug: params[:resort_id])
         warnings = Udot::Warnings.new(resort: resort).call
-        # plows    = Udot::SnowPlows.new(resort: resort).call
-        # combined = Array(warnings.value) + Array(plows.value)
-        render json: { alerts_events: warnings.value }
+        plows    = Udot::SnowPlows.new(resort: resort).call
+        render json: { alerts_events: warnings.value, plows:  normalize_plows(plows)}
       end
 
       def mountain_passes
@@ -80,6 +79,20 @@ module Api
           destination: resort.location
         ).call
         render json: { routes: directions_data&.value }
+      end
+
+      private
+
+      def normalize_plows(plows)
+        return { snow_plows: [] } unless plows.respond_to?(:success?)
+        return { snow_plows: [] } unless plows.success?
+
+        value = plows.value
+
+        return value if value.is_a?(Hash) && value.key?(:snow_plows)
+        return { snow_plows: value } if value.is_a?(Array)
+
+        { snow_plows: [] }
       end
     end
   end
