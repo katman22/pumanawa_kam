@@ -256,7 +256,7 @@
 .m-home { max-width: 720px; margin: 0 auto; padding: 18px; }
 
 .m-hero { padding: 8px 0 18px; }
-.m-hero-image { width: 100%; height: auto; border-radius: 18px; display: block; }
+.m-hero-image { width: 100%; height: auto; border-radius: 10px; display: block; margin-bottom: -30px; }
 .m-title { margin: 14px 0 8px; font-size: 34px; letter-spacing: -0.02em; }
 .m-subtitle { margin: 0 0 14px; font-size: 16px; line-height: 1.45; opacity: 0.85; }
 .m-note { margin: 10px 0 0; font-size: 13px; opacity: 0.7; }
