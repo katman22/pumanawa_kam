@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+      />
+
+  <title>Weather Radar</title>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+
+  <style>
+      /* ===== Radar WebView Layout ===== */
+
+      html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          background: #000;
+      }
+
+      .radar-container {
+          position: relative;
+          width: 100vw;
+          height: 100vh;
+          overflow: hidden;
+      }
+
+      #map {
+          position: absolute;
+          inset: 0;
+      }
+
+      /* ===== Shared Overlay Card ===== */
+
+      .map-overlay {
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          background: rgba(255, 255, 255, 0.92);
+          border-radius: 12px;
+          padding: 8px 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+          z-index: 10;
+      }
+
+      /* Header overlay (status) */
+      .map-overlay.header {
+          top: 12px;
+          pointer-events: none;
+          width: 25%;
+      }
+
+      /* Controls overlay */
+      .map-overlay.controls {
+          bottom: 12px;
+      }
+
+      .overlay-title {
+          font-size: 14px;
+          font-weight: 700;
+          line-height: 1.2;
+      }
+
+      .overlay-subtitle {
+          font-size: 12px;
+          opacity: 0.7;
+          margin-top: 2px;
+      }
+
+      /* ===== Controls ===== */
+
+      .controls-row {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+      }
+
+      .controls-row + .controls-row {
+          margin-top: 8px;
+      }
+
+      .time-label {
+          font-size: 12px;
+          opacity: 0.7;
+          margin-top: 4px;
+          text-align: center;
+      }
+
+      input[type="range"] {
+          width: 100%;
+      }
+
+      /* Mobile tweaks */
+      @media (max-width: 600px) {
+          .overlay-title {
+              font-size: 13px;
+          }
+      }
+  </style>
+</head>
+
+<body>
+<div
+    class="radar-container"
+    data-controller="weather-map"
+    data-weather-map-api-key="<%= ENV['MAP_TILER'] %>"
+    data-weather-map-lat="<%= lat %>"
+    data-weather-map-lng="<%= lng %>"
+    data-weather-map-type="<%= type %>"
+>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Header overlay -->
+  <div class="map-overlay header">
+    <div class="overlay-title">
+      Weather Radar
+    </div>
+
+    <div class="overlay-subtitle">
+    <span data-weather-map-target="dropdownButton">
+      <%= type.titleize %>
+    </span>
+      ·
+      <span data-weather-map-target="timeLabel">—</span>
+    </div>
+
+    <!-- NEW: pointer hint -->
+    <div class="overlay-subtitle" style="margin-top: 4px;">
+      Tap the map to see local values
+    </div>
+  </div>
+
+
+  <!-- Controls overlay -->
+  <div class="map-overlay controls">
+    <div class="controls-row">
+      <button
+          class="btn btn-primary btn-sm"
+          data-weather-map-target="playPause"
+      >
+        Play
+      </button>
+
+      <button
+          class="btn btn-outline-secondary btn-sm"
+          data-bs-toggle="dropdown"
+      >
+        Layer
+      </button>
+
+      <ul class="dropdown-menu">
+        <% [
+             ['Precipitation', 'precipitation'],
+             ['Temperature', 'temperature'],
+             ['Wind', 'wind'],
+             ['Radar', 'radar'],
+             ['Pressure', 'pressure']
+           ].each do |label, layer| %>
+          <li>
+            <a
+                href="#"
+                class="dropdown-item"
+                data-action="click->weather-map#selectLayer"
+                data-layer-type="<%= layer %>"
+            >
+              <%= label %>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="controls-row">
+      <input
+          type="range"
+          min="0"
+          max="11"
+          step="1"
+          data-weather-map-target="timeSlider"
+          />
+    </div>
+
+    <div class="time-label" data-weather-map-target="timeLabel">
+      —
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

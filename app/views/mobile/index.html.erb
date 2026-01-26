@@ -1,0 +1,135 @@
+<!-- app/views/mobile/index.html.erb -->
+<main class="m-home">
+  <header class="m-hero">
+
+    <h1 class="m-title">Canyon Traveller</h1>
+    <p class="m-subtitle">
+      Real-time travel times, UDOT conditions & alerts, canyon cameras, and weather — in one place.
+    </p>
+
+    <%= image_tag "canyon_travellers_flyer.png",
+                  alt: "Canyon Traveller",
+                  class: "m-hero-image",
+                  loading: "eager" %>
+
+    <div class="text-center my-5 d-grid gap-3">
+      <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
+                  target: "_blank",
+                  class: "btn btn-dark btn-lg d-flex justify-content-center align-items-center gap-2" do %>
+        <i data-feather="smartphone"></i>
+        Download on the App Store
+      <% end %>
+
+      <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
+                  target: "_blank",
+                  class: "btn btn-success btn-lg d-flex justify-content-center align-items-center gap-2" do %>
+        <i data-feather="download-cloud"></i>
+        Get it on Google Play
+      <% end %>
+    </div>
+
+    <p class="m-note">Safety info (UDOT + NOAA alerts) is always free.</p>
+  </header>
+
+  <section class="m-section">
+    <h2 class="m-h2">What you’ll see</h2>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Travel Times</strong> — Widgets for ‘should I go now?’ decisions.</p>
+      <%= image_tag 'IMG_0151.png',
+                    alt: "Widgets for Decisions",
+                    class: "m-shot",
+                    loading: "eager" %>
+    </article>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Traffic Map</strong> — See the trouble spots before you leave.</p>
+      <%= image_tag 'IMG_0150.png',
+                    alt: "Traffic Map See before you go",
+                    class: "m-shot",
+                    loading: "eager" %>
+    </article>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Best Time to Go</strong> — Pick the BEST time to go.</p>
+      <%= image_tag 'IMG_0182.png',
+                    alt: "Best Time to Go",
+                    class: "m-shot",
+                    loading: "eager" %>
+    </article>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Avoid delays</strong> — or at least know why you’re waiting.</p>
+      <%= image_tag 'IMG_0148.png',
+                    alt: "Delay Avoidance",
+                    class: "m-shot",
+                    loading: "eager" %>
+    </article>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Go Pro</strong> — get snow plow info, more resorts, widgets and other Pro only features.</p>
+      <%= image_tag "IMG_0149.png",
+                    alt: "Pro Features / Snow Plows",
+                    class: "m-shot",
+                    loading: "lazy" %>
+    </article>
+
+    <article class="m-card">
+      <p class="m-card-text"><strong>Free</strong> — See what’s going on at the resort.</p>
+      <%= image_tag "IMG_0184.png",
+                    alt: "See what’s going on at the resort.",
+                    class: "m-shot",
+                    loading: "lazy" %>
+    </article>
+
+    <article class="m-card">
+
+      <p class="m-card-text"><strong>UDOT Cameras</strong> — All cameras up and down the canyons.</p>
+      <%= image_tag "IMG_0183.png",
+                    alt: "All UDOT Cameras up and down the canyons",
+                    class: "m-shot",
+                    loading: "lazy" %>
+    </article>
+
+    <article class="m-card">
+
+      <p class="m-card-text"><strong>UDOT Alerts</strong> — All alerts for free. Detailed info for subscriptions</p>
+      <%= image_tag "IMG_0186.png",
+                    alt: "All alerts for free. Detailed info for subscriptions",
+                    class: "m-shot",
+                    loading: "lazy" %>
+    </article>
+  </section>
+
+  <section class="m-section">
+    <h2 class="m-h2">Why Canyon Traveler</h2>
+    <ul class="m-list">
+      <li>Live canyon traffic and route overview</li>
+      <li>UDOT cameras and road conditions</li>
+      <li>Weather forecasts and warnings</li>
+      <li>Resort context without the fluff</li>
+    </ul>
+  </section>
+
+  <div class="text-center my-5 d-grid gap-3">
+    <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
+                target: "_blank",
+                class: "btn btn-dark btn-lg d-flex justify-content-center align-items-center gap-2" do %>
+      <i data-feather="smartphone"></i>
+      Download on the App Store
+    <% end %>
+
+    <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
+                target: "_blank",
+                class: "btn btn-success btn-lg d-flex justify-content-center align-items-center gap-2" do %>
+      <i data-feather="download-cloud"></i>
+      Get it on Google Play
+    <% end %>
+  </div>
+
+  <footer class="m-footer">
+    <a href="/privacy">Privacy</a>
+    <span>·</span>
+    <a href="/terms">Terms</a>
+  </footer>
+</main>
