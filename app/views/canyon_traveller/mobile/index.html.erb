@@ -1,0 +1,57 @@
+<!-- app/views/canyon_traveller/mobile/index.html.erb -->
+<main class="m-home">
+  <header class="m-hero">
+    <%= image_tag "canyon_travellers_flyer.png",
+                  alt: "Canyon Traveller",
+                  class: "m-hero-image",
+                  loading: "eager" %>
+
+    <h1 class="m-title">Canyon Traveller</h1>
+    <p class="m-subtitle">
+      Real-time travel times, UDOT conditions & alerts, canyon cameras, and weather — in one place.
+    </p>
+
+    <div class="m-cta">
+      <a class="m-btn m-btn-primary" href="/download">Get the app</a>
+      <a class="m-btn" href="/support">Support</a>
+    </div>
+
+    <p class="m-note">Safety info (UDOT + NOAA alerts) is always free.</p>
+  </header>
+
+  <section class="m-section">
+    <h2 class="m-h2">What you’ll see</h2>
+
+    <article class="m-card">
+      <%= image_tag "IMG_0150.png",
+                    alt: "Travel times and map view",
+                    class: "m-shot",
+                    loading: "lazy" %>
+      <p class="m-card-text"><strong>Travel Times</strong> — know the drive before you commit.</p>
+    </article>
+
+    <article class="m-card">
+      <%= image_tag "IMG_0149.png",
+                    alt: "Alerts and road conditions view",
+                    class: "m-shot",
+                    loading: "lazy" %>
+      <p class="m-card-text"><strong>Conditions + Alerts</strong> — closures, incidents, and canyon updates.</p>
+    </article>
+  </section>
+
+  <section class="m-section">
+    <h2 class="m-h2">Why it’s different</h2>
+    <ul class="m-list">
+      <li>Live canyon traffic and route overview</li>
+      <li>UDOT cameras and road conditions</li>
+      <li>Weather forecasts and warnings</li>
+      <li>Resort context without the fluff</li>
+    </ul>
+  </section>
+
+  <footer class="m-footer">
+    <a href="/privacy">Privacy</a>
+    <span>·</span>
+    <a href="/terms">Terms</a>
+  </footer>
+</main>

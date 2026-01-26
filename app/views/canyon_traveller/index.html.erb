@@ -25,26 +25,24 @@
           <figcaption class="blockquote-footer mb-0">
             Smooth Drives. Epic Rides.<br/>
             Kia ora : Nau Mai Piki Mai<br/>
-            <%= link_to "🇳🇿 Te Reo", url_for(locale: :mi) %> |
-            <%= link_to "🇺🇸 English", url_for(locale: :en) %>
           </figcaption>
           <br/>
 
-          <!-- Download Buttons -->
-          <div class="d-flex justify-content-end gap-3">
-            <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
-                        target: "_blank",
-                        class: "btn btn-outline-success btn-sm d-flex align-items-center gap-2" do %>
-              <i data-feather="download-cloud"></i> Google Play
-            <% end %>
-
-            <%= link_to "https://apps.apple.com/us/app/canyon-travelers/idXXXXXXXX",
-                        target: "_blank",
-                        class: "btn btn-outline-dark btn-sm d-flex align-items-center gap-2" do %>
-              <i data-feather="smartphone"></i> iOS App Store
-            <% end %>
-          </div>
         </div>
+      </div>
+      <!-- Download Buttons Again (Mobile-Friendly) -->
+      <div class="text-center my-5">
+        <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
+                    target: "_blank",
+                    class: "btn btn-success btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
+          <i data-feather="download-cloud"></i> Get it on Google Play
+        <% end %>
+
+        <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
+                    target: "_blank",
+                    class: "btn btn-dark btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
+          <i data-feather="smartphone"></i> Download for iOS
+        <% end %>
       </div>
 
       <!-- Flyer Image -->

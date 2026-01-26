@@ -1,6 +1,10 @@
 class CanyonTravellerController < ApplicationController
   def index
-    render "index"
+    if mobile_device?
+      render "mobile/index", layout: "mobile"
+    else
+      render "index"
+    end
   end
 
   def support

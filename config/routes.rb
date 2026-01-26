@@ -73,6 +73,10 @@ Rails.application.routes.draw do
     get "canyon_traveller/support",     action: :support
   end
 
+  controller :mobile do
+    get "mobile",            action: :index
+  end
+
   # Forecast web UI
   controller :forecast do
     get "forecast",                       action: :index, as: :forecast
@@ -87,6 +91,7 @@ Rails.application.routes.draw do
       post "dual_geo_location",           action: :dual_geo_location,  as: :forecast_dual_geo_location
       get "radar_for_locale",             action: :radar_for_locale,   as: :radar_for_locale
       get "radar_for_locale_web",         action: :radar_for_locale_web, as: :radar_for_locale_web
+      get "radar_webview",         action: :radar_webview, as: :radar_webview
     end
   end
 
