@@ -1,15 +1,12 @@
 <% content_for :title, "Canyon Traveller" %>
 
 <div class="canyon_div">
-
   <div class="row d-flex justify-content-center">
-
     <!-- MAIN COLUMN -->
     <div class="col-md-10">
 
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center my-4 px-3">
-
         <!-- Logo + Title -->
         <div>
           <%= image_tag "canyon_travelers_logo.png",
@@ -21,36 +18,37 @@
         <!-- Branding / Language / Links -->
         <div class="text-end">
           <p class="fs-4 mb-1">Whare Pumanawa</p>
-
           <figcaption class="blockquote-footer mb-0">
             Smooth Drives. Epic Rides.<br/>
             Kia ora : Nau Mai Piki Mai<br/>
           </figcaption>
           <br/>
-
         </div>
       </div>
-      <!-- Download Buttons Again (Mobile-Friendly) -->
+
+      <!-- Download Buttons (Top) -->
       <div class="text-center my-5">
+        <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "btn btn-dark btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
+          <i data-feather="smartphone"></i> Download on the App Store
+        <% end %>
+
         <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
                     target: "_blank",
+                    rel: "noopener noreferrer",
                     class: "btn btn-success btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
           <i data-feather="download-cloud"></i> Get it on Google Play
         <% end %>
-
-        <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
-                    target: "_blank",
-                    class: "btn btn-dark btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
-          <i data-feather="smartphone"></i> Download for iOS
-        <% end %>
       </div>
 
-      <!-- Flyer Image -->
+      <!-- Flyer Hero -->
       <div class="text-center my-4">
         <%= image_tag "canyon_travellers_flyer.png",
                       alt: "Canyon Travelers App Flyer",
                       class: "img-fluid shadow rounded",
-                      style: "max-width: 900px;" %>
+                      style: "max-width: 950px;" %>
       </div>
 
       <!-- Description -->
@@ -65,8 +63,12 @@
         Canyon Travelers keeps you informed, safe, and moving smoothly.
       </p>
 
+      <p class="fs-6 fw-semibold text-success mb-4">
+        Safety info (UDOT + NOAA alerts) is always free.
+      </p>
+
       <!-- Feature Bullets -->
-      <ul class="fs-6 mt-4" style="margin-left: 20px;">
+      <ul class="fs-6 mt-2" style="margin-left: 20px;">
         <li>Live traffic times powered by Google Directions API</li>
         <li>UDOT road conditions, alerts, and overhead signs</li>
         <li>High-resolution canyon cameras</li>
@@ -74,18 +76,129 @@
         <li>Resort operating hours and route views</li>
       </ul>
 
-      <!-- Download Buttons Again (Mobile-Friendly) -->
-      <div class="text-center my-5">
-        <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
-                    target: "_blank",
-                    class: "btn btn-success btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
-          <i data-feather="download-cloud"></i> Get it on Google Play
-        <% end %>
+      <!-- NEW: Screenshots / What you'll see -->
+      <hr class="my-5"/>
 
+      <h2 class="fs-3 mb-3">What you’ll see</h2>
+      <p class="text-muted mb-4">
+        A quick look at the core features — traffic clarity, safety info, and resort context.
+      </p>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Travel Times</strong> — Widgets for ‘should I go now?’ decisions.</p>
+            </div>
+            <%= image_tag "IMG_0151.png",
+                          alt: "Widgets for Decisions",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Traffic Map</strong> — See the trouble spots before you leave.</p>
+            </div>
+            <%= image_tag "IMG_0150.png",
+                          alt: "Traffic Map",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Best Time to Go</strong> — Pick the BEST time to go.</p>
+            </div>
+            <%= image_tag "IMG_0182.png",
+                          alt: "Best Time to Go",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Avoid delays</strong> — or at least know why you’re waiting.</p>
+            </div>
+            <%= image_tag "IMG_0148.png",
+                          alt: "Delay Avoidance",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Go Pro</strong> — snow plows, more resorts, widgets, and more.</p>
+            </div>
+            <%= image_tag "IMG_0149.png",
+                          alt: "Pro Features / Snow Plows",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>Free</strong> — See what’s going on at the resort.</p>
+            </div>
+            <%= image_tag "IMG_0184.png",
+                          alt: "Resort Overview",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>UDOT Cameras</strong> — All cameras up and down the canyons.</p>
+            </div>
+            <%= image_tag "IMG_0183.png",
+                          alt: "UDOT Cameras",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <p class="mb-2"><strong>UDOT Alerts</strong> — Alerts are free. Detailed info with subscriptions.</p>
+            </div>
+            <%= image_tag "IMG_0186.png",
+                          alt: "UDOT Alerts",
+                          class: "img-fluid rounded-bottom" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHY -->
+      <hr class="my-5"/>
+
+      <h2 class="fs-3 mb-3">Why Canyon Traveler</h2>
+      <ul class="fs-6" style="margin-left: 20px;">
+        <li>Live canyon traffic and route overview</li>
+        <li>UDOT cameras and road conditions</li>
+        <li>Weather forecasts and warnings</li>
+        <li>Resort context without the fluff</li>
+      </ul>
+
+      <!-- Download Buttons (Bottom) -->
+      <div class="text-center my-5">
         <%= link_to "https://apps.apple.com/us/app/canyon-travelers/id6752226942",
                     target: "_blank",
+                    rel: "noopener noreferrer",
                     class: "btn btn-dark btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
-          <i data-feather="smartphone"></i> Download for iOS
+          <i data-feather="smartphone"></i> Download on the App Store
+        <% end %>
+
+        <%= link_to "https://play.google.com/store/apps/details?id=com.wharepumanawa.canyon_travel",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "btn btn-success btn-lg mx-2 d-inline-flex align-items-center gap-2" do %>
+          <i data-feather="download-cloud"></i> Get it on Google Play
         <% end %>
       </div>
 
