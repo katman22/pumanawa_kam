@@ -7,6 +7,9 @@ application.register("recent-location", RecentLocationController)
 import WeatherMapController from "controllers/weather_map_controller"
 application.register("weather-map", WeatherMapController)
 
+import WeatherMapWebController from "controllers/weather_map_web_controller"
+application.register("weather-map-web", WeatherMapWebController)
+
 import WeatherMapMobileController from "controllers/weather_map_mobile_controller"
 application.register("weather-map-mobile", WeatherMapMobileController)
 

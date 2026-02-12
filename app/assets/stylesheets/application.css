@@ -252,6 +252,12 @@
     padding: 20px;
 }
 
+.play-btn {
+    width: 80px;        /* ~¼ typical bootstrap width */
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .m-shell { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #fff; }
 .m-home { max-width: 720px; margin: 0 auto; padding: 18px; }
 
@@ -277,3 +283,116 @@
 
 .m-footer { margin: 24px 0 10px; display: flex; gap: 10px; justify-content: center; opacity: 0.75; }
 .m-footer a { color: inherit; text-decoration: none; }
+
+#map {
+    position: absolute;
+    inset: 0;
+}
+
+/* ===== Shared Overlay Card ===== */
+
+.map-overlay {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+/* Header overlay (status) */
+.map-overlay.header {
+    top: 140px;
+    pointer-events: none;
+    width: 35%;
+}
+
+/* Controls overlay */
+.map-overlay.controls {
+    bottom: 12px;
+}
+
+.overlay-title {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.overlay-subtitle {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+/* ===== Controls ===== */
+
+.controls-row + .controls-row {
+    margin-top: 8px;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+    .overlay-title {
+        font-size: 13px;
+    }
+}
+
+.map-overlay.controls {
+    padding: 10px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border-radius: 14px;
+}
+
+.controls-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.play-btn {
+    width: 76px;     /* ~quarter size feel */
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    border-radius: 12px;
+}
+
+#time-slider {
+    margin: 6px 0 10px 0;
+}
+
+.controls-bottom {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.controls-bottom .btn-group .btn {
+    padding: 8px 10px;
+    font-weight: 700;
+}
+
+/* tighten on very small phones */
+@media (max-width: 380px) {
+    .play-btn { width: 64px; height: 38px; }
+    .pointer-value { font-size: 16px; }
+    .controls-bottom .btn-group .btn { padding: 7px 8px; }
+}
+
+.map-overlay.controls.hidden {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+}

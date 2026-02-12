@@ -1,0 +1,31 @@
+<div id="controls" class="map-overlay controls">
+  <div class="controls-top">
+    <button id="play-pause-bt"
+            data-weather-map-web-target="playPause"
+            class="btn btn-primary play-btn">
+      Play
+    </button>
+  </div>
+
+  <input type="range"
+         id="time-slider"
+         data-weather-map-web-target="timeSlider"
+         class="form-range"
+         min="0"
+         max="11"
+         step="1" />
+
+  <div class="controls-bottom">
+    <div class="btn-group" role="group" data-weather-map-web-target="forecastButtons">
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setForecastDuration" data-hours="24">24hr</button>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setForecastDuration" data-hours="48">48hr</button>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setForecastDuration" data-hours="72">72hr</button>
+    </div>
+
+    <div class="btn-group" role="group" data-weather-map-web-target="speedButtons">
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setSpeed" data-speed="800">8x</button>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setSpeed" data-speed="1600">16x</button>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map-web#setSpeed" data-speed="3200">32x</button>
+    </div>
+  </div>
+</div>
