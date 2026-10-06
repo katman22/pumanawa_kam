@@ -1,13 +1,13 @@
 module BaseForecaster
   extend ActiveSupport::Concern
 
+  DUAL = "Dual Screen"
+  SCREEN_A = "Locale A"
+  SCREEN_B = "Locale B"
+
+  DEFAULT_LAYER = "precipitation"
+
   included do
-    DUAL = "Dual Screen"
-    SCREEN_A = "Locale A"
-    SCREEN_B = "Locale B"
-
-    DEFAULT_LAYER = "precipitation"
-
     def find_locations(location)
       return unless location
       location_context, _recent_locations = set_defaults
