@@ -10,17 +10,7 @@
           <%= button_tag "Load Location B", name: "commit", value: BaseForecaster::SCREEN_B, class: "btn btn-primary", data: { turbo_frame: "location_response_b" } %>
         </div>
       <% end %>
-      <% if @recent_locations.present? %>
-        <section class="forecast-dual-recent" aria-labelledby="dual-recent-title">
-          <h2 id="dual-recent-title">Recent Search Locations</h2>
-          <% @recent_locations.each do |raw_recent| %>
-            <% recent = raw_recent.with_indifferent_access %>
-            <% if recent[:latitude].present? && recent[:longitude].present? %>
-              <button type="button" class="btn btn-outline-secondary" data-action="click->recent-location#select" data-lat="<%= recent[:latitude] %>" data-lng="<%= recent[:longitude] %>"><%= recent[:location_name].presence || recent[:location].presence || "#{recent[:latitude]}, #{recent[:longitude]}" %></button>
-            <% end %>
-          <% end %>
-        </section>
-      <% end %>
+      <%= render "recent_locations", recent_locations: @recent_locations %>
     </div>
     <div class="forecast-dual-grid">
       <% %w[a b].each do |side| %>
