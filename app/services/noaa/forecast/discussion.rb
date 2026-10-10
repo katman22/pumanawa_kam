@@ -45,39 +45,41 @@ module Noaa
 
       def parse_product_text(text)
         sections = {
-          synopsis: extract_between(text, ".SYNOPSIS...", "&&") || extract_between(text, ".KEY MESSAGES...", "&&"),
-          discussion: extract_between(text, ".SHORT TERM", ".AVIATION") || extract_between(text, ".DISCUSSION...", "&&"),
-          fire_weather: extract_between(text, ".FIRE WEATHER", "&&"),
-          aviation: extract_between(text, ".AVIATION", "&&"),
-          watches_warnings: extract_between(text, "WATCHES/WARNINGS/ADVISORIES...", "&&") || "None"
+          synopsis: extract_section(text, "SYNOPSIS"),
+          key_messages: extract_section(text, "KEY MESSAGES"),
+          discussion: extract_section(text, "DISCUSSION"),
+          short_term: extract_section(text, "SHORT TERM"),
+          long_term: extract_section(text, "LONG TERM"),
+          fire_weather: extract_section(text, "FIRE WEATHER"),
+          aviation: extract_section(text, "AVIATION"),
+          watches_warnings: extract_section(text, "WATCHES/WARNINGS/ADVISORIES", office_prefix: true)
         }
-        @short_term, @long_range = split_short_and_long(sections[:discussion])
+        short_term, long_range = split_short_and_long(sections)
         {
-          synopsis: sections[:synopsis]&.strip || "No summary available",
-          short_term: @short_term&.strip || "No forecast available",
-          long_range: @long_range&.strip || "No extended forecast available",
-          aviation: sections[:aviation]&.strip || "No aviation forecast available",
-          fire_weather: sections[:fire_weather]&.strip || "No fire forecast available",
-          watches_warnings: sections[:watches_warnings]&.strip || "No watches or warning available"
+          synopsis: sections[:synopsis] || sections[:key_messages] || "No summary available",
+          short_term: short_term || "No forecast available",
+          long_range: long_range || "No extended forecast available",
+          aviation: sections[:aviation] || "No aviation forecast available",
+          fire_weather: sections[:fire_weather] || "No fire forecast available",
+          watches_warnings: sections[:watches_warnings] || "None"
         }
       end
 
-      def extract_between(text, start_marker, end_marker)
-        pattern = /#{Regexp.escape(start_marker)}(.*?)#{Regexp.escape(end_marker)}/m
-        match = text.match(pattern)
-        match ? match[1] : nil
+      def extract_section(text, name, office_prefix: false)
+        prefix = office_prefix ? "(?:[A-Z]{3}[ \\t]+)?" : ""
+        # Stop at a delimiter, the next section heading, or the end of the product.
+        pattern = /^\.#{prefix}#{Regexp.escape(name)}(?:[ \t]*,[^\n]*)?\.{3}[ \t]*\n(.*?)(?=^[ \t]*&&[ \t]*$|^\.[A-Z][^\n]*\.{3}[ \t]*$|\z)/m
+        text.to_s.gsub("\r\n", "\n").match(pattern)&.[](1)&.strip.presence
       end
 
-      def split_short_and_long(discussion)
-        return [ nil, nil ] unless discussion
-
-        start_index = discussion.index(/LONG TERM/i) ||
-          discussion.index(/(Friday|This weekend|Extended Forecast|Wednesday and beyond)/i)
-        return [ discussion, nil ] unless start_index
-
-        short_term = discussion[0...start_index].strip
-        long_range = discussion[start_index...discussion.length].strip
-
+      def split_short_and_long(sections)
+        paragraphs = sections[:discussion].to_s.split(/\n[ \t]*\n+/).map(&:strip).reject(&:empty?)
+        summary = sections[:key_messages] || sections[:synopsis]
+        short_term = sections[:short_term] || summary || paragraphs.first
+        long_range = sections[:long_term]
+        unless long_range || sections[:short_term]
+          long_range = summary ? sections[:discussion] : paragraphs.drop(1).join("\n\n").presence
+        end
         [ short_term, long_range ]
       end
     end
