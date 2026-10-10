@@ -1,0 +1,9 @@
+<% locations = Array(recent_locations).map(&:with_indifferent_access).select { |recent| recent[:latitude].present? && recent[:longitude].present? } %>
+<% if locations.any? %>
+  <section class="forecast-recent-locations forecast-dual-recent" aria-labelledby="forecast-recent-title">
+    <h2 id="forecast-recent-title">Recent Search Locations</h2>
+    <% locations.each do |recent| %>
+      <button type="button" class="btn btn-outline-secondary" data-action="click->recent-location#select" data-lat="<%= recent[:latitude] %>" data-lng="<%= recent[:longitude] %>"><%= recent[:location_name].presence || recent[:location].presence || "#{recent[:latitude]}, #{recent[:longitude]}" %></button>
+    <% end %>
+  </section>
+<% end %>
