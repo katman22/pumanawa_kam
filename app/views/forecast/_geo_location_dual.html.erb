@@ -1,37 +1,25 @@
 <turbo-frame id="<%= turbo_location %>">
-  <br/>
-  <div class="table_geo_container">
-    <div class="dual_div">
-      <% if erred %>
-        <p class="fs-6">Location Response: No Location found from input. Please check your requested location.</p>
-      <% else %>
-        <p class="fs-6">Location Response from: <%= location %>, Total Locations: <%= total %></p>
-        <table class="table">
-          <thead>
-          <tr>
-            <th scope="col">Location</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% locations.each do |location_hash| %>
-            <tr>
-              <td><p class="fs-8 geo_formatted"><%= location_hash["formatted"] %><br/>
-                <%= form_with url: forecast_dual_full_path, method: :post, local: true do %>
-                  <%= hidden_field_tag :location, location_hash["formatted"] %>
-                  <%= hidden_field_tag :lat, location_hash["geometry"]["lat"] %>
-                  <%= hidden_field_tag :long, location_hash["geometry"]["lng"] %>
-                  <%= hidden_field_tag :location_name, location_hash["formatted"] %>
-                  <%= hidden_field_tag :turbo_location, turbo_location %>
-
-                  <%= submit_tag "Full Forecast", class: "link-button" %> | <%= submit_tag "Text Only Forecast", class: "link-button" %>
-                <% end %></p>
-              </td>
-            </tr>
+  <% if erred %>
+    <p class="forecast-full-error" role="alert">Location search is currently unavailable. Please try again.</p>
+  <% elsif locations.empty? %>
+    <p>No locations found for <%= location %>. Please try another search.</p>
+  <% else %>
+    <p>Choose a location for <%= location %>:</p>
+    <ul class="forecast-dual-candidates">
+      <% locations.each do |raw_location| %>
+        <% candidate = raw_location.with_indifferent_access %>
+        <li>
+          <%= form_with url: forecast_dual_full_path, method: :post, data: { turbo_frame: turbo_location } do %>
+            <%= hidden_field_tag :location, location %>
+            <%= hidden_field_tag :lat, candidate[:lat] %>
+            <%= hidden_field_tag :long, candidate[:lng] %>
+            <%= hidden_field_tag :location_name, candidate[:name] %>
+            <%= hidden_field_tag :country_code, candidate[:country_code] %>
+            <%= hidden_field_tag :turbo_location, turbo_location %>
+            <%= button_tag "Load #{candidate[:name]}", class: "btn btn-outline-primary" %>
           <% end %>
-          </tbody>
-        </table>
+        </li>
       <% end %>
-
-    </div>
-  </div>
+    </ul>
+  <% end %>
 </turbo-frame>

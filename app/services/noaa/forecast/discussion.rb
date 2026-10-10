@@ -68,7 +68,7 @@ module Noaa
       def extract_section(text, name, office_prefix: false)
         prefix = office_prefix ? "(?:[A-Z]{3}[ \\t]+)?" : ""
         # Stop at a delimiter, the next section heading, or the end of the product.
-        pattern = /^\.#{prefix}#{Regexp.escape(name)}(?:[ \t]*,[^\n]*)?\.{3}[ \t]*\n(.*?)(?=^[ \t]*&&[ \t]*$|^\.[A-Z][^\n]*\.{3}[ \t]*$|\z)/m
+        pattern = /^\.#{prefix}#{Regexp.escape(name)}(?:[ \t]*,[^\n]*?)?\.{3}[ \t]*(.*?)(?=^[ \t]*&&[ \t]*$|^\.[A-Z][^\n]*?\.{3}|\z)/m
         text.to_s.gsub("\r\n", "\n").match(pattern)&.[](1)&.strip.presence
       end
 

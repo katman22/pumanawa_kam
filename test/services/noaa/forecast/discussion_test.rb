@@ -12,6 +12,41 @@ module Noaa
         @parser = Discussion.new(40.5986, -111.5845)
       end
 
+      def test_inline_section_bodies_with_legacy_and_metadata_headings
+        ["", ", arbitrary metadata"].each do |metadata|
+          ["\n", "\r\n"].each do |newline|
+            text = <<~PRODUCT.gsub("\n", newline)
+              .KEY MESSAGES#{metadata}...
+              Heavy rain expected.
+              &&
+              .DISCUSSION#{metadata}...Current radar shows showers.
+              Rain continues overnight.
+
+              A second discussion paragraph.
+              .FIRE WEATHER#{metadata}...A storm system approaches.
+              .AVIATION#{metadata}...VFR conditions prevail.
+              .SLC WATCHES/WARNINGS/ADVISORIES#{metadata}...UT...Wind Advisory.
+            PRODUCT
+            result = @parser.parse_product_text(text)
+            assert_equal "Heavy rain expected.", result[:short_term]
+            assert_equal "Current radar shows showers.\nRain continues overnight.\n\nA second discussion paragraph.", result[:long_range]
+            assert_equal "A storm system approaches.", result[:fire_weather]
+            assert_equal "VFR conditions prevail.", result[:aviation]
+            assert_equal "UT...Wind Advisory.", result[:watches_warnings]
+          end
+        end
+      end
+
+      def test_inline_explicit_terms_and_discussion_paragraph_fallback
+        result = @parser.parse_product_text(".SHORT TERM...Near-term forecast.\n.LONG TERM...Extended forecast.\n")
+        assert_equal "Near-term forecast.", result[:short_term]
+        assert_equal "Extended forecast.", result[:long_range]
+        result = @parser.parse_product_text(".DISCUSSION...First paragraph.\nWrapped line.\n\nSecond paragraph.\n.WATCHES/WARNINGS/ADVISORIES...None.\n")
+        assert_equal "First paragraph.\nWrapped line.", result[:short_term]
+        assert_equal "Second paragraph.", result[:long_range]
+        assert_equal "None.", result[:watches_warnings]
+      end
+
       def test_legacy_and_current_headings_with_both_line_endings
         [ "", ", Issued 1027 PM MDT Fri Oct 9 2026", ", arbitrary metadata without a timestamp" ].each do |metadata|
           [ "\n", "\r\n" ].each do |newline|

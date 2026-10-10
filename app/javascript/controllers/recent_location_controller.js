@@ -13,5 +13,6 @@ export default class extends Controller {
     const lng = row.dataset.lng
 
     this.inputTarget.value = `${lat}, ${lng}`
+    this.inputTarget.focus()
   }
 }

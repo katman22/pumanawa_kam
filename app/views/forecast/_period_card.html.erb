@@ -1,8 +1,9 @@
+<% period_prefix = local_assigns[:period_prefix] || "forecast-period" %>
 <button type="button"
-        id="forecast-period-card-<%= index %>"
+        id="<%= period_prefix %>-card-<%= index %>"
         class="forecast-full-card"
         aria-pressed="false"
-        aria-controls="forecast-period-detail-<%= index %>"
+        aria-controls="<%= period_prefix %>-detail-<%= index %>"
         data-forecast-periods-target="card"
         data-forecast-periods-index-param="<%= index %>"
         data-action="click->forecast-periods#select">

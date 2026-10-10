@@ -1,8 +1,9 @@
-<section id="forecast-period-detail-<%= index %>"
+<% period_prefix = local_assigns[:period_prefix] || "forecast-period" %>
+<section id="<%= period_prefix %>-detail-<%= index %>"
          class="forecast-full-detail"
-         aria-labelledby="forecast-period-title-<%= index %>"
+         aria-labelledby="<%= period_prefix %>-title-<%= index %>"
          data-forecast-periods-target="detail">
-  <h3 id="forecast-period-title-<%= index %>"><%= forecast[:name] %></h3>
+  <h3 id="<%= period_prefix %>-title-<%= index %>"><%= forecast[:name] %></h3>
   <p><strong>In Brief:</strong> <%= forecast[:shortForecast] %></p>
   <dl class="forecast-full-metrics">
     <div><dt>Temperature</dt><dd><%= forecast[:temperature] %>&deg; <%= forecast[:temperatureUnit] %></dd></div>
