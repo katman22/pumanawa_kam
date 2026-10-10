@@ -1,0 +1,24 @@
+<div class="forecast-full-alerts">
+  <h2>Weather Alerts</h2>
+  <% if !available %>
+    <p>Weather alerts are currently unavailable.</p>
+  <% elsif alerts.empty? %>
+    <p>No active weather alerts.</p>
+  <% else %>
+    <% alerts.each do |raw_alert| %>
+      <% alert = raw_alert.with_indifferent_access %>
+      <article class="forecast-full-alert">
+        <h3><%= alert[:headline].presence || alert[:event].presence || "Weather alert" %></h3>
+        <dl class="forecast-full-metrics">
+          <% { "Event" => :event, "Severity" => :severity, "Effective" => :effective, "Expires" => :expires, "Source" => :sender_name }.each do |label, key| %>
+            <% if alert[key].present? %>
+              <div><dt><%= label %></dt><dd><%= alert[key] %></dd></div>
+            <% end %>
+          <% end %>
+        </dl>
+        <% if alert[:description].present? %><p class="forecast-full-text"><%= flowing_discussion_text(alert[:description]) %></p><% end %>
+        <% if alert[:instruction].present? %><h4>Instructions</h4><p class="forecast-full-text"><%= flowing_discussion_text(alert[:instruction]) %></p><% end %>
+      </article>
+    <% end %>
+  <% end %>
+</div>

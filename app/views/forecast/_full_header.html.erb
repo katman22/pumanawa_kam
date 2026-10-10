@@ -1,0 +1,43 @@
+<header class="forecast-full-header">
+  <div>
+    <% unless local_assigns[:page_title] %>
+    <p class="forecast-full-eyebrow"><%= local_assigns[:forecast_label] || (local_assigns[:radar_page] ? "Weather Radar" : "Full Forecast") %></p>
+    <% end %>
+    <h1><%= local_assigns[:page_title] || location_context.location_name.presence || location_context.location.presence || "Current location" %></h1>
+  </div>
+  <div class="forecast-full-header-utilities">
+    <%= render "header", branding_only: true, compact: true %>
+    <% if local_assigns[:page_title] %>
+      <%= link_to "Dual Screen Forecasts", forecast_dual_path, class: "btn btn-outline-primary", data: { turbo: false } %>
+    <% elsif local_assigns[:radar_page] %>
+      <%= link_to "Full forecast", forecast_full_path(
+        lat: location_context.latitude,
+        long: location_context.longitude,
+        country_code: location_context.country_code,
+        location: location_context.location,
+        location_name: location_context.location_name
+      ), class: "btn btn-primary", data: { turbo: false } %>
+    <% else %>
+      <div class="d-flex flex-wrap gap-2">
+      <% if local_assigns[:show_full_forecast] %>
+        <%= link_to "Full Forecast", forecast_full_path(
+          lat: location_context.latitude,
+          long: location_context.longitude,
+          country_code: location_context.country_code,
+          location: location_context.location,
+          location_name: location_context.location_name
+        ), class: "btn btn-outline-primary", data: { turbo: false } %>
+      <% end %>
+  <%= link_to "View Radar", radar_for_locale_web_path(
+    lat: location_context.latitude,
+    lng: location_context.longitude,
+    country_code: location_context.country_code,
+    location: location_context.location,
+    location_name: location_context.location_name,
+    type: "radar"
+  ), class: "btn btn-primary", data: { turbo: false } %>
+      </div>
+    <% end %>
+  </div>
+</header>
+<%= render "header", attribution_only: true %>

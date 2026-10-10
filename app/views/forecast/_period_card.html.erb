@@ -1,0 +1,17 @@
+<button type="button"
+        id="forecast-period-card-<%= index %>"
+        class="forecast-full-card"
+        aria-pressed="false"
+        aria-controls="forecast-period-detail-<%= index %>"
+        data-forecast-periods-target="card"
+        data-forecast-periods-index-param="<%= index %>"
+        data-action="click->forecast-periods#select">
+  <span class="forecast-full-card-name"><%= forecast[:name] %></span>
+  <% if forecast[:icon].present? %>
+    <%= image_tag forecast[:icon], alt: "", width: 48, height: 48 %>
+  <% end %>
+  <span class="forecast-full-temperature <%= forecast[:isDaytime] ? 'forecast-full-high' : 'forecast-full-low' %>">
+    <%= forecast[:isDaytime] ? "High" : "Low" %> <%= forecast[:temperature] %>&deg; <%= forecast[:temperatureUnit] %>
+  </span>
+  <span><%= forecast[:shortForecast] %></span>
+</button>

@@ -1,9 +1,9 @@
-<div class="weather_div" style=" margin-left: 40px;margin-top: 20px">
-  <%= render "header" %>
+<div class="weather_div forecast-full forecast-radar">
+  <%= render "full_header", location_context: @location_context, radar_page: true %>
   <!-- START ALIGNMENT ROW -->
   <div class="row">
     <!-- Left Column -->
-    <div class="col-md-7">
+    <div class="col-12">
 
       <div data-controller="weather-map"
            data-weather-map-api-key="<%= ENV["MAP_TILER"] %>"
@@ -11,9 +11,9 @@
            data-weather-map-lng="<%= lng %>"
            data-weather-map-type="<%= type %>">
 
-        <div id="map" style="height: 500px; min-width: 900px;padding: 40px;"></div>
+        <div id="map"></div>
 
-        <div id="controls" style="margin-top: 20px; width: 940px">
+        <div id="controls" style="margin-top: 20px;">
           <div class="row align-items-start">
             <!-- Layer dropdown + pointer value -->
             <div class="col-md-auto">
@@ -85,6 +85,7 @@
                   <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="1">1hr</button>
                   <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="6">6hr</button>
                   <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="24">24hr</button>
+                  <button type="button" class="btn btn-outline-secondary" data-action="click->weather-map#setForecastDuration" data-hours="48">48hr</button>
                 </div>
 
                 <!-- Speed buttons -->
