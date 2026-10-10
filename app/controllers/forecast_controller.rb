@@ -11,6 +11,20 @@ class ForecastController < ApplicationController
   def radar_for_locale_web
     @lat = params[:lat]
     @lng = params[:lng]
+    location_data = params.permit(:lat, :location, :location_name, :country_code).to_h.merge("long" => @lng).with_indifferent_access
+    recent_location = Array(session[:recent_locations]).find do |entry|
+      entry = entry.with_indifferent_access
+      @lat.present? && @lng.present? &&
+        entry[:latitude].to_s == @lat.to_s && entry[:longitude].to_s == @lng.to_s &&
+        entry[:location_name].present?
+    end
+    if recent_location
+      recent_location = recent_location.with_indifferent_access
+      %i[location location_name country_code].each do |key|
+        location_data[key] = recent_location[key] if location_data[key].blank?
+      end
+    end
+    @location_context = LocationContext.new(location_data)
     @type = params[:type] || DEFAULT_LAYER
     render layout: "map_web", locals: { type: @type, lng: @lng, lat: @lat }
   end
@@ -44,6 +58,10 @@ class ForecastController < ApplicationController
   def full
     @location_context, _recent_locations = set_defaults
     @erred, @forecasts = forecaster
+    unless @erred
+      load_full_discussion
+      load_full_alerts
+    end
   end
 
   def dual_full
@@ -113,8 +131,37 @@ class ForecastController < ApplicationController
 
   private
 
+  def load_full_alerts
+    @alerts_available = false
+    @alerts = []
+    erred, result = create_alert_forecasts(
+      latitude: @location_context.latitude,
+      longitude: @location_context.longitude,
+      country_code: @location_context.country_code
+    )
+    return if erred
+
+    @alerts = result.value.fetch("alerts", [])
+    @alerts_available = true
+  rescue StandardError => error
+    Rails.logger.warn("Forecast alerts unavailable: #{error.class}: #{error.message}")
+  end
+
+  def load_full_discussion
+    erred, result = forecast_discussion(
+      latitude: @location_context.latitude,
+      longitude: @location_context.longitude,
+      country_code: @location_context.country_code
+    )
+    @discussion = result.value unless erred
+  rescue StandardError => error
+    Rails.logger.warn("Forecast discussion unavailable: #{error.class}: #{error.message}")
+  end
+
   def forecaster
     results = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
+    return results if results.first
+
     forecasts = params[:country_code] == "us" ? results.last["forecasts"] : results.last
     [ results.first, forecasts ]
   end

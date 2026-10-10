@@ -1,13 +1,8 @@
-<div class="weather_div">
-  <%= render "header" %>
-  <!-- START ALIGNMENT ROW -->
-  <div class="row">
-    <!-- Left Column -->
-    <div class="col-md-7">
-      <p class ="text_only">
-        <%= link_to 'Dual Screen Forecasts', forecast_dual_path, data: { turbo: false } %>
-      </p>
+<div class="weather_div forecast-full forecast-find">
+  <%= render "full_header", page_title: "Find a Forecast" %>
+  <main>
       <%= form_with url: forecast_geo_location_path, method: 'POST', class: 'forecast_form', data: { turbo_frame: "location_response" }, id: 'location_form' do %>
+        <%= label_tag :location, "Location" %>
         <%= text_field_tag :location,
                            params[:location],
                            placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
@@ -27,15 +22,5 @@
           <%= render partial: "forecast_summary" %>
         <% end %>
       </turbo-frame>
-    </div>
-  </div>
-</div>
-<div class="footer_tag">
-  <figcaption class="blockquote-footer text-left">
-    Forecast Data supplied by
-    <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
-    GeoLocation Data supplied by
-    <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite>
-    <br/>Search for forecast
-  </figcaption>
+  </main>
 </div>

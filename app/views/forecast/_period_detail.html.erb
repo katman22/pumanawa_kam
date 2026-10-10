@@ -1,0 +1,14 @@
+<section id="forecast-period-detail-<%= index %>"
+         class="forecast-full-detail"
+         aria-labelledby="forecast-period-title-<%= index %>"
+         data-forecast-periods-target="detail">
+  <h3 id="forecast-period-title-<%= index %>"><%= forecast[:name] %></h3>
+  <p><strong>In Brief:</strong> <%= forecast[:shortForecast] %></p>
+  <dl class="forecast-full-metrics">
+    <div><dt>Temperature</dt><dd><%= forecast[:temperature] %>&deg; <%= forecast[:temperatureUnit] %></dd></div>
+    <div><dt>Wind Direction</dt><dd><%= forecast[:windDirection] %></dd></div>
+    <div><dt>Wind Speed</dt><dd><%= forecast[:windSpeed] %></dd></div>
+    <div><dt>Chance of Precipitation</dt><dd><%= forecast.dig(:probabilityOfPrecipitation, :value) || 0 %>%</dd></div>
+  </dl>
+  <p class="forecast-full-text"><%= forecast[:detailedForecast] %></p>
+</section>

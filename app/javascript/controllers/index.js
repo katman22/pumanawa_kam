@@ -22,3 +22,9 @@ application.register("parking-profiles", ParkingProfilesController)
 import CamerasController from "controllers/cameras_controller"
 application.register("cameras", CamerasController)
 
+import ForecastPeriodsController from "controllers/forecast_periods_controller"
+application.register("forecast-periods", ForecastPeriodsController)
+
+
+import ForecastTabsController from "controllers/forecast_tabs_controller"
+application.register("forecast-tabs", ForecastTabsController)

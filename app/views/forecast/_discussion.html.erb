@@ -1,0 +1,12 @@
+<% discussion = (discussion || {}).with_indifferent_access %>
+<section class="forecast-full-discussion" tabindex="0" aria-labelledby="forecast-discussion-title">
+  <h2 id="forecast-discussion-title">Forecast Discussion</h2>
+  <section class="forecast-full-summary">
+    <h3>Key Messages / Summary</h3>
+    <p class="forecast-full-text"><%= flowing_discussion_text(discussion[:short_term].presence || "No forecast available") %></p>
+  </section>
+  <section class="forecast-full-long-range">
+    <h3>Detailed Discussion</h3>
+    <p class="forecast-full-text"><%= flowing_discussion_text(discussion[:long_range].presence || "No extended forecast available") %></p>
+  </section>
+</section>

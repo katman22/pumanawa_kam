@@ -68,7 +68,11 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     fake_forecast_service.expect(:call, forecast_service_handler, %w[39.4225192 -111.714358])
 
     Noaa::Forecast::TextOnly.stub :new, fake_forecast_service do
-      get forecast_full_path, params: { lat: "39.4225192", long: "-111.714358", location_name: "One and Only Utah", country_code: "us" }
+      Weather::DiscussionForecaster.stub :call, ServiceResult.new(success: true, value: { short_term: "Summary.", long_range: "Discussion." }) do
+        Weather::AlertsForecaster.stub :call, ServiceResult.new(success: true, value: { "alerts" => [] }) do
+          get forecast_full_path, params: { lat: "39.4225192", long: "-111.714358", location_name: "One and Only Utah", country_code: "us" }
+        end
+      end
       assert_equal 58, assigns(:forecasts).first.with_indifferent_access["temperature"]
       # assert_equal "Mostly Clear", assigns(:summary)["shortForecast"]
       assert_response :success

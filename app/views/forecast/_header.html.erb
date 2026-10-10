@@ -1,5 +1,10 @@
-<%= image_tag "aura_logo_v6_512.png", alt: "Aura Weather logo", style: "width: 120px;" %>
+<% unless local_assigns[:attribution_only] %>
+<% if local_assigns[:compact] %><div class="forecast-full-brand"><% end %>
+<%= image_tag "aura_logo_v6_512.png", alt: "Aura Weather logo", width: (local_assigns[:compact] ? 56 : 120) %>
 <u class="fs-2"><%= t("home.title") %></u>
+<% if local_assigns[:compact] %></div><% end %>
+<% end %>
+<% unless local_assigns[:branding_only] %>
 <figcaption class="blockquote-footer text-left">
   Forecast Data supplied by
   <cite title="Source Title"><a href="https://www.noaa.gov/" target="_blank">NOAA.gov</a></cite>,
@@ -7,5 +12,7 @@
   GeoLocation Data supplied by
   <cite title="Source Title"><a href="https://opencagedata.com/" target="_blank">OpenCage</a></cite> &
   <cite title="Source Title"><a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a></cite>
-  <br/><a href="javascript:window.history.back();">Back to Summary</a> | <i data-feather="home" style="width: 16px; height: 16px; margin-top: -2px"></i> <%= link_to "Kainga", aura_weather_forecasts_root_path %>
+
 </figcaption>
+<%= render "forecast/navigation" %>
+<% end %>
