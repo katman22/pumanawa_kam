@@ -8,7 +8,9 @@
   <div class="forecast-full-header-utilities">
     <%= render "header", branding_only: true, compact: true %>
     <% if local_assigns[:page_title] %>
-      <%= link_to "Dual Screen Forecasts", forecast_dual_path, class: "btn btn-outline-primary", data: { turbo: false } %>
+      <% unless local_assigns[:dual_page] %>
+        <%= link_to "Dual Screen Forecasts", forecast_dual_path, class: "btn btn-outline-primary", data: { turbo: false } %>
+      <% end %>
     <% elsif local_assigns[:radar_page] %>
       <%= link_to "Full forecast", forecast_full_path(
         lat: location_context.latitude,

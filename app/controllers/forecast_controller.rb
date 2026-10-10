@@ -65,9 +65,11 @@ class ForecastController < ApplicationController
   end
 
   def dual_full
-    location_context, _recent_locations = set_defaults
-    erred, forecasts = forecaster
-    render_forecast(params[:turbo_location], forecasts, erred, location_context)
+    target = params[:turbo_location]
+    return head :unprocessable_entity unless dual_target?(target)
+
+    context = LocationContext.new(params)
+    load_dual_forecast(target, context)
   end
 
   def text_only
@@ -87,11 +89,16 @@ class ForecastController < ApplicationController
   end
 
   def dual_geo_location
-    location = params[:location]
-    erred, locations, total = location_services(location)
-    turbo_location = params[:commit] == SCREEN_A ? "location_response_a" : "location_response_b"
-    return full_forecast_for_location(turbo_location, locations.first) if total == 1
-    dual_multi_locations(turbo_location, location, locations, total, erred)
+    target = { SCREEN_A => "location_response_a", SCREEN_B => "location_response_b" }[params[:commit]]
+    return head :unprocessable_entity unless dual_target?(target)
+
+    erred, locations, total = location_services(params[:location])
+    return full_forecast_for_location(target, locations.first) if !erred && total == 1
+
+    dual_multi_locations(target, params[:location], locations, total, erred)
+  rescue StandardError => error
+    Rails.logger.warn("Dual location unavailable: #{error.class}: #{error.message}")
+    dual_multi_locations(target, params[:location], [], 0, true)
   end
 
   def dual_multi_locations(turbo_location, location, locations, total, erred)
@@ -103,16 +110,13 @@ class ForecastController < ApplicationController
   end
 
   def full_forecast_for_location(turbo_location, found_location)
-    location_context = LocationContext.new(
-      {
-        lat: found_location["geometry"]["lat"],
-        long: found_location["geometry"]["lng"],
-        location: params[:location],
-        location_name: found_location["formatted"]
-      }
+    found_location = found_location.with_indifferent_access
+    context = LocationContext.new(
+      lat: found_location[:lat], long: found_location[:lng],
+      location: params[:location], location_name: found_location[:name],
+      country_code: found_location[:country_code]
     )
-    erred, forecasts = forecasts
-    render_forecast(turbo_location, forecasts, erred, location_context)
+    load_dual_forecast(turbo_location, context)
   end
 
   def render_forecast(turbo_location, forecasts, erred, location_context)
@@ -123,13 +127,24 @@ class ForecastController < ApplicationController
     ]
   end
 
-  def location_ctx(location_data)
-    LocationContext.new(
-      { location: params[:location], location_name: location_data["formatted"], lat: location_data["lat"], long: location_data["lng"] }
-    )
+  private
+
+  def dual_target?(target)
+    %w[location_response_a location_response_b].include?(target)
   end
 
-  private
+  def load_dual_forecast(target, context)
+    unless context.latitude.present? && context.longitude.present? && context.country_code.present?
+      return render_forecast(target, "Location coordinates and country are required. Please search again.", true, context)
+    end
+
+    RecentLocations.new(session).add(context.to_h.stringify_keys)
+    erred, forecasts = forecaster(context)
+    render_forecast(target, forecasts, erred, context)
+  rescue StandardError => error
+    Rails.logger.warn("Dual forecast unavailable: #{error.class}: #{error.message}")
+    render_forecast(target, "Forecast is currently unavailable. Please try again.", true, context)
+  end
 
   def load_full_alerts
     @alerts_available = false
@@ -158,11 +173,11 @@ class ForecastController < ApplicationController
     Rails.logger.warn("Forecast discussion unavailable: #{error.class}: #{error.message}")
   end
 
-  def forecaster
-    results = create_forecasts(latitude: @location_context.latitude, longitude: @location_context.longitude, country_code: params[:country_code])
+  def forecaster(context = @location_context)
+    results = create_forecasts(latitude: context.latitude, longitude: context.longitude, country_code: context.country_code)
     return results if results.first
 
-    forecasts = params[:country_code] == "us" ? results.last["forecasts"] : results.last
+    forecasts = context.country_code == "us" ? results.last["forecasts"] : results.last
     [ results.first, forecasts ]
   end
 end

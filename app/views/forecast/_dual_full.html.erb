@@ -1,66 +1,39 @@
+<% period_prefix = "dual-#{turbo_location.last}-period" %>
 <turbo-frame id="<%= turbo_location %>">
-<div class="weather_div">
-  <p class="text-left fs-6">Full Forecast for:<br/><%= location_context.location_name %></p>
-  <% if erred %>
-    <p class="fs-6">Error Response: <%= forecasts %></p>
-  <% else %>
-
-    <!-- START ALIGNMENT ROW -->
-      <!-- Left Column -->
-        <div class="table_daily_container">
-          <table class="table_daily table">
-            <tr>
-              <% forecasts.each do |forecast| %>
-                <td class="text-right align-top" style="vertical-align: top;">
-                  <div class="d-flex flex-column align-items-right" style="min-height: 120px;width: 100px"> <!-- Adjust height as needed -->
-                    <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
-                      <small><b><%= forecast["name"] %></b></small>
-                    </div>
-                    <%= image_tag(forecast["icon"], title: forecast["detailedForecast"]) %>
-                    <div class="forecast-name text-right mb-2" style="min-height: 3em;"> <!-- Reserve space -->
-                      <% temp = forecast["isDaytime"] ? "High #{forecast["temperature"]}" : "Low #{forecast["temperature"]}" %>
-                      <% temp_class = forecast["isDaytime"] ? "text-danger" : "text-info" %>
-                      <small class="<%= temp_class %>"><b><%= temp %>&deg; <%= forecast["temperatureUnit"] %></b></small><br/>
-                      <br/>
-                      <small>
-                        <%= forecast["shortForecast"] %>
-                      </small>
-                    </div>
-                  </div>
-                </td>
-              <% end %>
-            </tr>
-          </table>
-
-        </div>
-
-        <% days = forecasts.size / 2 %>
-        <p class="text-decoration-underline text_only"><i><%= days %> Day Forecast (Day/Night)</i></p>
-        <div class="table_weekly_container">
-          <table class="table table_aliceblue">
-            <% forecasts.each do |forecast| %>
-              <% precipitation = forecast["probabilityOfPrecipitation"] %>
-              <tr class="table-primary">
-                <td colspan=2><i><%= forecast["name"] %>:</i></td>
-              </tr>
-              <tr>
-                <th rowspan="2"><%= image_tag(forecast["icon"], title: forecast["shortForecast"]) %></th>
-                <td>
-                  <p><small>
-                    <b>In Brief:</b> <%= forecast["shortForecast"] %>, <b>Temp:</b> <%= forecast["temperature"] %>&deg; <%= forecast["temperatureUnit"] %>,
-                    <b>Wind Direction:</b> <%= forecast["windDirection"] %>,<br/>
-                    <b>Wind Speed:</b> <%= forecast["windSpeed"] %>
-                    <b>Chance of Precipitation: </b><%= precipitation["value"] || 0 %>%
-                  </small></p>
-                </td>
-              </tr>
-              <tr>
-                <td><p><small><%= forecast["detailedForecast"] %></small></p></td>
-              </tr>
-            <% end %>
-          </table>
-        </div>
-      </div>
-
+  <h3><%= location_context.location_name.presence || location_context.location.presence || "Current location" %></h3>
+  <% if location_context.latitude.present? && location_context.longitude.present? && location_context.country_code.present? %>
+    <div class="forecast-dual-links d-flex flex-wrap gap-2 mb-3">
+      <%= link_to "Full Forecast", forecast_full_path(
+        lat: location_context.latitude, long: location_context.longitude,
+        country_code: location_context.country_code,
+        location: location_context.location, location_name: location_context.location_name
+      ), class: "btn btn-outline-primary btn-sm", data: { turbo: false, turbo_frame: "_top" } %>
+      <%= link_to "View Radar", radar_for_locale_web_path(
+        lat: location_context.latitude, lng: location_context.longitude,
+        country_code: location_context.country_code,
+        location: location_context.location, location_name: location_context.location_name,
+        type: "radar"
+      ), class: "btn btn-outline-primary btn-sm", data: { turbo: false, turbo_frame: "_top" } %>
+    </div>
   <% end %>
-  </turbo-frame>
+  <% if erred %>
+    <p class="forecast-full-error" role="alert">Error Response: <%= forecasts %></p>
+  <% else %>
+    <div data-controller="forecast-periods">
+      <% if forecasts.blank? %>
+        <p>No forecast periods available.</p>
+      <% else %>
+        <div class="forecast-full-strip" aria-label="Choose a forecast period">
+          <% forecasts.each_with_index do |forecast, index| %>
+            <%= render "period_card", forecast: forecast.with_indifferent_access, index: index, period_prefix: period_prefix %>
+          <% end %>
+        </div>
+        <div class="forecast-full-details">
+          <% forecasts.each_with_index do |forecast, index| %>
+            <%= render "period_detail", forecast: forecast.with_indifferent_access, index: index, period_prefix: period_prefix %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</turbo-frame>

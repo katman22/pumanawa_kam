@@ -35,6 +35,23 @@ class FindForecastControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-stream[action='replace'][target='summary_response']", count: 1
   end
 
+  def test_find_page_shows_recent_locations_from_existing_session
+    Weather::Forecaster.stub :call, ServiceResult.new(success: true, value: { "forecasts" => [] }) do
+      get forecast_text_only_path, params: { lat: "40.5986", long: "-111.5845", country_code: "us", location_name: "Brighton" }
+    end
+    get forecast_path
+    assert_response :success
+    assert_select "main[data-controller='recent-location']", count: 1
+    assert_select "input[name='location'][data-recent-location-target='input']", count: 1
+    assert_select ".forecast-recent-locations h2", "Recent Search Locations"
+    assert_select ".forecast-recent-locations button[type='button'][data-action='click->recent-location#select'][data-lat='40.5986'][data-lng='-111.5845']", text: "Brighton", count: 1
+  end
+
+  def test_find_page_omits_recent_locations_when_session_is_empty
+    get forecast_path
+    assert_select ".forecast-recent-locations", count: 0
+  end
+
   def test_dual_and_text_only_share_navigation_without_duplicate_attribution
     get forecast_dual_path
     assert_shared_navigation

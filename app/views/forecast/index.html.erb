@@ -1,15 +1,17 @@
 <div class="weather_div forecast-full forecast-find">
   <%= render "full_header", page_title: "Find a Forecast" %>
-  <main>
+  <main data-controller="recent-location">
       <%= form_with url: forecast_geo_location_path, method: 'POST', class: 'forecast_form', data: { turbo_frame: "location_response" }, id: 'location_form' do %>
         <%= label_tag :location, "Location" %>
         <%= text_field_tag :location,
                            params[:location],
                            placeholder: 'Enter city, state or zip I.E: Salt Lake City, UT or 84101',
-                           class: 'weather_input' %>
+                           class: 'weather_input', data: { 'recent-location-target': 'input' } %>
         <%= submit_tag 'Go', class: 'btn btn-primary', name: 'commit', value: 'Go' %>
       <% end %>
 
+
+      <%= render "recent_locations", recent_locations: session[:recent_locations] %>
 
       <turbo-frame id="location_response">
         <% if @locations %>
