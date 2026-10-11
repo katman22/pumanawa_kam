@@ -46,7 +46,7 @@ class FullForecastControllerTest < ActionDispatch::IntegrationTest
     assert_select ".forecast-full-summary p", "Key message. Second line."
     assert_select ".forecast-full-long-range p", "Detailed discussion."
     assert_select ".forecast-full-discussion a", count: 0
-    assert_select "[data-forecast-tabs-target='panel']", count: 3
+    assert_select "[data-forecast-tabs-target='panel']", count: 4
     assert_select "#forecast-tab-periods[aria-selected='true']", "Forecast Periods"
     assert_select ".forecast-full-header .forecast-full-brand img", count: 1
     refute_includes response.body, "Weather Tips"
@@ -132,6 +132,7 @@ class FullForecastControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_forecast_failure_preserves_error_and_skips_discussion
+    @hourly_result = Minitest::Mock.new
     @alert_result = Minitest::Mock.new
     discussion = Minitest::Mock.new
     Weather::Forecaster.stub :call, ServiceResult.new(success: false, value: "Forecast unavailable") do
@@ -142,6 +143,7 @@ class FullForecastControllerTest < ActionDispatch::IntegrationTest
     discussion.verify
     assert_response :success
     @alert_result.verify
+    @hourly_result.verify
     assert_select "[role='alert']", "Error Response: Forecast unavailable"
     assert_select ".forecast-full-card", count: 0
   end
@@ -203,11 +205,74 @@ class FullForecastControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  def test_hourly_is_rendered_initially_with_offsets_and_optional_values
+    @hourly_result = Minitest::Mock.new
+    @hourly_result.expect :call, ServiceResult.new(success: true, value: { "periods" => [
+      { name: "Tonight", startTime: "2026-10-11T18:00:00-06:00", temperature: 0, temperatureUnit: "F", shortForecast: "Clear", probabilityOfPrecipitation: { value: 0 }, relativeHumidity: { value: nil } },
+      { name: "", startTime: "2026-10-11T19:00:00-06:00", shortForecast: "<b>Rain</b>", relativeHumidity: { value: 0 } },
+      { startTime: "invalid", shortForecast: "Unknown" }
+    ] }), [ "noaa", "40.5986", "-111.5845" ]
+    get_full_with_discussion(ServiceResult.new(success: true, value: { short_term: "Summary", long_range: "Details" }))
+    @hourly_result.verify
+    assert_select "[data-forecast-tabs-target='tab']" do |tabs|
+      assert_equal ["Forecast Periods", "Hourly", "Discussion", "Alerts"], tabs.map(&:text)
+    end
+    assert_select "#forecast-tab-hourly[aria-controls='forecast-panel-hourly']", count: 1
+    assert_select "#forecast-panel-hourly[aria-labelledby='forecast-tab-hourly']", count: 1
+    assert_select ".forecast-hourly-row", count: 3
+    assert_select ".forecast-hourly-row:first-child", text: /Period summary — Tonight/
+    assert_select "time[datetime='2026-10-11T18:00:00-06:00']", "Sun Oct 11, 6:00 PM (UTC-06:00)"
+    assert_select ".forecast-hourly-weather strong", text: "0° F"
+    assert_select ".forecast-hourly-row:first-child dd", text: "0%"
+    assert_select ".forecast-hourly-row:first-child dd", text: "—", count: 2
+    assert_select ".forecast-hourly-row:nth-child(2) dd", text: "0%"
+    assert_select ".forecast-hourly-row b", count: 0
+    assert_select ".forecast-hourly-row:last-child", text: /Time unavailable/
+  end
+
+  def test_openweather_hourly_array_uses_its_offset_and_has_no_noaa_summary_label
+    @params[:country_code] = "nz"
+    @hourly_result = Minitest::Mock.new
+    @hourly_result.expect :call, ServiceResult.new(success: true, value: [
+      { startTime: "2026-10-12T00:00:00+00:00", temperature: 5, temperatureUnit: "C", windDirection: "N", windSpeed: "3 m/s", relativeHumidity: { value: 80 } }
+    ]), [ "openweather", "40.5986", "-111.5845" ]
+    Weather::Forecaster.stub :call, ServiceResult.new(success: true, value: [@period]) do
+      Weather::DiscussionForecaster.stub :call, ServiceResult.new(success: true, value: {}) do
+        get forecast_full_path, params: @params
+      end
+    end
+    @hourly_result.verify
+    assert_select "time", "Mon Oct 12, 12:00 AM (UTC+00:00)"
+    assert_select ".forecast-hourly-summary", count: 0
+    assert_select ".forecast-hourly-row dd", text: "N 3 m/s"
+    assert_select ".forecast-hourly-row dd", text: "80%"
+  end
+
+  def test_hourly_failure_exception_and_unexpected_payload_preserve_other_panels
+    [ServiceResult.new(success: false, value: "Unavailable"), ->(*) { raise Timeout::Error }, ServiceResult.new(success: true, value: {})].each do |result|
+      @hourly_result = result
+      get_full_with_discussion(ServiceResult.new(success: true, value: { short_term: "Summary", long_range: "Details" }), alerts: ServiceResult.new(success: true, value: { "alerts" => [{ headline: "Warning" }] }))
+      assert_response :success
+      assert_select ".forecast-full-hourly p", "Hourly forecast is currently unavailable."
+      assert_select ".forecast-full-detail", text: /Clear overnight/
+      assert_select ".forecast-full-summary p", "Summary"
+      assert_select ".forecast-full-long-range p", "Details"
+      assert_select ".forecast-full-alert h3", "Warning"
+    end
+  end
+
+  def test_hourly_successful_empty_state
+    get_full_with_discussion(ServiceResult.new(success: true, value: {}))
+    assert_select ".forecast-full-hourly p", "No hourly forecast periods available."
+  end
+
   private
 
   def get(*args, **kwargs)
     Weather::AlertsForecaster.stub :call, (@alert_result || ServiceResult.new(success: true, value: { "alerts" => [] })) do
-      super
+      Weather::HourlyForecaster.stub :call, (@hourly_result || ServiceResult.new(success: true, value: @params[:country_code] == "us" ? { "periods" => [] } : [])) do
+        super
+      end
     end
   end
 

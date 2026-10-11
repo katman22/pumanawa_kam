@@ -59,6 +59,7 @@ class ForecastController < ApplicationController
     @location_context, _recent_locations = set_defaults
     @erred, @forecasts = forecaster
     unless @erred
+      load_full_hourly
       load_full_discussion
       load_full_alerts
     end
@@ -144,6 +145,25 @@ class ForecastController < ApplicationController
   rescue StandardError => error
     Rails.logger.warn("Dual forecast unavailable: #{error.class}: #{error.message}")
     render_forecast(target, "Forecast is currently unavailable. Please try again.", true, context)
+  end
+
+  def load_full_hourly
+    @hourly_periods = []
+    @hourly_available = false
+    erred, value = create_hourly_forecasts(
+      latitude: @location_context.latitude,
+      longitude: @location_context.longitude,
+      country_code: @location_context.country_code
+    )
+    return if erred
+
+    periods = @location_context.country_code == "us" ? value.fetch("periods") : value
+    return unless periods.is_a?(Array) && periods.all? { |period| period.is_a?(Hash) }
+
+    @hourly_periods = periods
+    @hourly_available = true
+  rescue StandardError => error
+    Rails.logger.warn("Hourly forecast unavailable: #{error.class}: #{error.message}")
   end
 
   def load_full_alerts

@@ -1,0 +1,40 @@
+<div class="forecast-full-hourly">
+  <h2 id="forecast-hourly-title">Hourly Forecast</h2>
+  <% if !available %>
+    <p>Hourly forecast is currently unavailable.</p>
+  <% elsif periods.empty? %>
+    <p>No hourly forecast periods available.</p>
+  <% else %>
+    <p class="forecast-hourly-note">Times retain the supplied UTC offset; they may differ from the location's local time.</p>
+    <div class="forecast-hourly-list" tabindex="0" role="region" aria-labelledby="forecast-hourly-title">
+      <% periods.each_with_index do |raw_period, index| %>
+        <% period = raw_period.with_indifferent_access %>
+        <% label = hourly_time_label(period[:startTime]) %>
+        <article class="forecast-hourly-row" aria-labelledby="forecast-hourly-time-<%= index %>">
+          <div>
+            <h3 id="forecast-hourly-time-<%= index %>">
+              <% if noaa && index.zero? %>
+                <span class="forecast-hourly-summary">Period summary<%= " — #{period[:name]}" if period[:name].present? %></span>
+                <span>Starts </span>
+              <% end %>
+              <% if label %><time datetime="<%= period[:startTime] %>"><%= label %></time><% else %><span>Time unavailable</span><% end %>
+            </h3>
+            <% if noaa && index.zero? %><p class="forecast-hourly-note">NOAA's first entry describes a broader forecast period, rather than a single hour.</p><% end %>
+          </div>
+          <div class="forecast-hourly-weather">
+            <% if period[:icon].present? %><%= image_tag period[:icon], alt: "", width: 40, height: 40 %><% end %>
+            <strong><%= period[:temperature].nil? ? "—" : "#{period[:temperature]}° #{period[:temperatureUnit]}" %></strong>
+            <span><%= period[:shortForecast].presence || "No summary available" %></span>
+          </div>
+          <dl class="forecast-full-metrics">
+            <% precipitation = period.dig(:probabilityOfPrecipitation, :value) %>
+            <% humidity = period.dig(:relativeHumidity, :value) %>
+            <div><dt>Precipitation</dt><dd><%= precipitation.nil? ? "—" : "#{precipitation}%" %></dd></div>
+            <div><dt>Wind</dt><dd><%= [period[:windDirection], period[:windSpeed]].compact_blank.join(" ").presence || "—" %></dd></div>
+            <div><dt>Humidity</dt><dd><%= humidity.nil? ? "—" : "#{humidity}%" %></dd></div>
+          </dl>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+</div>

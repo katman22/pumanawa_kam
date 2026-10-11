@@ -1,0 +1,174 @@
+FULL FORECAST HOURLY TAB REVIEW
+
+Status: Review only. No application code changed. One isolated service/cache experiment used stubbed HTTP and a process-local test MemoryStore; no network requests or persistent cache changes were made.
+
+1. EXISTING FETCH FLOW AND BOUNDARY
+
+GET /api/v1/weather/hourly -> Api::V1::WeatherController#hourly
+-> LocationContext built from lat, long, country_code
+-> private hourly_forecaster
+-> BaseForecaster#create_hourly_forecasts
+-> Weather::HourlyForecaster
+-> Noaa::Forecast::HourlyForecast for country_code == us
+   or OpenWeather::Forecast::Hourly otherwise.
+
+The existing concern returns [failure?, service value]. NOAA's value is { "periods" => normalized array }; OpenWeather's value is the normalized array itself. API controller unwraps NOAA and returns { periods: array } on success. No new endpoint is needed: web Full Forecast can call the concern directly.
+
+The adjacent canyon_travel mobile application calls this endpoint in hooks/UseRemoteService.ts (fetchHourlyWeather), supplying resort.latitude/longitude as lat/long. Its components/FullHourlyForecastStrip.tsx and HourlyForecastStrip.tsx consume startTime, temperature, icon, forecast text, precipitation, wind and quantity fields. These are React Native components and cannot be reused directly in Rails ERB. Their display conventions are useful references, not an implementation dependency.
+
+2. CURRENT FULL FORECAST
+
+ForecastController#full currently loads daily/period forecasts, discussion, and alerts. It has no hourly data. full.html.erb renders three panels and the generic forecast-tabs controller switches already-rendered content.
+
+Adding Hourly requires one additional controller service call on initial successful forecast page load. It does not imply exactly one upstream HTTP call:
+- NOAA service reads points, regular forecast, and hourly forecast; existing points/regular forecast caches normally reuse initial forecast work, leaving an hourly request on a cache miss.
+- OpenWeather reads One Call hourly data and also calls Overview, both through existing caches. Cache misses can make two upstream calls.
+
+All calls remain synchronous/sequential. Tab selection must perform no fetch, Turbo visit, lazy frame load, or delayed weather request. Do not lazy-load hourly icons on tab activation if the goal includes avoiding image requests on selection.
+
+3. NORMALIZED PERIOD SHAPE
+
+Both converters use Convert::Weather::BaseForecast.standard_format, producing symbol-key Ruby hashes. JSON serialization produces these field names:
+number (string)
+name
+icon
+isDaytime
+temperature
+temperatureUnit
+shortForecast
+detailedForecast
+windSpeed
+windDirection
+startTime (ISO8601)
+dewpoint: { unitCode, value }
+relativeHumidity: { unitCode, value }
+probabilityOfPrecipitation: { unitCode, value }
+
+Time: startTime is the reliable source. NOAA name can be blank and OpenWeather name is also an ISO8601 string; do not assume name contains a useful hour label.
+Temperature: supplied temperature and temperatureUnit.
+Icon: supplied URL; may be blank.
+Short forecast: supplied shortForecast, with converter defaults.
+Precipitation probability: probabilityOfPrecipitation.value, normally percent; NOAA may return nil.
+Wind: windDirection and windSpeed, already formatted with provider units.
+Humidity: relativeHumidity.value, percent when present; optional/nil.
+
+This is enough for the requested UI. Missing quantities should display an em dash, not a fabricated 0%. Temperature can also be absent; preserve a legitimate zero.
+
+4. PROVIDER DIFFERENCES AND BRITTLE ASSUMPTIONS
+
+NOAA:
+- Reads hourly periods but merge_first_record replaces element 0 with the FIRST REGULAR DAY/NIGHT forecast period, enlarging its icon.
+- Returns indices 0..98 (up to 99 records), not a guaranteed fixed number of true hourly entries.
+- First row can therefore represent Tonight/Today or another broader period, with temperature, precipitation, and startTime from that broader period rather than a strict hour.
+- Converts optional quantity fields to { unitCode: "", value: nil } when absent.
+- Preserves NOAA temperature and wind units; US forecasts normally use F and mph.
+- label_for returns the supplied name when startTime exists, including blank names; use startTime for display.
+- Missing forecast/hourly structures or icon can cause exceptions before conversion; catches belong in the supplemental web loader so the rest of the page remains useful.
+- merge_first_record mutates the raw hourly data. Preserve current service behavior for this task; changing that requires separate API/mobile contract review.
+
+OpenWeather:
+- Converts every available hourly record; service does not impose a display horizon.
+- Requests metric units, emits C and m/s, and truncates temperature/wind values to integers.
+- Converts pop fraction to rounded percent; absent pop becomes 0 through the existing converter.
+- First detailedForecast uses Overview (possibly nil if Overview fails); later details use weather description.
+- Time.at(...).iso8601 reflects server process timezone, not a resolved location timezone. NOAA startTime normally carries the forecast location offset.
+- The common response does not supply a location timezone identifier. The first iteration should format startTime without silently converting it to Rails/browser local time, and show its UTC offset explicitly. Do not label OpenWeather times as resort-local without additional data.
+
+5. CACHING
+
+NOAA Base:
+- noaa_{latitude}{longitude}: points response, 30 minutes.
+- noaa_forecasts_{resolved_lon}{resolved_lat}: regular forecast, 30 minutes.
+- noaa_hourly{latitude}{longitude}: hourly response, 30 minutes.
+- HourlyForecast's CACHE_KEY and rounded cache_key override do not control these actual Base cache reads.
+
+OpenWeather Base:
+- openweather_{url}_{latitude}{longitude}_{type}, 30 minutes.
+- Keys omit query/exclude/unit/date differences.
+- Hourly uses type=:hourly.
+- Alerts ALSO uses type=:hourly, same One Call URL and coordinates, but excludes hourly data.
+
+CONFIRMED CACHE COLLISION:
+An isolated actual-service test populated an in-memory cache with a stubbed alerts-only payload, then called Hourly at the same coordinates. Output: alerts_count=1, hourly_count=0, http_calls=1, hourly_success=true. Hourly consumed the cached alerts response and returned a successful empty list.
+
+The reverse order can cause Alerts to consume an hourly-only payload and return no alerts. Full Forecast already invokes Alerts and OpenWeather Discussion also invokes Alerts, so changing loader order does not solve this reliably.
+
+Recommendation for approval: include a narrow existing-service cache identity fix, changing OpenWeather::Forecast::Alerts's cache type from :hourly to :alerts. Preserve the existing cache store, 30-minute TTL, external query, service boundary, converters, and response fields. Add a regression test covering both population orders. This separates the two existing payload identities rather than introducing a new cache/service abstraction.
+
+Overview also has a pre-existing date-insensitive key. Do not expand this Hourly task into a broad caching repair; document it and preserve current behavior.
+
+6. FAILURE BEHAVIOR
+
+Provider nil responses return failed ServiceResults; wrapper preserves failure via a failed result. Structural/HTTP/JSON/configuration errors may raise. The API hourly action currently ignores its failure flag and assumes the success-shaped payload; it is not suitable as an internal HTTP dependency or a failure-handling model for the web page.
+
+The new private web loader should:
+- Initialize @hourly_periods=[] and @hourly_available=false.
+- Call create_hourly_forecasts with @location_context latitude/longitude/country_code once.
+- On failure, leave unavailable state.
+- Unwrap NOAA's periods; accept OpenWeather's array. Treat an unexpected success payload shape as unavailable, rather than crashing or declaring no data.
+- On valid array, set @hourly_available=true, including an empty array.
+- Rescue/log StandardError locally; do not change @erred or other supplemental state.
+
+Display successful empty as No hourly forecast periods available. Display failure/exception/unexpected payload as Hourly forecast is currently unavailable.
+
+7. EXACT CONTROLLER AND FILE PLAN
+
+Modify app/controllers/forecast_controller.rb:
+- Add private load_full_hourly with the behavior above.
+- Invoke once inside full's existing unless @erred block, independently of discussion and alerts. Existing supplemental loaders already rescue locally.
+- No Dual, Text Only, API, provider dispatch, or route changes.
+
+Modify app/views/forecast/full.html.erb:
+- Tab order Forecast Periods, Hourly, Discussion, Alerts.
+- Add forecast-tab-hourly/forecast-panel-hourly using existing data targets/ARIA relationships.
+- Render the new hourly partial in initial HTML.
+
+Create app/views/forecast/_hourly.html.erb:
+- Accessible heading, empty/unavailable state, compact hourly records.
+- Use with_indifferent_access for records and optional quantity fields.
+- Show day/time, temperature/unit, optional icon, short forecast, precipitation, wind, and optional humidity.
+- Preserve broader NOAA first-entry name where useful; annotate its summary nature rather than claiming every entry is an hourly measurement.
+
+Modify app/helpers/forecast_helper.rb:
+- Small safe timestamp-label helper, preserving supplied offset and handling invalid/missing timestamps without raising.
+
+Modify app/assets/stylesheets/application.css:
+- Only scoped hourly-panel layout/scrolling styles; retain existing centered wrapper and tab styling.
+
+Modify test/controllers/full_forecast_controller_test.rb:
+- Add hourly stubs to existing successful full-page requests.
+- Update panel count/order expectations to four.
+- Cover NOAA wrapper/OpenWeather array, missing fields, nil versus zero percentages, escaped text, empty/unavailable/exception states, dispatch/coordinates/call count, independent supplemental failures, and skipped hourly on main forecast failure.
+
+Modify test/controllers/forecast_controller_test.rb:
+- Add hourly-service stub to the existing full action test to avoid a real new network request.
+
+Modify test/system/forecast_period_selection_test.rb:
+- Add hourly service stub/counter.
+- Verify Hourly visibility, four-tab keyboard navigation, preserved selected period, and no new service calls when changing tabs.
+
+Recommended cache prerequisite files:
+Modify app/services/open_weather/forecast/alerts.rb (type=:alerts only).
+Create test/services/open_weather/forecast/hourly_alerts_cache_test.rb (real services/converters, stub HTTP, isolated memory cache, both request orders).
+
+Unchanged:
+app/javascript/controllers/forecast_tabs_controller.js (already supports arbitrary target count and preserves accessible keyboard/reconnect behavior)
+Hourly forecaster/concern, NOAA/OpenWeather hourly services and converters, API endpoints, shared period-card/detail partials.
+
+8. PANEL UX AND RESPONSIVENESS
+
+Use compact readable hourly records rather than reusing daily selector cards directly: hourly needs a timestamp and additional metrics, while daily cards imply High/Low and a detail selector. Reuse full-forecast typography, panel borders, metric styling, and empty-state conventions without creating a generic forecast component abstraction.
+
+Desktop/tablet: compact aligned rows showing day/time, icon/temperature, summary, and metrics; bound long hourly lists to a viewport-relative height for useful vertical scrolling. Render all available entries; do not silently cut the service result to 24 hours.
+
+Mobile: same HTML becomes stacked compact records, labels retained, min-width:0, long text wraps, optional icon remains compact. Prefer natural page scrolling on small screens. If the desktop scroller is focusable, provide an accessible label and visible focus styling.
+
+Use semantic time datetime values where valid. Explicit UTC offsets avoid promising location-local times that the contract cannot provide. No new weather fetches, selection controller, React component, chart library, or API endpoint.
+
+9. TEST/VALIDATION PLAN
+
+Run focused full-forecast rendering tests first, then the isolated OpenWeather hourly/alerts cache regression test if that fix is approved. Run relevant existing full-page/NOAA tests as environment permits. Run the browser test where ChromeDriver is available and bin/rails zeitwerk:check after adding the partial/helper structure.
+
+Hourly failure tests must assert all other panels still contain their expected data, including when hourly raises. Tests should prove one initial hourly boundary call and zero extra calls after selecting Hourly. Existing tab keyboard tests must account for the inserted tab. Browser tests were previously blocked by ChromeDriver certificate/cache issues, so report any remaining limitation honestly.
+
+No implementation performed. Only this summary was created and staged as requested. Await approval, including whether to include the narrowly scoped OpenWeather cache identity correction recommended above.
