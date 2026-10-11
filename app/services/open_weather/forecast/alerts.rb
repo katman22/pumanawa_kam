@@ -17,7 +17,7 @@ module OpenWeather
           units: "metric"
         }
         url = "#{ENV.fetch("OPENWEATHER_ONE_CALL_API")}"
-        response = weather_forecast(url: url, query: query, type: :hourly)
+        response = weather_forecast(url: url, query: query, type: :alerts)
         return failed("No Alert information available for lat: #{@latitude}, long: #{@longitude}") if response.nil?
 
         converted = Convert::Weather::OpenWeather::Alerts.call(response)

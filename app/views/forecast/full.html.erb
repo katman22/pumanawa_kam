@@ -6,7 +6,7 @@
   <% else %>
     <main class="forecast-full-layout" data-controller="forecast-tabs">
       <div class="forecast-full-tabs" role="tablist" aria-label="Weather information" data-forecast-tabs-target="tablist" hidden>
-        <% [["periods", "Forecast Periods"], ["discussion", "Discussion"], ["alerts", @alerts_available && @alerts.any? ? "Alerts (#{@alerts.size})" : "Alerts"]].each do |key, label| %>
+        <% [["periods", "Forecast Periods"], ["hourly", "Hourly"], ["discussion", "Discussion"], ["alerts", @alerts_available && @alerts.any? ? "Alerts (#{@alerts.size})" : "Alerts"]].each do |key, label| %>
           <button type="button" role="tab" id="forecast-tab-<%= key %>" aria-controls="forecast-panel-<%= key %>" aria-selected="<%= key == 'periods' %>" tabindex="<%= key == 'periods' ? 0 : -1 %>" data-forecast-tabs-target="tab" data-action="click->forecast-tabs#select keydown->forecast-tabs#navigate"><%= label %></button>
         <% end %>
       </div>
@@ -28,6 +28,9 @@
           </div>
         <% end %>
       </div>
+      </section>
+      <section id="forecast-panel-hourly" data-forecast-tabs-target="panel" aria-labelledby="forecast-tab-hourly">
+        <%= render "hourly", periods: @hourly_periods, available: @hourly_available, noaa: @location_context.country_code == "us" %>
       </section>
       <section id="forecast-panel-discussion" data-forecast-tabs-target="panel" aria-labelledby="forecast-tab-discussion">
         <%= render "discussion", discussion: @discussion %>
