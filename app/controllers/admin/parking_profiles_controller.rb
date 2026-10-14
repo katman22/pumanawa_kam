@@ -6,7 +6,7 @@ class Admin::ParkingProfilesController < Admin::BaseController
   end
 
   def create
-    service_response = Resorts::ParkingProfiles::Create.new(resort_id: params[:resort_id], season: params[:season]).call
+    service_response = Resorts::ParkingProfiles::Create.new(resort_id: params[:resort_id], season: params[:season], actor: current_admin_user).call
     return redirect_to admin_edit_parking_profile_path(
                          resort_id: service_response.value.resort_id,
                          season: service_response.value.season) if service_response.success
@@ -16,7 +16,7 @@ class Admin::ParkingProfilesController < Admin::BaseController
 
   def update
     filtered_params = profile_params.to_h
-    service_response = Resorts::ParkingProfiles::Update.new(resort_id: params[:resort_id], params: filtered_params).call
+    service_response = Resorts::ParkingProfiles::Update.new(resort_id: params[:resort_id], params: filtered_params, actor: current_admin_user).call
     return redirect_to admin_edit_parking_profile_path(
                          resort_id: service_response.value.resort_id,
                          season: service_response.value.season),

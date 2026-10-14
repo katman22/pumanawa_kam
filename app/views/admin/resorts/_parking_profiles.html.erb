@@ -4,9 +4,9 @@
   <% if @resort&.persisted? %>
     <div class="ms-2">
       <% season = "#{ParkingSeason.current}#{SecureRandom.alphanumeric(6)}" %>
-      <%= link_to "Add Parking Profile (#{season})",
+      <%= button_to "Add Parking Profile (#{season})",
                   admin_create_parking_profile_path(resort_id: @resort.id, season: season),
-                  class: "btn btn-outline-primary" %>
+                  method: :post, class: "btn btn-outline-primary" %>
     </div>
   <% else %>
     <div class="ms-2">

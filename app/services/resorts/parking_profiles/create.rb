@@ -5,8 +5,9 @@ module Resorts
     class Create < ApplicationService
       attr_reader :resort, :season
 
-      def initialize(resort_id:, season:)
+      def initialize(resort_id:, season:, actor:)
         @season = season
+        @actor = actor
         @resort = Resort.find(resort_id)
       end
 
@@ -17,7 +18,7 @@ module Resorts
             pp.effective_from = from
             pp.effective_to = to
             pp.version = 1
-            pp.updated_by = "admin-lite:#{ENV.fetch("ADMIN_USER", "unknown")}"
+            pp.updated_by = "admin:#{@actor.id}:#{@actor.username}".truncate(120)
           end
         end
         successful(@profile)
