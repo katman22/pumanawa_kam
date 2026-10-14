@@ -32,3 +32,15 @@ local:
 #   service: Mirror
 #   primary: local
 #   mirrors: [ amazon, google, microsoft ]
+
+# Placeholder only. Mural attachments explicitly use this service in production.
+# No bucket or credentials are created by this configuration. Originals must be
+# retained in durable object storage so variants can be regenerated.
+mural_artwork:
+  service: S3
+  access_key_id: <%= ENV["MURAL_STORAGE_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["MURAL_STORAGE_SECRET_ACCESS_KEY"] %>
+  region: <%= ENV.fetch("MURAL_STORAGE_REGION", "us-east-1") %>
+  bucket: <%= ENV["MURAL_STORAGE_BUCKET"] %>
+  endpoint: <%= ENV["MURAL_STORAGE_ENDPOINT"] %>
+  force_path_style: true

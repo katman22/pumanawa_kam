@@ -10,11 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_14_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_14_213348) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
   enable_extension "uuid-ossp"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "admin_users", force: :cascade do |t|
     t.string "username", null: false
@@ -263,6 +291,33 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_14_000001) do
     t.check_constraint "provider::text = ANY (ARRAY['apple'::character varying::text, 'google'::character varying::text])", name: "webhook_events_provider_check"
   end
 
+  create_table "whare_pumanawa_mural_photos", force: :cascade do |t|
+    t.bigint "mural_id", null: false
+    t.string "alt_text"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mural_id"], name: "index_whare_pumanawa_mural_photos_on_mural_id"
+    t.check_constraint "\"position\" >= 0", name: "whare_pumanawa_mural_photos_position_nonnegative"
+  end
+
+  create_table "whare_pumanawa_murals", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.string "location"
+    t.integer "year"
+    t.string "client"
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "published", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_whare_pumanawa_murals_on_slug", unique: true
+    t.check_constraint "\"position\" >= 0", name: "whare_pumanawa_murals_position_nonnegative"
+  end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cameras", "resorts"
   add_foreign_key "entitlement_overrides", "users"
   add_foreign_key "entitlement_overrides", "users", column: "created_by_id"
@@ -275,4 +330,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_14_000001) do
   add_foreign_key "receipts", "users"
   add_foreign_key "resort_filters", "resorts"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
 end

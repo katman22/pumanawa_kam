@@ -1,0 +1,18 @@
+/* Public foundation only: isolated from Aura, Canyon and the admin shell. */
+.whare-portfolio { margin: 0; background: #faf9f6; color: #24211f; font-family: system-ui, sans-serif; }
+.whare-portfolio * { box-sizing: border-box; }
+.whare-header, .whare-content, .whare-footer { width: min(90vw, 1100px); margin-inline: auto; padding: 1.5rem 0; }
+.whare-header a { font-size: 1.35rem; font-weight: 650; text-decoration: none; letter-spacing: .06em; }
+.whare-portfolio a { color: inherit; }
+.whare-portfolio :focus-visible { outline: 3px solid #8c2426; outline-offset: 4px; }
+.whare-portfolio h1 { font-weight: 500; }
+.whare-mural-links { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0 2rem; }
+.whare-mural-links [aria-current] { color: #8c2426; font-weight: 650; }
+.whare-hero, .whare-supporting img { display: block; max-width: 100%; height: auto; object-fit: contain; }
+.whare-hero { max-height: 75svh; }
+.whare-metadata { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.whare-metadata dt { color: #625b55; font-size: .8rem; }
+.whare-metadata dd { margin: .3rem 0 0; }
+.whare-story { max-width: 70ch; line-height: 1.7; overflow-wrap: anywhere; }
+.whare-supporting { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1.5rem; align-items: start; margin-top: 2rem; }
+.whare-empty, .whare-footer { color: #625b55; }

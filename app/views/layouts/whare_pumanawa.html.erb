@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= @mural ? "#{@mural.title} · " : "" %>Whare Pūmanawa</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "whare_pumanawa", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="whare-portfolio">
+    <header class="whare-header"><%= link_to "Whare Pūmanawa", whare_pumanawa_root_path %></header>
+    <main class="whare-content"><%= yield %></main>
+    <footer class="whare-footer">Kia ora · Nau mai · Piki mai</footer>
+  </body>
+</html>
