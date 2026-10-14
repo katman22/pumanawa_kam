@@ -1,0 +1,11 @@
+<h1>Murals &amp; stories</h1>
+<% if @mural %>
+  <nav class="whare-mural-links" aria-label="Murals">
+    <% @murals.each do |mural| %>
+      <%= link_to mural.title, whare_pumanawa_mural_path(mural.slug), aria: { current: mural == @mural ? "page" : nil } %>
+    <% end %>
+  </nav>
+  <%= render "mural", mural: @mural, photos: @photos %>
+<% else %>
+  <p class="whare-empty">New work will be shared here soon.</p>
+<% end %>
