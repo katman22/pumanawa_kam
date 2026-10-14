@@ -57,3 +57,60 @@ The splash chooses one supplied local photograph per render; no rotation or
 network interaction is needed to sign in. It retains the mirrored/right-aligned
 Whare Pūmanawa mark and responsive uncropped image treatment. Originals are
 temporary curated assets; delivery optimization can be reviewed separately.
+
+
+## Whare Pūmanawa public foundation (Phase B)
+
+Preview the published portfolio at `/whare_pumanawa`; permalinks use
+`/whare_pumanawa/murals/:slug`. No new production hostname or mural admin CRUD
+exists yet. `/admin` links to the foundation and marks mural administration as
+coming next. No changes to web-admin or mobile authentication are needed here.
+
+`WharePumanawa::Mural` and `WharePumanawa::MuralPhoto` use their own prefixed tables
+in the existing primary database/migration stream. Order is position then id.
+Slugs persist after title edits; normalized-title duplicates get distinct slugs,
+and the unique index plus bounded savepoint retry handles creation collisions.
+The first published mural is selected initially; each published slug selects its
+own detail page. All photos/attachments/blobs are preloaded for this small V1.
+There is no final selector interaction yet; navigation uses ordinary links.
+
+Drafts may have incomplete photos. Publication requires at least one photo and
+every photo must have an attached supported image plus nonblank descriptive alt
+text. Public rendering also omits photos that later become invalid. Description
+is treated as escaped plain text, with paragraphs preserved. Originals remain
+stored; named variants are thumbnail (240x180 fill/crop) and hero (fit within
+1600x1600, preserving aspect ratio and avoiding upscaling). Only JPEG, PNG and
+WebP are accepted, up to 20 MiB. The first valid ordered photo supplies the hero.
+
+Active Storage's standard three tables are installed once. Development uses
+local Disk and test uses test Disk, as configured before Phase B. Install native
+libvips for development/runtime; the local build is currently 8.18.7 and Rails
+uses `config.active_storage.variant_processor = :vips`. Real fixture processing
+and variant HTTP delivery are covered in tests; no image-processing stubs.
+
+Production mural images explicitly select the `mural_artwork` S3-compatible
+service through Rails' per-attachment service selector. This is separate from
+the shared application's existing global storage setting. The selector defers
+service construction until attachment use so absent future bucket credentials
+do not break other application domains during eager loading. There is no Disk
+fallback for production mural uploads. Supply these runtime settings before
+uploading artwork in production; placeholders create no infrastructure:
+
+- MURAL_STORAGE_BUCKET
+- MURAL_STORAGE_REGION (default us-east-1)
+- MURAL_STORAGE_ACCESS_KEY_ID
+- MURAL_STORAGE_SECRET_ACCESS_KEY
+- MURAL_STORAGE_ENDPOINT if using an S3-compatible provider instead of AWS S3
+
+Keep originals in durable object storage, never the ephemeral Render web disk.
+Back up originals and the database; derivatives can be regenerated. Do not copy
+local/test blob records into production without moving their originals and
+mapping service names. No bucket, credentials, Render service changes, direct
+upload UI or dedicated worker was provisioned. Standard Rails analysis/purge jobs
+use the existing job adapter; production durability of those jobs remains a
+deployment consideration before enabling live uploads. Signed Active Storage
+URLs are not private draft authorization; private delivery remains deferred.
+
+Phase C: mural admin CRUD, photo upload/edit/order forms, publishing workflow,
+and the final gallery selector/detail interaction. See
+research/whare_pumanawa_phase_b_implementation.txt for validation and limitations.
