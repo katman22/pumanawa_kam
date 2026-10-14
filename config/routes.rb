@@ -99,7 +99,10 @@ Rails.application.routes.draw do
   # ADMIN PANEL
   # --------------------------------------------------------
   namespace :admin do
-    root to: "resorts#index"
+    get "login", to: "sessions#new", as: :login
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
+    root to: "dashboard#index"
 
     resources :resorts do
       resources :resort_filters, only: [ :new, :create ]
@@ -109,7 +112,7 @@ Rails.application.routes.draw do
     resources :resort_filters, only: [ :edit, :update, :destroy, :create, :show ]
 
     get  "parking_profiles/:resort_id/:season/edit",    to: "parking_profiles#edit",   as: :edit_parking_profile
-    get  "parking_profiles/:resort_id/:season/create",  to: "parking_profiles#create", as: :create_parking_profile
+    post "parking_profiles/:resort_id/:season/create",  to: "parking_profiles#create", as: :create_parking_profile
     patch "parking_profiles/:resort_id/:season",        to: "parking_profiles#update", as: :update_parking_profile
     get "parking_profiles/:resort_id/:season",         to: "parking_profiles#show",   as: :show_parking_profile
   end

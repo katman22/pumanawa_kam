@@ -6,8 +6,9 @@ module Resorts
       JSON_ARRAY_FIELDS = %i[links rules faqs sources].freeze
       JSON_OBJECT_FIELDS = %i[operations highway_parking accessibility media].freeze
 
-      def initialize(resort_id:, params:)
+      def initialize(resort_id:, params:, actor:)
         @resort_id = resort_id
+        @actor = actor
         @resort = Resort.find(resort_id)
         @profile = ParkingProfile.find_by!(resort: @resort, season: params[:season])
         @params = params
@@ -27,7 +28,7 @@ module Resorts
         @profile.with_lock do
           @profile.update!(raw.merge(
             version: @profile.version + 1,
-            updated_by: "admin-lite:#{ENV.fetch("ADMIN_USER", "unknown")}"
+            updated_by: "admin:#{@actor.id}:#{@actor.username}".truncate(120)
           ))
         end
         successful(@profile)

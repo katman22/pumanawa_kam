@@ -1,0 +1,228 @@
+Phase A — Shared Admin Authentication Foundation
+Completed in pumanawa_kam, 2026-10-14
+
+SCOPE AND BASELINE
+
+Existing Rails app, primary database and migration stream retained.
+Rails remains 8.0.2; Ruby remains 3.3.0. bcrypt 3.1.22 is the only locked gem
+addition. No Rails/Ruby upgrade, new Render service, production infrastructure
+change, mural/gallery/CRUD work, Active Storage installation, object storage,
+Redis/Solid change, public host or cross-domain SSO was introduced.
+The standalone mural_portfolio repository was read as a porting source only;
+it was not modified in this Phase A task.
+
+ADMIN MODEL / MIGRATION
+
+Admin::User explicitly maps to admin_users, independently of existing ::User.
+Fields: username, password_digest, active (default true), created_at, updated_at.
+Required database fields, unique username index, normalized/nonempty username
+check and nonempty password-digest check are installed by:
+db/migrate/20261014000001_create_admin_users.rb (ActiveRecord::Migration[8.0]).
+The checked-in schema diff contains only admin_users and its version change.
+Existing mobile User schema, requirements, role/status semantics and relations
+are unchanged. Existing unrelated schema-dump drift was excluded from the diff.
+
+Username is stripped/lowercased via Active Record normalization. Password uses
+has_secure_password with reset_token: false; minimum 12 characters and bcrypt's
+72-byte maximum. Model and database enforce username uniqueness. No email,
+roles, account-management UI, signup, recovery, invitations, MFA or OAuth added.
+No database-backed Session model/table exists.
+
+AUTH FLOW AND ROUTES
+
+GET /admin/login -> Admin::SessionsController#new, dedicated admin_login layout.
+POST /admin/login -> #create, outside protected Admin::BaseController.
+DELETE /admin/logout -> #destroy, normal Rails CSRF protection.
+GET /admin -> Admin::DashboardController#index, protected by Admin::BaseController.
+
+authenticate_by uses bcrypt, including dummy work for unknown usernames.
+Inactive accounts are rejected. Unknown username, wrong password and inactive
+account receive the same generic failure, HTTP 422, with no password repopulation.
+Auth responses and protected admin pages have Cache-Control: no-store.
+Success resets the session before storing admin_user_id and redirects to /admin.
+Logout resets the session and redirects to login. current_admin_user explicitly
+queries Admin::User with active: true on each protected request. Deactivation or
+deletion rejects subsequent access. HTTP Basic was removed, not retained as an
+alternative. Password parameters remain covered by the existing passw filter.
+
+Normal Rails encrypted CookieStore/key/domain are retained. No new cookie-based
+API auth or JWT-based admin auth exists. Production HTTPS remains as configured.
+CSRF checks were retained for login, logout and parking mutations. The rate limit
+is 10 attempts/IP/3 minutes using a small process-local memory store; it is not
+coordinated between workers and does not survive restarts. No new infrastructure.
+
+SESSION NAVIGATION STATE
+
+Forecast recent_locations is stored in the same host's normal session. The chosen
+smallest safe behavior is to let reset_session clear it on login/logout. No old
+session values are copied blindly or selectively retained. No cookie domain
+widening or public host-routing changes were made.
+
+DASHBOARD / EXISTING RESOURCES
+
+/admin now shows Administration with Canyon Traveller/Resorts navigation and
+Whare Pūmanawa marked Coming next. Existing /admin/resorts, resort filters,
+cameras and parking-profile resource paths remain. Existing Bootstrap-based
+admin layout and resource forms are preserved; dashboard/sign-out navigation
+was added. Authenticated resource rendering and resort update are exercised.
+ApplicationController and API controller inheritance/auth concerns are untouched.
+
+LOGIN SPLASH PORT
+
+Ported only the dedicated login layout, session view, scoped admin_login.css,
+seven supplied original photos, final whare_pumanawa_mark.png, and relevant tests.
+Identity: Whare Pūmanawa; warm off-white, charcoal, deep red, system typography.
+One curated image is selected per server render. It stays fixed on that page.
+No slideshow/timer/carousel, rotation controller or image-selection JavaScript.
+Large desktop artwork beside form; stacked and height-bounded artwork on mobile.
+object-fit: contain preserves aspect ratios rather than cropping artwork.
+Final mark remains right-aligned beneath the welcome text and mirrored in CSS.
+Labels, autocomplete, password input, focus styles and generic error alert remain.
+The login uses ordinary HTML POST and loads no JavaScript; decorative images
+use empty alt. The shared protected resource layout retains existing Bootstrap.
+No Mural/Active Storage connection is used for splash assets.
+
+PARKING CUTOVER
+
+The existing named creation path remains /admin/parking_profiles/:resort_id/
+:season/create, but now accepts POST instead of GET. The resource partial uses
+button_to method: :post, so a real form and Rails authenticity token are present.
+GET no longer creates data. Authentication and CSRF are tested independently.
+
+The controller passes current_admin_user explicitly as actor: to both existing
+Resorts::ParkingProfiles::Create and Update services. They require the actor and
+stamp updated_by as admin:<id>:<username>, truncated to the existing 120-character
+field limit. Long usernames are covered for both creation and update. No mobile
+User association or EntitlementOverride.created_by_id change was introduced.
+Other parsing, locking, versioning and service behavior are retained.
+
+BOOTSTRAP / RELEASE
+
+No credentials/default password/account seed was committed or created.
+README documents the first production admin through the existing Render app's
+Rails console after migrations. STDIN.getpass hides the password; trailing nil
+prevents IRB from echoing assigned secret values. Create Admin::User explicitly;
+do not type real passwords as command literals or write them into seeds/source.
+All active web admins currently have access to the existing shared resources.
+There is deliberately no roles/product-permissions system in Phase A.
+
+VALIDATION RESULTS
+
+Both local configurations confirmed at runtime with no DATABASE_URL override:
+- pumanawa_kam_development @ localhost:5433
+- pumanawa_kam_test @ localhost:5433
+Server: PostgreSQL 18.6 (Homebrew). Admin migration is applied in both local DBs.
+The owner's corrected database.yml was left as provided and is not staged by
+this task. No local DATABASE_URL dependency was introduced. Production continues
+to use its existing environment/deployment mechanism; no production DB was queried.
+
+Focused admin/model/session/parking/host-boundary tests initially:
+20 tests, 166 assertions, zero failures/errors/skips.
+Final focused run including long-audit-label/password-boundary coverage and
+existing API tests:
+24 tests, 180 assertions, zero failures/errors/skips.
+
+Browser tests with an already-installed matching Chrome driver:
+2 tests, 20 assertions, zero failures/errors/skips. Desktop, 820px tablet, exact
+390px mobile, all seven image assets, portrait/landscape containment, no horizontal
+overflow, visible mobile submit button, static image during entry, login/logout.
+Screenshots reviewed; generated screenshots remain ignored in tmp/screenshots.
+The existing legacy webdrivers downloader fails locally with an SSL/CRL error.
+A CHROMEDRIVER override in the new test permits a preinstalled matching driver;
+no Selenium/webdrivers gem upgrade or shared system-helper change was made.
+
+Full bin/rails test:
+95 tests, 687 assertions, zero assertion failures, ONE unrelated error:
+DabsControllerTest#test_should_get_index calls missing dabs_index_url.
+test/controllers/dabs_controller_test.rb was already untracked before Phase A.
+It and its unrelated controller/routes were not changed or staged by this task.
+The full suite is therefore not fully green; no test was skipped or weakened.
+
+Cross-auth tests use real JWT issue/decode and real session authentication:
+- Admin cookie alone receives 401 from both mobile and Weather API paths.
+- Mobile JWT and Weather JWT alone cannot authenticate /admin.
+- Device endpoint creates existing ::User without any password requirement and
+  recovers it by public_id; no Admin::User is created by that endpoint.
+- Existing JWT-authenticated home-resort and entitlement responses remain the
+  same before/after web-admin login, and subscriptions/ownership stay separate.
+- Another mobile user's token cannot read the first user's home resorts.
+- Both existing Weather and mobile auth routes remain usable with valid JWTs.
+- Aura, both Canyon host roots, default root and existing admin resource routes
+  resolve to their prior controllers. No Whare public host was added.
+
+Zeitwerk check: exit 0, All is good, WITH existing duplicate BaseForecaster
+constants DUAL/SCREEN_A/SCREEN_B/DEFAULT_LAYER warnings. Those files are unchanged.
+Phase A scoped RuboCop: 14 files, no offenses.
+Full-repository RuboCop: 212 files, 74 existing offenses in older forecast tests;
+no broad lint cleanup or test weakening was performed.
+Brakeman 8.1.0: zero scan errors, nine warnings, exit 3. Eight command-injection
+findings are under the pre-existing untracked node_modules/react-native tree;
+one is its Rails 8.0.2 support-window warning. No Phase A auth finding was reported.
+No ignore configuration or unrelated dependency upgrade was added.
+
+Production-mode asset precompile: passed. The initial attempt lacked the existing
+required REDIS_URL. Retry used REDIS_URL=redis://127.0.0.1:6379/15 and
+SECRET_KEY_BASE_DUMMY=1 for that local command only. No Redis service/configuration
+change or production resource provisioning. All seven splash originals, mark and
+admin_login.css appear in the generated asset output. Build artifacts are ignored.
+
+Initial test-schema refresh was blocked by the owner's idle pgAdmin connection.
+After the owner disconnected it, standard Rails tests ran successfully against
+the specified test database. No owner connection was forcibly terminated and
+no workaround disabling test schema checks was introduced.
+
+EXACT PHASE A FILES
+
+Gemfile
+Gemfile.lock
+README.md
+app/models/admin/user.rb
+app/controllers/admin/base_controller.rb
+app/controllers/admin/sessions_controller.rb
+app/controllers/admin/dashboard_controller.rb
+app/controllers/admin/parking_profiles_controller.rb
+app/services/resorts/parking_profiles/create.rb
+app/services/resorts/parking_profiles/update.rb
+app/views/layouts/admin.html.erb
+app/views/layouts/admin_login.html.erb
+app/views/admin/sessions/new.html.erb
+app/views/admin/dashboard/index.html.erb
+app/views/admin/resorts/_parking_profiles.html.erb
+app/assets/stylesheets/admin_login.css
+app/assets/images/whare_pumanawa_mark.png
+app/assets/images/admin_splash/IMG_6245-Edit.jpg
+app/assets/images/admin_splash/IMG_6377.JPG
+app/assets/images/admin_splash/IMG_6390.JPG
+app/assets/images/admin_splash/IMG_6395.JPG
+app/assets/images/admin_splash/IMG_6417.JPG
+app/assets/images/admin_splash/IMG_6429.JPG
+app/assets/images/admin_splash/IMG_6435.JPG
+config/routes.rb
+db/migrate/20261014000001_create_admin_users.rb
+db/schema.rb
+test/models/admin/user_test.rb
+test/controllers/admin/authentication_test.rb
+test/controllers/admin/resources_test.rb
+test/controllers/admin/integration_boundaries_test.rb
+test/system/admin_login_test.rb
+research/shared_admin_phase_a_implementation.txt
+
+UNRELATED ISSUES / DEFERRED WORK
+
+Existing ResortsController#show queries parking_profiles.resort_id using resort
+slug; left unchanged as requested. Existing parking edit helper/field/versioning
+issues were not refactored. The Dabs test error, old lint offenses, BaseForecaster
+warnings and existing Brakeman warnings are separately reported above.
+Actual production deployment/first-user bootstrap remains a release action.
+Password changes do not revoke other browsers' existing sessions; logout clears
+the current session. Role/product authorization and account-management/recovery
+remain deliberately absent. Asset optimization can be reviewed independently.
+
+Phase B remains unimplemented: WharePumanawa mural/photo models, Active Storage,
+uploads/object storage, mural CRUD, gallery/public pages, public host routing.
+No changes were made to mobile User/Identity/OAuth/JWT/subscription/entitlement
+code, JWT secrets/payloads/lookups, Rails/Ruby versions, existing host roots,
+production infrastructure or the standalone application.
+
+Only the Phase A files above are staged by this task. Existing unrelated staged
+and untracked work is preserved. No commit or push.

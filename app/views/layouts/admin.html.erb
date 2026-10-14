@@ -20,8 +20,10 @@
 <header style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
   <h4 style="margin-bottom:10px; margin-left: 10px; margin-top: 10px">Admin</h4>
   <nav style="display:flex; gap:.5rem;">
+    <%= link_to "Dashboard", admin_root_path, class: "btn" %>
     <%= link_to "Resorts", admin_resorts_path, class: "btn" %>
     <%= link_to "New Resort", new_admin_resort_path, class: "btn btn-primary" %>
+    <%= button_to "Sign out", admin_logout_path, method: :delete, class: "btn", form: { class: "d-inline" } %>
   </nav>
 </header>
 <%= yield %>

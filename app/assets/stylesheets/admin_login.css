@@ -1,0 +1,41 @@
+/* Dedicated entry page: no public gallery or admin dashboard styling. */
+.admin-entry { margin: 0; color: #24211f; background: #faf9f6; font-family: system-ui, sans-serif; }
+.admin-entry * { box-sizing: border-box; }
+.entry-shell { width: min(90vw, 1440px); min-height: 100svh; margin: auto; display: flex; flex-direction: column; }
+.entry-header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 2.5rem 0 2rem; }
+.entry-wordmark { margin: 0; font-size: clamp(1.2rem, 2vw, 1.7rem); font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
+.entry-edition, .entry-eyebrow { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
+.entry-edition { color: #625b55; }
+.entry-composition { flex: 1; display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(250px, 1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+.entry-artwork { min-width: 0; height: clamp(340px, 64svh, 760px); display: flex; align-items: center; justify-content: center; background: #f0ede7; }
+.entry-image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.entry-login { padding: 1.5rem 0; width: 100%; max-width: 340px; }
+.entry-eyebrow { color: #8c2426; margin: 0 0 1.25rem; }
+.entry-login h1 { font-size: clamp(2.5rem, 4vw, 4rem); line-height: 1; font-weight: 500; letter-spacing: -.05em; margin: 0 0 1.5rem; }
+.entry-introduction { color: #625b55; line-height: 1.6; margin: 0 0 2rem; }
+.entry-form { display: grid; gap: 1.25rem; }
+.entry-field { display: grid; gap: .6rem; }
+.entry-field label { font-size: .85rem; }
+.entry-field input { width: 100%; min-height: 48px; padding: .75rem; border: 1px solid #9c948c; border-radius: 0; background: #fff; color: #24211f; font: inherit; }
+.entry-submit { min-height: 48px; padding: .85rem 1.5rem; border: 1px solid #8c2426; border-radius: 0; background: #8c2426; color: white; font: inherit; cursor: pointer; margin-top: .5rem; }
+.entry-submit:hover { background: #702022; }
+.admin-entry :focus-visible { outline: 3px solid #8c2426; outline-offset: 4px; }
+.entry-error { color: #8c2426; font-size: .9rem; line-height: 1.5; }
+.entry-footer { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding: 2rem 0; }
+.entry-mark { display: block; width: 160px; max-width: 100%; height: auto; margin: .9rem 0 0 auto; transform: scaleX(-1); }
+.entry-signature { text-align: right; }
+.entry-signature p { font-size: .85rem; font-weight: 600; margin: 0 0 .4rem; }
+.entry-signature span { font-size: .7rem; color: #625b55; }
+@media (max-width: 760px) {
+  .entry-shell { width: 90vw; }
+  .entry-header { padding: 1.5rem 0; }
+  .entry-edition { display: none; }
+  .entry-composition { display: flex; flex-direction: column; align-items: stretch; gap: 1.5rem; }
+  .entry-artwork { height: clamp(180px, 28svh, 300px); }
+  .entry-login { max-width: none; padding: 0; }
+  .entry-login h1 { font-size: 2rem; margin-bottom: .75rem; }
+  .entry-eyebrow { margin-bottom: .75rem; }
+  .entry-introduction { margin-bottom: 1.25rem; }
+  .entry-form { gap: 1rem; }
+  .entry-footer { padding: 1.5rem 0; }
+}

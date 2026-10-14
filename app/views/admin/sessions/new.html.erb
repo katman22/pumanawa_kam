@@ -1,0 +1,42 @@
+<div class="entry-shell">
+  <header class="entry-header">
+    <p class="entry-wordmark">Whare Pūmanawa</p>
+    <span class="entry-edition">Art · Place · Story</span>
+  </header>
+
+  <main class="entry-composition">
+    <div class="entry-artwork">
+      <%= image_tag "admin_splash/#{@artwork}", alt: "", class: "entry-image", fetchpriority: "high" %>
+    </div>
+
+    <section class="entry-login" aria-labelledby="login-heading">
+      <p class="entry-eyebrow">Nau mai</p>
+      <h1 id="login-heading">Admin</h1>
+      <p class="entry-introduction">A space for the work,<br>and the stories behind it.</p>
+
+      <% if @error %>
+        <p id="login-error" class="entry-error" role="alert"><%= @error %></p>
+      <% end %>
+
+      <%= form_with url: admin_login_path, method: :post, data: { turbo: false }, class: "entry-form" do |form| %>
+        <div class="entry-field">
+          <%= form.label :username, "Username" %>
+          <%= form.text_field :username, required: true, autocomplete: "username", autocapitalize: "none", spellcheck: false, aria: { describedby: @error ? "login-error" : nil } %>
+        </div>
+        <div class="entry-field">
+          <%= form.label :password, "Password" %>
+          <%= form.password_field :password, required: true, autocomplete: "current-password", aria: { describedby: @error ? "login-error" : nil } %>
+        </div>
+        <%= form.submit "Sign in", class: "entry-submit" %>
+      <% end %>
+    </section>
+  </main>
+
+  <footer class="entry-footer">
+    <div class="entry-signature">
+      <p>Whare Pūmanawa</p>
+      <span>Kia ora · Nau mai · Piki mai</span>
+      <%= image_tag "whare_pumanawa_mark.png", alt: "", class: "entry-mark", aria: { hidden: true } %>
+    </div>
+  </footer>
+</div>

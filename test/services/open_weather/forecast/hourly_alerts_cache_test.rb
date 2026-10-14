@@ -5,6 +5,18 @@ require "minitest/autorun"
 require "minitest/mock"
 
 class HourlyAlertsCacheTest < Minitest::Test
+  def setup
+    @original_configuration = %w[OPENWEATHER_API_KEY OPENWEATHER_ONE_CALL_API].to_h { |key| [key, ENV[key]] }
+    ENV["OPENWEATHER_API_KEY"] = "test-openweather-key"
+    ENV["OPENWEATHER_ONE_CALL_API"] = "https://weather.example.test/onecall"
+  end
+
+  def teardown
+    @original_configuration.each do |key, value|
+      value.nil? ? ENV.delete(key) : ENV[key] = value
+    end
+  end
+
   Response = Struct.new(:body) do
     def [](_key)
       nil
@@ -26,6 +38,7 @@ class HourlyAlertsCacheTest < Minitest::Test
     calls = []
     request = lambda do |url, options|
       query = options.fetch(:query)
+      assert_equal "test-openweather-key", query[:appid]
       calls << [url, query[:exclude]]
       payload = if url.end_with?("/overview")
         { "weather_overview" => "Overview text" }
