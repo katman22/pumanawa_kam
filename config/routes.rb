@@ -95,6 +95,11 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :whare_pumanawa do
+    root "murals#index"
+    resources :murals, only: :show, param: :slug
+  end
+
   # --------------------------------------------------------
   # ADMIN PANEL
   # --------------------------------------------------------
