@@ -1,0 +1,20 @@
+<h2>Photographs</h2>
+<p>The lowest position is the hero / thumbnail. Equal positions use creation order. Unpublish before removing the last valid photo.</p>
+<% (@photos || @mural.mural_photos.select(&:persisted?)).each_with_index do |photo, index| %>
+  <section class="border-bottom py-3" aria-labelledby="photo-<%= photo.id %>-heading">
+    <h3 id="photo-<%= photo.id %>-heading" class="h5">Photo <%= index + 1 %><% if index.zero? %> · Hero / thumbnail<% end %></h3>
+    <% if photo.image.attached? && photo.image.blob.content_type.in?(%w[image/jpeg image/png image/webp]) %><%= image_tag photo.image.variant(:thumbnail), alt: "", width: 120, height: 90 %><% end %>
+    <%= form_with model: photo, url: admin_whare_pumanawa_mural_mural_photo_path(@mural, photo), namespace: "photo_#{photo.id}" do |form| %>
+      <div class="mb-2"><%= form.label :alt_text %><%= form.text_field :alt_text, required: @mural.published?, class: "form-control" %></div>
+      <div class="mb-2"><%= form.label :position %><%= form.number_field :position, min: 0, required: true, class: "form-control" %></div>
+      <%= form.submit "Save photo", class: "btn btn-outline-primary" %>
+    <% end %>
+    <%= button_to "Remove photo", admin_whare_pumanawa_mural_mural_photo_path(@mural, photo), method: :delete, class: "btn btn-outline-danger mt-2", form: { data: { turbo_confirm: "Remove this photograph permanently?" } } %>
+  </section>
+<% end %>
+<h3 class="h5 mt-4">Add photographs</h3>
+<%= form_with url: admin_whare_pumanawa_mural_mural_photos_path(@mural), scope: :upload, multipart: true do |form| %>
+  <div class="mb-3"><%= form.label :images, "JPEG, PNG or WebP images (up to 20 MiB each)" %><%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg,image/png,image/webp", class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :alt_text, "Initial alt text for these photographs" %><%= form.text_field :alt_text, required: @mural.published?, class: "form-control" %><p class="form-text">Required for published murals. You can edit each photo's description after upload.</p></div>
+  <%= form.submit "Upload photographs", class: "btn btn-primary" %>
+<% end %>

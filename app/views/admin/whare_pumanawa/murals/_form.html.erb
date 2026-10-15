@@ -1,0 +1,18 @@
+<% if @mural.errors.any? %>
+  <div role="alert" class="alert alert-danger"><ul><% @mural.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
+  <% @mural.mural_photos.each do |photo| %>
+    <% if photo.errors.any? %><p role="alert" class="alert alert-danger">Photo <%= photo.position + 1 %>: <%= photo.errors.full_messages.join(", ") %></p><% end %>
+  <% end %>
+<% end %>
+<%= form_with model: @mural, url: @mural.persisted? ? admin_whare_pumanawa_mural_path(@mural) : admin_whare_pumanawa_murals_path do |form| %>
+  <div class="row">
+    <% [ :title, :location, :client ].each do |field| %><div class="col-md-4 mb-3"><%= form.label field %><%= form.text_field field, required: field == :title, class: "form-control" %></div><% end %>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-3"><%= form.label :year %><%= form.number_field :year, class: "form-control" %></div>
+    <div class="col-md-4 mb-3"><%= form.label :position %><%= form.number_field :position, min: 0, required: true, class: "form-control" %></div>
+  </div>
+  <div class="mb-3"><%= form.label :description, "Story / description (plain text)" %><%= form.text_area :description, rows: 6, class: "form-control" %></div>
+  <div class="mb-3"><%= form.check_box :published %> <%= form.label :published, "Published — visible in the public portfolio" %><p class="form-text">Publishing requires a valid image and descriptive alt text for every photo.</p></div>
+  <%= form.submit "Save mural", class: "btn btn-primary" %> <%= link_to "Back to murals", admin_whare_pumanawa_murals_path %>
+<% end %>

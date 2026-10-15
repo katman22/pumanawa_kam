@@ -1,7 +1,21 @@
 <h1>Administration</h1>
 <p>Welcome, <%= current_admin_user.username %>.</p>
-<h2>Canyon Traveller</h2>
-<p><%= link_to "Manage resorts, cameras and parking profiles", admin_resorts_path %></p>
-<h2>Whare Pūmanawa</h2>
-<p><%= link_to "Portfolio foundation available", whare_pumanawa_root_path %></p>
-<p>Mural administration coming next.</p>
+<% if current_admin_user.can_administer_canyon? %>
+  <section aria-labelledby="canyon-admin-heading">
+    <h2 id="canyon-admin-heading">Canyon Traveller</h2>
+    <p><%= link_to "Manage resorts, cameras and parking profiles", admin_resorts_path %></p>
+  </section>
+<% end %>
+<% if current_admin_user.can_administer_murals? %>
+  <section aria-labelledby="mural-admin-heading">
+    <h2 id="mural-admin-heading">Whare Pūmanawa</h2>
+    <p><%= link_to "Manage murals and photos", admin_whare_pumanawa_murals_path %></p>
+    <p><%= link_to "View portfolio", whare_pumanawa_root_path %></p>
+  </section>
+<% end %>
+<% if current_admin_user.super_admin? %>
+  <section aria-labelledby="users-admin-heading">
+    <h2 id="users-admin-heading">Administrators</h2>
+    <p><%= link_to "Manage admin users", admin_users_path %></p>
+  </section>
+<% end %>

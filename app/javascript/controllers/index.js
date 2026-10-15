@@ -28,3 +28,6 @@ application.register("forecast-periods", ForecastPeriodsController)
 
 import ForecastTabsController from "controllers/forecast_tabs_controller"
 application.register("forecast-tabs", ForecastTabsController)
+
+import MuralGalleryController from "controllers/mural_gallery_controller"
+application.register("mural-gallery", MuralGalleryController)

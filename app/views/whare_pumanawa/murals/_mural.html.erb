@@ -1,8 +1,8 @@
-<article class="whare-mural" aria-labelledby="mural-title">
+<article id="whare-detail-<%= mural.id %>" class="whare-mural whare-panel" aria-labelledby="whare-mural-<%= mural.id %>-title" data-mural-gallery-target="detail" <%= "hidden" unless selected %>>
   <% if (hero = photos.first) %>
-    <%= image_tag hero.image.variant(:hero), alt: hero.alt_text, class: "whare-hero" %>
+    <%= image_tag hero.image.variant(:hero), alt: hero.alt_text, class: "whare-hero", loading: "eager" %>
   <% end %>
-  <h2 id="mural-title"><%= mural.title %></h2>
+  <h2 id="whare-mural-<%= mural.id %>-title"><%= mural.title %></h2>
   <% if mural.location.present? || mural.year.present? || mural.client.present? %>
     <dl class="whare-metadata">
       <% { "Location" => mural.location, "Year" => mural.year, "Client" => mural.client }.each do |label, value| %>
@@ -17,7 +17,7 @@
   <% if photos.length > 1 %>
     <section class="whare-supporting" aria-label="More photographs of this mural">
       <% photos.drop(1).each do |photo| %>
-        <%= image_tag photo.image.variant(:hero), alt: photo.alt_text, loading: "lazy" %>
+        <%= image_tag photo.image.variant(:hero), alt: photo.alt_text, loading: "eager" %>
       <% end %>
     </section>
   <% end %>

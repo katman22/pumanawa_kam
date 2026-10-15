@@ -2,7 +2,7 @@ require "test_helper"
 
 class AdminResourcesTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = Admin::User.create!(username: "editor", password: "a-long-test-password")
+    @admin = Admin::User.create!(username: "editor", password: "a-long-test-password", role: :canyon_admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     @resort = Resort.create!(resort_name: "Admin Test Resort", slug: "admin-test", latitude: 40.6, longitude: -111.6)
     post admin_login_path, params: { username: "editor", password: "a-long-test-password" }

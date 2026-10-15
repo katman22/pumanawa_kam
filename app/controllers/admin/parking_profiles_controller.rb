@@ -1,5 +1,6 @@
 # app/controllers/admin/parking_profiles_controller.rb
 class Admin::ParkingProfilesController < Admin::BaseController
+  before_action :require_canyon_admin!
   def edit
     @resort = Resort.find_by!(id: params[:resort_id])
     @profile = ParkingProfile.find_by!(resort: @resort, season: params[:season])

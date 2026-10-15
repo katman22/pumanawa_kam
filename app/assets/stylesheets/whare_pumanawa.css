@@ -1,4 +1,4 @@
-/* Public foundation only: isolated from Aura, Canyon and the admin shell. */
+/* Artist portfolio, isolated from Aura, Canyon and the admin shell. */
 .whare-portfolio { margin: 0; background: #faf9f6; color: #24211f; font-family: system-ui, sans-serif; }
 .whare-portfolio * { box-sizing: border-box; }
 .whare-header, .whare-content, .whare-footer { width: min(90vw, 1100px); margin-inline: auto; padding: 1.5rem 0; }
@@ -16,3 +16,25 @@
 .whare-story { max-width: 70ch; line-height: 1.7; overflow-wrap: anywhere; }
 .whare-supporting { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1.5rem; align-items: start; margin-top: 2rem; }
 .whare-empty, .whare-footer { color: #625b55; }
+
+.whare-content { overflow-wrap: anywhere; }
+.whare-introduction { margin: 1rem 0 2rem; }
+.whare-introduction h1 { margin: .5rem 0; font-size: clamp(2rem, 4vw, 3.8rem); letter-spacing: -.04em; }
+.whare-eyebrow { color: #8c2426; text-transform: uppercase; font-size: .7rem; letter-spacing: .14em; }
+.whare-selector-strip { display: flex; gap: 1rem; overflow-x: auto; padding: .5rem .25rem 1rem; margin-bottom: 2rem; }
+.whare-selector { flex: 0 0 145px; padding: 0 0 .6rem; border: 0; border-bottom: 2px solid transparent; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.whare-selector img, .whare-thumbnail-empty { width: 145px; height: 108px; object-fit: cover; display: block; margin-bottom: .65rem; }
+.whare-thumbnail-empty { background: #e9e5df; padding: 2rem; color: #625b55; }
+.whare-selector > span:last-child { display: block; font-size: .85rem; line-height: 1.4; }
+.whare-selector[aria-pressed="true"] { border-bottom-color: #8c2426; }
+.whare-panel[hidden] { display: none; }
+.whare-panel { margin: 0; }
+.whare-panel h2 { font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -.025em; font-weight: 500; }
+.whare-hero { margin: 0 auto 2rem; background: #f0ede7; }
+@media (max-width: 600px) {
+  .whare-header, .whare-content, .whare-footer { width: 92vw; padding-block: 1rem; }
+  .whare-selector { flex-basis: 120px; min-height: 44px; }
+  .whare-selector img, .whare-thumbnail-empty { width: 120px; height: 90px; }
+  .whare-selector-strip { gap: .75rem; margin-bottom: 1rem; }
+  .whare-hero { max-height: 60svh; }
+}

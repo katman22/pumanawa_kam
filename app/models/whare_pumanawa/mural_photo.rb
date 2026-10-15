@@ -8,6 +8,8 @@ class WharePumanawa::MuralPhoto < ApplicationRecord
     attachable.variant :hero, resize_to_limit: [ 1600, 1600 ]
   end
 
+  before_destroy :protect_published_hero
+
   scope :ordered, -> { order(:position, :id) }
 
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
@@ -15,6 +17,17 @@ class WharePumanawa::MuralPhoto < ApplicationRecord
   validate :supported_image
 
   private
+
+  def protect_published_hero
+    return if destroyed_by_association
+
+    mural.with_lock do
+      if mural.published? && !mural.mural_photos.where.not(id: id).includes(image_attachment: :blob).any?(&:valid?)
+        errors.add(:base, "Unpublish this mural before removing its last valid photo.")
+        throw :abort
+      end
+    end
+  end
 
   def supported_image
     return unless image.attached?

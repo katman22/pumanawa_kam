@@ -2,7 +2,7 @@ require "test_helper"
 
 class AdminAuthenticationTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = Admin::User.create!(username: "artist", password: "a-long-test-password")
+    @admin = Admin::User.create!(username: "artist", password: "a-long-test-password", role: :canyon_admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     @original_secrets = %w[JWT_SECRET JWT_TOKEN].to_h { |key| [ key, ENV[key] ] }
     ENV["JWT_SECRET"] = "test-only-mobile-secret"

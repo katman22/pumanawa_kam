@@ -1,11 +1,23 @@
-<h1>Murals &amp; stories</h1>
+<div class="whare-introduction"><p class="whare-eyebrow">Whare Pūmanawa · Selected work</p><h1>Murals &amp; stories</h1></div>
 <% if @mural %>
-  <nav class="whare-mural-links" aria-label="Murals">
+  <div class="whare-gallery" data-controller="mural-gallery">
+    <div class="whare-selector-strip" role="group" aria-label="Choose a mural" data-action="keydown->mural-gallery#navigate">
+      <% @murals.each_with_index do |mural, index| %>
+        <button type="button" id="whare-selector-<%= mural.id %>" class="whare-selector" aria-pressed="<%= mural == @mural %>" aria-controls="whare-detail-<%= mural.id %>" tabindex="<%= mural == @mural ? 0 : -1 %>" data-mural-gallery-target="card" data-action="mural-gallery#select" data-mural-gallery-index-param="<%= index %>">
+          <% if (photo = @photos_by_mural.fetch(mural.id).first) %>
+            <%= image_tag photo.image.variant(:thumbnail), alt: "", loading: "eager", width: 240, height: 180 %>
+          <% else %>
+            <span class="whare-thumbnail-empty" aria-hidden="true">WP</span>
+          <% end %>
+          <span><%= mural.title %></span>
+        </button>
+      <% end %>
+    </div>
+    <noscript><nav aria-label="Mural permalinks"><% @murals.each do |mural| %><p><%= link_to mural.title, whare_pumanawa_mural_path(mural.slug) %></p><% end %></nav></noscript>
     <% @murals.each do |mural| %>
-      <%= link_to mural.title, whare_pumanawa_mural_path(mural.slug), aria: { current: mural == @mural ? "page" : nil } %>
+      <%= render "mural", mural: mural, photos: @photos_by_mural.fetch(mural.id), selected: mural == @mural %>
     <% end %>
-  </nav>
-  <%= render "mural", mural: @mural, photos: @photos %>
+  </div>
 <% else %>
   <p class="whare-empty">New work will be shared here soon.</p>
 <% end %>
