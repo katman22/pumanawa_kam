@@ -9,6 +9,7 @@ class WharePumanawa::MuralsController < ApplicationController
 
   def show
     @mural = @murals.find { |mural| mural.slug == params[:slug] }
+
     raise ActiveRecord::RecordNotFound unless @mural
 
     load_photos
