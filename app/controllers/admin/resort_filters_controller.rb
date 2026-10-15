@@ -1,5 +1,6 @@
 # app/controllers/admin/resort_filters_controller.rb
 class Admin::ResortFiltersController < Admin::BaseController
+  before_action :require_canyon_admin!
   before_action :set_resort_filter, only: [ :edit, :update, :destroy ]
   before_action :set_parent, only: [ :new, :create ]
 

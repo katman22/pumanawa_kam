@@ -1,5 +1,6 @@
 # app/controllers/admin/resorts_controller.rb
 class Admin::ResortsController < Admin::BaseController
+  before_action :require_canyon_admin!
   before_action :set_resort, only: [ :show, :edit, :update, :destroy ]
 
   def index

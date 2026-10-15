@@ -39,7 +39,7 @@ class AdminIntegrationBoundariesTest < ActionDispatch::IntegrationTest
     HomeResort.create!(user: mobile, resort: resort, kind: 0)
     subscription = mobile.subscriptions.create!(platform: "ios", product_id: "test.pro", status: "active", expires_at: 1.day.from_now)
     mobile.entitlement_snapshots.create!(active: true, tier: "pro", version: 2, features: [ "test-feature" ], source: {})
-    admin = Admin::User.create!(username: "operator", password: "a-long-test-password")
+    admin = Admin::User.create!(username: "operator", password: "a-long-test-password", role: :canyon_admin)
     token = JwtToken.issue({ user_id: mobile.id })
     headers = { "Authorization" => "Bearer #{token}" }
 

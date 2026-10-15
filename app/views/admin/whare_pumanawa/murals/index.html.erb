@@ -1,0 +1,13 @@
+<h1>Whare Pūmanawa murals</h1>
+<p><%= link_to "New mural", new_admin_whare_pumanawa_mural_path, class: "btn btn-primary" %> <%= link_to "View portfolio", whare_pumanawa_root_path %></p>
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Thumbnail</th><th>Title</th><th>Status</th><th>Position</th><th>Manage</th></tr></thead>
+  <tbody><% @murals.each do |mural| %>
+    <tr>
+      <td><% if (photo = mural.mural_photos.first)&.image&.attached? && photo.valid? %><%= image_tag photo.image.variant(:thumbnail), alt: "", width: 120, height: 90 %><% end %></td>
+      <td><%= mural.title %></td><td><%= mural.published? ? "Published" : "Draft" %></td><td><%= mural.position %></td>
+      <td><%= link_to "Edit #{mural.title}", edit_admin_whare_pumanawa_mural_path(mural) %></td>
+    </tr>
+  <% end %></tbody>
+</table></div>
+<% if @murals.empty? %><p>No murals yet. Create a draft to begin.</p><% end %>

@@ -1,0 +1,11 @@
+<% if @user.errors.any? %>
+  <div role="alert" class="alert alert-danger"><ul><% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
+<% end %>
+<%= form_with model: @user, url: @user.persisted? ? admin_user_path(@user) : admin_users_path do |form| %>
+  <div class="mb-3"><%= form.label :username %><%= form.text_field :username, required: true, autocomplete: "off", class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :role %><%= form.select :role, Admin::User.roles.keys.map { |role| [ role.humanize, role ] }, {}, class: "form-select" %></div>
+  <div class="mb-3"><%= form.check_box :active %> <%= form.label :active %></div>
+  <div class="mb-3"><%= form.label :password, @user.persisted? ? "New password (leave blank to keep current)" : "Password" %><%= form.password_field :password, value: nil, autocomplete: "new-password", minlength: 12, required: @user.new_record?, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :password_confirmation %><%= form.password_field :password_confirmation, value: nil, autocomplete: "new-password", class: "form-control" %></div>
+  <%= form.submit class: "btn btn-primary" %> <%= link_to "Cancel", admin_users_path %>
+<% end %>

@@ -23,6 +23,6 @@ class WharePumanawa::MuralsController < ApplicationController
 
   def load_photos
     # Recheck publication-facing validity if an attachment was removed separately.
-    @photos = @mural ? @mural.mural_photos.select(&:valid?) : []
+    @photos_by_mural = @murals.to_h { |mural| [ mural.id, mural.mural_photos.select(&:valid?) ] }
   end
 end

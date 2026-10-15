@@ -108,6 +108,13 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy", as: :logout
     root to: "dashboard#index"
+    resources :users, only: [ :index, :new, :create, :edit, :update ]
+
+    namespace :whare_pumanawa do
+      resources :murals do
+        resources :mural_photos, only: [ :create, :update, :destroy ]
+      end
+    end
 
     resources :resorts do
       resources :resort_filters, only: [ :new, :create ]

@@ -14,10 +14,11 @@ class AdminLoginTest < ApplicationSystemTestCase
 
   setup do
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
+    page.driver.browser.execute_cdp("Emulation.clearDeviceMetricsOverride")
   end
 
   test "form signs in and out without image rotation" do
-    Admin::User.create!(username: "artist", password: "a-long-test-password")
+    Admin::User.create!(username: "artist", password: "a-long-test-password", role: :canyon_admin)
     visit admin_login_path
     image = find(".entry-image")["src"]
     fill_in "Username", with: "artist"

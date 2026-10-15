@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_14_213348) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_15_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -50,8 +50,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_14_213348) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "mural_admin", null: false
     t.index ["username"], name: "index_admin_users_on_username", unique: true
     t.check_constraint "length(password_digest::text) > 0", name: "admin_users_password_digest_present"
+    t.check_constraint "role::text = ANY (ARRAY['super_admin'::character varying, 'canyon_admin'::character varying, 'mural_admin'::character varying]::text[])", name: "admin_users_role_allowed"
     t.check_constraint "username::text = lower(btrim(username::text)) AND length(username::text) > 0", name: "admin_users_username_normalized"
   end
 

@@ -23,8 +23,8 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
     WharePumanawa::Mural.create!(title: "Private draft")
     get whare_pumanawa_root_path
     assert_response :success
-    assert_select "#mural-title", "Blue Heron"
-    assert_equal [ first.title, second.title, later.title ], css_select(".whare-mural-links a").map(&:text)
+    assert_select ".whare-panel:not([hidden]) h2", "Blue Heron"
+    assert_equal [ first.title, second.title, later.title ], css_select(".whare-selector > span:last-child").map(&:text)
     assert_select ".whare-hero[alt='Blue Heron painted on a wall']", count: 1
     assert_select ".whare-supporting img[alt='Supporting detail']", count: 1
     assert_select ".whare-metadata", text: /Main Street.*2026.*Community/m
@@ -40,9 +40,9 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
     draft = WharePumanawa::Mural.create!(title: "Hidden")
     get whare_pumanawa_mural_path(requested.slug)
     assert_response :success
-    assert_select "#mural-title", "Renamed Work"
+    assert_select ".whare-panel:not([hidden]) h2", "Renamed Work"
     assert_select "a[rel='bookmark'][href=?]", whare_pumanawa_mural_path("second", locale: :en)
-    assert_select ".whare-mural-links a", count: 2
+    assert_select ".whare-selector", count: 2
     assert_not_includes response.body, draft.title
     get whare_pumanawa_mural_path(draft.slug)
     assert_response :not_found
@@ -56,7 +56,7 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
     mural.mural_photos.first.update_columns(alt_text: " ")
     get whare_pumanawa_mural_path(mural.slug)
     assert_response :success
-    assert_select "#mural-title", mural.title
+    assert_select ".whare-panel:not([hidden]) h2", mural.title
     assert_select ".whare-hero", count: 0
   end
 
@@ -65,9 +65,29 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
     WharePumanawa::Mural.strict_loading_by_default = true
     get whare_pumanawa_root_path
     assert_response :success
-    assert_select ".whare-hero", count: 1
+    assert_select ".whare-hero", count: 3
   ensure
     WharePumanawa::Mural.strict_loading_by_default = false
+  end
+
+  test "selectors control unique server rendered panels with the requested initial state" do
+    first = published_mural("First work")
+    second = published_mural("Second work")
+    get whare_pumanawa_mural_path(second.slug)
+    assert_response :success
+    assert_select ".whare-selector", count: 2
+    assert_select ".whare-panel", count: 2
+    assert_select ".whare-panel[hidden]", count: 1
+    assert_select "#whare-selector-#{first.id}[aria-pressed='false'][tabindex='-1']"
+    assert_select "#whare-selector-#{second.id}[aria-pressed='true'][tabindex='0']"
+    css_select(".whare-selector").each do |button|
+      assert_equal "button", button["type"]
+      assert_select "##{button['aria-controls']}[data-mural-gallery-target='detail']", count: 1
+    end
+    ids = css_select("[id]").map { |node| node["id"] }
+    assert_equal ids.uniq, ids
+    assert_select ".whare-gallery img[loading='lazy']", count: 0
+    assert_select "noscript a", count: 2
   end
 
   private

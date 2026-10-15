@@ -1,0 +1,8 @@
+<h1>Edit mural</h1>
+<p><strong><%= @mural.published? ? "Published" : "Draft" %></strong> · Stable slug: <code><%= @mural.slug %></code></p>
+<% if @mural.published? %><p><%= link_to "Open public permalink", whare_pumanawa_mural_path(@mural.slug) %></p><% end %>
+<%= render "admin/whare_pumanawa/murals/form" %>
+<hr>
+<%= render "admin/whare_pumanawa/murals/photos" %>
+<hr>
+<%= button_to "Delete mural", admin_whare_pumanawa_mural_path(@mural), method: :delete, class: "btn btn-outline-danger", form: { data: { turbo_confirm: "Delete this mural and all its photographs? This cannot be undone." } } %>
