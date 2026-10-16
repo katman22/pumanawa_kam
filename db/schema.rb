@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_15_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_16_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -293,6 +293,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_15_000001) do
     t.check_constraint "provider::text = ANY (ARRAY['apple'::character varying::text, 'google'::character varying::text])", name: "webhook_events_provider_check"
   end
 
+  create_table "whare_pumanawa_contributors", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "bio"
+    t.string "location"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_whare_pumanawa_contributors_on_slug", unique: true
+    t.check_constraint "\"position\" >= 0", name: "whare_contributors_position_nonnegative"
+  end
+
   create_table "whare_pumanawa_mural_photos", force: :cascade do |t|
     t.bigint "mural_id", null: false
     t.string "alt_text"
@@ -314,6 +327,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_15_000001) do
     t.boolean "published", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "contributor_id"
+    t.index ["contributor_id"], name: "index_whare_pumanawa_murals_on_contributor_id"
     t.index ["slug"], name: "index_whare_pumanawa_murals_on_slug", unique: true
     t.check_constraint "\"position\" >= 0", name: "whare_pumanawa_murals_position_nonnegative"
   end
@@ -333,4 +348,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_15_000001) do
   add_foreign_key "resort_filters", "resorts"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
+  add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_contributors", column: "contributor_id"
 end

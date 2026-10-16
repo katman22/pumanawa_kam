@@ -59,6 +59,7 @@ class MuralGalleryTest < ApplicationSystemTestCase
   end
 
   test "mural admin can create upload describe and publish through ordinary forms" do
+    WharePumanawa::Contributor.create!(name: "Community artist")
     Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     visit admin_login_path
@@ -68,6 +69,7 @@ class MuralGalleryTest < ApplicationSystemTestCase
     click_link "Whare Pūmanawa", match: :first
     click_link "New mural"
     fill_in "Title", with: "Community wall"
+    select "Community artist", from: "Contributor"
     click_button "Save mural"
     assert_text "Mural created"
     attach_file "JPEG, PNG or WebP images (up to 20 MiB each)", file_fixture("mural-small.jpg")

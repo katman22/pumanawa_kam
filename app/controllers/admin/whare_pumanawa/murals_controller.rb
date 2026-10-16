@@ -1,4 +1,5 @@
 class Admin::WharePumanawa::MuralsController < Admin::WharePumanawa::BaseController
+  before_action :load_contributors, only: [ :new, :create, :edit, :update ]
   before_action :set_mural, only: [ :show, :edit, :update, :destroy ]
 
   def index
@@ -45,7 +46,11 @@ class Admin::WharePumanawa::MuralsController < Admin::WharePumanawa::BaseControl
     @mural = ::WharePumanawa::Mural.includes(mural_photos: { image_attachment: :blob }).find(params[:id])
   end
 
+  def load_contributors
+    @contributors = ::WharePumanawa::Contributor.ordered
+  end
+
   def mural_params
-    params.require(:whare_pumanawa_mural).permit(:title, :location, :year, :client, :description, :position, :published)
+    params.require(:whare_pumanawa_mural).permit(:contributor_id, :title, :location, :year, :client, :description, :position, :published)
   end
 end

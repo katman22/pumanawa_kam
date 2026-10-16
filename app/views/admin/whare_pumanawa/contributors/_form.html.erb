@@ -1,0 +1,11 @@
+<% if @contributor.errors.any? %>
+  <div role="alert" class="alert alert-danger"><ul><% @contributor.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
+<% end %>
+<%= form_with model: @contributor, url: @contributor.persisted? ? admin_whare_pumanawa_contributor_path(@contributor) : admin_whare_pumanawa_contributors_path do |form| %>
+  <div class="mb-3"><%= form.label :name %><%= form.text_field :name, required: true, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :location %><%= form.text_field :location, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :bio, "Bio (plain text)" %><%= form.text_area :bio, rows: 5, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :position %><%= form.number_field :position, min: 0, required: true, class: "form-control" %></div>
+  <div class="mb-3"><%= form.check_box :active %> <%= form.label :active %><p class="form-text">Inactive contributors have no public showcase. Individual published mural pages remain available.</p></div>
+  <%= form.submit "Save contributor", class: "btn btn-primary" %> <%= link_to "Cancel", admin_whare_pumanawa_contributors_path %>
+<% end %>
