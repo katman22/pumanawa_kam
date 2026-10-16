@@ -1,4 +1,8 @@
 class WharePumanawa::Mural < ApplicationRecord
+  # Nullable during the contributor rollout so older deployed writers remain compatible.
+  belongs_to :contributor, optional: true, inverse_of: :murals
+  validates :contributor, presence: true, if: -> { contributor_id.present? }
+
   has_many :mural_photos, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :mural
 
   attr_readonly :slug

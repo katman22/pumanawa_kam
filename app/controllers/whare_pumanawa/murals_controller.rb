@@ -19,7 +19,7 @@ class WharePumanawa::MuralsController < ApplicationController
 
   def load_murals
     @murals = WharePumanawa::Mural.published.ordered
-      .includes(mural_photos: { image_attachment: :blob }).to_a
+      .includes(:contributor, mural_photos: { image_attachment: :blob }).to_a
   end
 
   def load_photos

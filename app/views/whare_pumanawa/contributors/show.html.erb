@@ -1,0 +1,29 @@
+<header class="showcase-intro">
+  <p class="whare-eyebrow">Whare Pūmanawa · Contributor showcase</p>
+  <h1><%= @contributor.name %></h1>
+  <% if @contributor.location.present? %><p><%= @contributor.location %></p><% end %>
+</header>
+<% if @showcase.items.empty? %>
+  <% if @contributor.bio.present? %><p class="showcase-bio"><%= truncate(@contributor.bio, length: 360, separator: " ") %></p><% end %>
+  <p class="whare-empty">Published work will be shared here soon.</p>
+<% else %>
+  <div class="showcase-wall showcase-wall--<%= @showcase.size %>" aria-label="Selected work by <%= @contributor.name %>">
+    <% @showcase.items.each_with_index do |item, index| %>
+      <figure class="showcase-art showcase-slot--<%= item.slot %>" data-photo-id="<%= item.photo.id %>" data-orientation="<%= item.orientation %>">
+        <%= link_to whare_pumanawa_mural_path(item.mural.slug), aria: { label: "View #{item.mural.title}" } do %>
+          <%= image_tag item.photo.image.variant(:hero), alt: item.photo.alt_text, loading: index.zero? ? "eager" : "lazy" %>
+        <% end %>
+        <figcaption><%= item.mural.title %><% if item.mural.year.present? %> · <%= item.mural.year %><% end %></figcaption>
+      </figure>
+      <% if index.zero? && @contributor.bio.present? %>
+        <aside class="showcase-text showcase-bio"><p class="whare-eyebrow">In their words</p><p><%= truncate(@contributor.bio, length: 360, separator: " ") %></p></aside>
+      <% end %>
+      <% if index == [1, @showcase.items.length - 1].min && @showcase.story %>
+        <% mural = @showcase.story %>
+        <aside class="showcase-text showcase-story"><h2><%= mural.title %></h2><p class="showcase-caption"><%= [mural.location, mural.year, mural.client].select(&:present?).join(" · ") %></p><p><%= truncate(mural.description, length: 240, separator: " ") %></p><%= link_to "Read the story", whare_pumanawa_mural_path(mural.slug) %></aside>
+      <% end %>
+    <% end %>
+    <div class="showcase-signature"><p>Whare Pūmanawa</p><p><%= @contributor.name %></p><% if @contributor.location.present? %><p><%= @contributor.location %></p><% end %></div>
+  </div>
+<% end %>
+<p class="showcase-return"><%= link_to "Explore all murals", whare_pumanawa_root_path %></p>

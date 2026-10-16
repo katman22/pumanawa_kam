@@ -3,6 +3,7 @@
     <%= image_tag hero.image.variant(:hero), alt: hero.alt_text, class: "whare-hero", loading: "eager" %>
   <% end %>
   <h2 id="whare-mural-<%= mural.id %>-title"><%= mural.title %></h2>
+  <% if mural.contributor&.active? %><p class="whare-contributor"><%= link_to mural.contributor.name, whare_pumanawa_contributor_path(mural.contributor.slug) %></p><% end %>
   <% if mural.location.present? || mural.year.present? || mural.client.present? %>
     <dl class="whare-metadata">
       <% { "Location" => mural.location, "Year" => mural.year, "Client" => mural.client }.each do |label, value| %>

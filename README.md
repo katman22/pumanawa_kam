@@ -143,3 +143,35 @@ delivery, durable production object-storage provisioning, richer permissions,
 signup/recovery and gallery search/filtering. See
 research/whare_pumanawa_phase_c_implementation.txt for Phase C validation and
 research/whare_pumanawa_phase_b_implementation.txt for the storage foundation.
+
+## Contributor showcases
+
+Mural administrators and super admins manage contributors at
+`/admin/whare_pumanawa/contributors`. Contributors are content identities, not
+login accounts. Edit name, plain-text bio, location, order and active status;
+slugs are permanent and deletion is not exposed. Assign contributors using the
+ordinary mural form select. Deactivating a contributor hides their showcase,
+while existing published mural detail URLs remain available.
+
+Public showcases use `/whare_pumanawa/contributors/:slug`. They select up to ten
+distinct attached originals from that contributor's published murals, taking
+ordered hero photos before supporting photos. CSS Grid supplies the exhibition
+wall; mobile uses an editorial stack. Existing image dimensions determine
+landscape/portrait/squareish slots, with a neutral fallback when unavailable.
+No synchronous analysis, new variants, layout JavaScript or storage changes.
+Images link to existing mural permalinks; bio/story excerpts stay bounded.
+
+Migration `20261016000001` adds the contributor table and nullable mural FK,
+then assigns existing unassigned murals to an initial `Whare Pūmanawa`
+contributor. Edit this placeholder's name/content and reassign murals as needed.
+It creates no contributor when there are no existing unassigned murals.
+The initial backfill preserves mural slugs, publication state, timestamps and
+all attachment/storage records. The FK remains nullable and model association
+optional during this rollout so old application writers remain compatible.
+The admin form requires a contributor, but legacy requests can still omit it.
+Once old writers are retired and assignments reviewed, repeat the unassigned
+audit/backfill before a separate NOT NULL migration; no automatic post-deploy
+backfill or NOT NULL enforcement is bundled here. R2 configuration is unchanged.
+
+See research/whare_pumanawa_contributor_showcase.txt for inspection, exact files,
+validation results and remaining rollout considerations.

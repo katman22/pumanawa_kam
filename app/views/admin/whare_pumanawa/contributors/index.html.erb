@@ -1,0 +1,9 @@
+<h1>Contributors</h1>
+<p><%= link_to "New contributor", new_admin_whare_pumanawa_contributor_path, class: "btn btn-primary" %> <%= link_to "Back to murals", admin_whare_pumanawa_murals_path %></p>
+<div class="table-responsive"><table class="table">
+  <thead><tr><th>Name</th><th>Location</th><th>Status</th><th>Position</th><th>Manage</th></tr></thead>
+  <tbody><% @contributors.each do |contributor| %>
+    <tr><td><%= contributor.name %></td><td><%= contributor.location %></td><td><%= contributor.active? ? "Active" : "Inactive" %></td><td><%= contributor.position %></td><td><%= link_to "Edit #{contributor.name}", edit_admin_whare_pumanawa_contributor_path(contributor) %> <% if contributor.active? %>· <%= link_to "Showcase", whare_pumanawa_contributor_path(contributor.slug) %><% end %></td></tr>
+  <% end %></tbody>
+</table></div>
+<% if @contributors.empty? %><p>Create a contributor before assigning murals.</p><% end %>

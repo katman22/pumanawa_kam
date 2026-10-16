@@ -98,6 +98,7 @@ Rails.application.routes.draw do
   namespace :whare_pumanawa do
     root "murals#index"
     resources :murals, only: :show, param: :slug
+    resources :contributors, only: :show, param: :slug
   end
 
   # --------------------------------------------------------
@@ -111,6 +112,7 @@ Rails.application.routes.draw do
     resources :users, only: [ :index, :new, :create, :edit, :update ]
 
     namespace :whare_pumanawa do
+      resources :contributors, only: [ :index, :new, :create, :edit, :update ]
       resources :murals do
         resources :mural_photos, only: [ :create, :update, :destroy ]
       end
