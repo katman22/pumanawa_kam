@@ -51,7 +51,7 @@ class Admin::WharePumanawa::ContributorsControllerTest < ActionDispatch::Integra
     contributor = ::WharePumanawa::Contributor.create!(name: "Artist")
     get new_admin_whare_pumanawa_mural_path
     assert_select "select[name='whare_pumanawa_mural[contributor_id]'] option[value='#{contributor.id}']", "Artist"
-    post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { title: "Assigned", contributor_id: contributor.id } }
+    post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { title: "Assigned", project_id: @project.id, contributor_id: contributor.id } }
     assert_response :see_other
     mural = ::WharePumanawa::Mural.find_by!(title: "Assigned")
     assert_equal contributor, mural.contributor
@@ -64,6 +64,8 @@ class Admin::WharePumanawa::ContributorsControllerTest < ActionDispatch::Integra
 
   def login(role)
     admin = Admin::User.create!(username: role.to_s, password: "a-long-test-password", role: role)
+    @project = ::WharePumanawa::Project.create!(name: "Test collection #{role}")
+    @project.project_memberships.create!(admin_user: admin) if admin.mural_admin?
     post admin_login_path, params: { username: admin.username, password: "a-long-test-password" }
   end
 end

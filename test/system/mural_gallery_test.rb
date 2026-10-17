@@ -60,14 +60,17 @@ class MuralGalleryTest < ApplicationSystemTestCase
 
   test "mural admin can create upload describe and publish through ordinary forms" do
     WharePumanawa::Contributor.create!(name: "Community artist")
-    Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
+    project = WharePumanawa::Project.create!(name: "Community collection")
+    admin = Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
+    project.project_memberships.create!(admin_user: admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     visit admin_login_path
     fill_in "Username", with: "artist"
     fill_in "Password", with: "a-long-test-password"
     click_button "Sign in"
-    click_link "Whare Pūmanawa", match: :first
-    click_link "New mural"
+    click_link "Whare Pūmanawa / Projects", match: :first
+    click_link "Community collection"
+    click_link "New mural in this project"
     fill_in "Title", with: "Community wall"
     select "Community artist", from: "Contributor"
     click_button "Save mural"

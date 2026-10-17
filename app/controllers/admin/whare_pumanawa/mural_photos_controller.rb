@@ -6,6 +6,8 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
     upload = params.require(:upload).permit(:alt_text, images: [])
     files = Array(upload[:images]).reject(&:blank?)
     saved = @mural.with_lock do
+      return unless require_mural_access!(@mural)
+
       start = (@mural.mural_photos.maximum(:position) || -1) + 1
       photos = files.each_with_index.map do |file, index|
         @mural.mural_photos.build(image: file, alt_text: upload[:alt_text], position: start + index)
@@ -25,7 +27,11 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
   end
 
   def update
-    saved = @mural.with_lock { @photo.update(photo_params) }
+    saved = @mural.with_lock do
+      return unless require_mural_access!(@mural)
+
+      @photo.update(photo_params)
+    end
     if saved
       redirect_to_mural("Photo updated.")
     else
@@ -35,7 +41,11 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
   end
 
   def destroy
-    removed = @mural.with_lock { @photo.destroy }
+    removed = @mural.with_lock do
+      return unless require_mural_access!(@mural)
+
+      @photo.destroy
+    end
     if removed
       redirect_to_mural("Photo removed.")
     else
@@ -47,7 +57,8 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
   private
 
   def set_mural
-    @mural = ::WharePumanawa::Mural.includes(mural_photos: { image_attachment: :blob }).find(params[:mural_id])
+    @mural = ::WharePumanawa::Mural.includes(:project, mural_photos: { image_attachment: :blob }).find(params[:mural_id])
+    require_mural_access!(@mural)
   end
 
   def set_photo
@@ -63,6 +74,7 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
   end
 
   def render_mural_errors
+    @projects = available_projects
     @photos = @mural.mural_photos.select(&:persisted?).map { |photo| photo.id == @photo&.id ? @photo : photo }
     render "admin/whare_pumanawa/murals/edit", status: :unprocessable_entity
   end
