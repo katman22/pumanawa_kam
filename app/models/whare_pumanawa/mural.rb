@@ -3,6 +3,11 @@ class WharePumanawa::Mural < ApplicationRecord
   belongs_to :contributor, optional: true, inverse_of: :murals
   validates :contributor, presence: true, if: -> { contributor_id.present? }
 
+  # Nullable for older writers during rollout; admin saves require assignment.
+  belongs_to :project, optional: true, inverse_of: :murals
+  validates :project, presence: true, if: -> { project_id.present? }
+  validates :project, presence: true, on: :admin
+
   has_many :mural_photos, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :mural
 
   attr_readonly :slug

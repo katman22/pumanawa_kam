@@ -1,4 +1,5 @@
 require "test_helper"
+require "vips"
 
 if ENV["CHROMEDRIVER"].present?
   Selenium::WebDriver::Chrome::Service.driver_path = ENV.fetch("CHROMEDRIVER")

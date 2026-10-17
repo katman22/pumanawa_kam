@@ -3,6 +3,8 @@ require "test_helper"
 class Admin::WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
   setup do
     admin = Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
+    @project = ::WharePumanawa::Project.create!(name: "Test collection")
+    @project.project_memberships.create!(admin_user: admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     post admin_login_path, params: { username: admin.username, password: "a-long-test-password" }
   end
@@ -11,7 +13,7 @@ class Admin::WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTe
     get new_admin_whare_pumanawa_mural_path
     assert_response :success
     assert_difference "WharePumanawa::Mural.count", 1 do
-      post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { title: "Blue Heron", position: 2, slug: "forged" } }
+      post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { project_id: @project.id, title: "Blue Heron", position: 2, slug: "forged" } }
     end
     mural = ::WharePumanawa::Mural.find_by!(title: "Blue Heron")
     assert_equal "blue-heron", mural.slug
@@ -19,7 +21,7 @@ class Admin::WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTe
     get edit_admin_whare_pumanawa_mural_path(mural)
     assert_response :success
     assert_select "input[name='whare_pumanawa_mural[slug]']", count: 0
-    patch admin_whare_pumanawa_mural_path(mural), params: { whare_pumanawa_mural: { title: "Renamed", location: "Main Street", year: 2026, client: "Community", description: "Story", position: 1, slug: "forged" } }
+    patch admin_whare_pumanawa_mural_path(mural), params: { whare_pumanawa_mural: { project_id: @project.id, title: "Renamed", location: "Main Street", year: 2026, client: "Community", description: "Story", position: 1, slug: "forged" } }
     assert_equal "blue-heron", mural.reload.slug
     assert_equal "Main Street", mural.location
     get admin_whare_pumanawa_murals_path
@@ -32,10 +34,10 @@ class Admin::WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "validation and incomplete publication errors are shown" do
-    post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { title: "" } }
+    post admin_whare_pumanawa_murals_path, params: { whare_pumanawa_mural: { project_id: @project.id, title: "" } }
     assert_response :unprocessable_entity
     assert_select "[role=alert]"
-    mural = ::WharePumanawa::Mural.create!(title: "Draft")
+    mural = ::WharePumanawa::Mural.create!(project: @project, title: "Draft")
     patch admin_whare_pumanawa_mural_path(mural), params: { whare_pumanawa_mural: { published: "1" } }
     assert_response :unprocessable_entity
     assert_not mural.reload.published?
@@ -51,7 +53,7 @@ class Admin::WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "valid content publishes and unpublishes without changing permalink" do
-    mural = ::WharePumanawa::Mural.create!(title: "Publishable")
+    mural = ::WharePumanawa::Mural.create!(project: @project, title: "Publishable")
     photo = mural.mural_photos.build(alt_text: "Heron on a wall")
     photo.image.attach(io: File.open(file_fixture("mural-small.jpg")), filename: "mural-small.jpg")
     photo.save!

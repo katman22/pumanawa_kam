@@ -5,9 +5,11 @@ class Admin::WharePumanawa::MuralPhotosControllerTest < ActionDispatch::Integrat
 
   setup do
     admin = Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
+    @project = ::WharePumanawa::Project.create!(name: "Test collection")
+    @project.project_memberships.create!(admin_user: admin)
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     post admin_login_path, params: { username: admin.username, password: "a-long-test-password" }
-    @mural = ::WharePumanawa::Mural.create!(title: "Photos")
+    @mural = ::WharePumanawa::Mural.create!(project: @project, title: "Photos")
   end
 
   test "multiple real images upload then alt text and ordering can change" do

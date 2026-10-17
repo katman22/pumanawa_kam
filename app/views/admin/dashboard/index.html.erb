@@ -9,6 +9,8 @@
 <% if current_admin_user.can_administer_murals? %>
   <section aria-labelledby="mural-admin-heading">
     <h2 id="mural-admin-heading">Whare Pūmanawa</h2>
+    <p><%= link_to "Projects", admin_whare_pumanawa_projects_path %></p>
+    <p><%= link_to "Contributors", admin_whare_pumanawa_contributors_path %></p>
     <p><%= link_to "Manage murals and photos", admin_whare_pumanawa_murals_path %></p>
     <p><%= link_to "View portfolio", whare_pumanawa_root_path %></p>
   </section>

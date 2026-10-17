@@ -175,3 +175,47 @@ backfill or NOT NULL enforcement is bundled here. R2 configuration is unchanged.
 
 See research/whare_pumanawa_contributor_showcase.txt for inspection, exact files,
 validation results and remaining rollout considerations.
+
+## Projects and collaborative editing
+
+`Admin::User` is the authenticated identity, `Contributor` is public attribution,
+and `WharePumanawa::Project` is the collaboration boundary above murals.
+Start at `/admin/whare_pumanawa/projects`; no public Project page is introduced.
+
+Super admins manage every project/mural without membership. Mural admins see
+and manage only projects joined through `WharePumanawa::ProjectMembership` and
+the murals in those projects. Canyon/inactive accounts receive no access, even
+with stale membership rows. Membership removal takes effect on the next request.
+Only super admins add/remove existing active mural admins. Future accounts gain
+no blanket membership. A mural admin creating a project gets initial membership
+in that new project within the same transaction, granting no access elsewhere.
+
+Mural indexes and project selects use the same scoped capabilities as direct URL
+authorization. Mural edits, publishing, deletion, photo upload, alt text/order and
+photo removal enforce project access; mutations check again after parent locking.
+Reassignment requires access to both the current and destination projects.
+Admin mural saves require project assignment server-side using the additional
+admin validation context alongside create/update, preserving slug callbacks.
+Inactive projects remain editable by members; they do not unpublish their murals.
+Project deletion has no route, and model/FK restrictions protect owned records.
+
+Migration `20261016000002` adds projects/memberships and nullable mural project_id,
+then backfills existing unassigned murals into **Whare Pūmanawa Collection** only
+when needed. IDs, slugs, contributor assignments, published state, timestamps and
+photos/attachments stay unchanged. Existing mural-admin accounts get a one-time
+membership to that collection, including inactive accounts (which remain denied
+while inactive). Super/canyon accounts receive no membership. This is deployment
+bootstrap, not an ongoing synchronization task; do not rerun the initial grant
+for future accounts.
+
+The model/FK remain optional/nullable for older writers during rollout. Unassigned
+murals are manageable only by super admins until assigned. Audit these rows after
+deployment before a later reviewed NOT NULL migration. Contributor administration
+remains product-wide public-attribution editing. Public contributor showcases
+still compose published murals across projects, including inactive projects.
+Existing gallery/detail URLs, R2/checksum settings and mobile/API auth are unchanged.
+No private attachment delivery, Organization or generic Artwork domain is added.
+
+The approved design is documented in
+research/whare_pumanawa_project_collaboration.txt. Restoration provenance and
+current validation are in research/whare_pumanawa_project_baseline_restoration.txt.

@@ -1,6 +1,8 @@
 class Admin::User < ApplicationRecord
   self.table_name = "admin_users"
 
+  has_many :project_memberships, class_name: "WharePumanawa::ProjectMembership", foreign_key: :admin_user_id, inverse_of: :admin_user, dependent: :destroy
+
   has_secure_password reset_token: false
   normalizes :username, with: ->(value) { value.strip.downcase }
   enum :role, { super_admin: "super_admin", canyon_admin: "canyon_admin", mural_admin: "mural_admin" }, validate: true
@@ -17,6 +19,33 @@ class Admin::User < ApplicationRecord
 
   def can_administer_murals?
     super_admin? || mural_admin?
+  end
+
+  def administrable_projects
+    projects = ::WharePumanawa::Project.all
+    return projects.none unless active? && can_administer_murals?
+    return projects if super_admin?
+
+    projects.where(id: project_memberships.select(:project_id))
+  end
+
+  def administrable_murals
+    murals = ::WharePumanawa::Mural.all
+    return murals.none unless active? && can_administer_murals?
+    return murals if super_admin?
+
+    murals.where(project_id: administrable_projects.select(:id))
+  end
+
+  def can_administer_project?(project)
+    return false unless active? && can_administer_murals?
+    return false unless project&.persisted?
+
+    super_admin? || project_memberships.exists?(project_id: project.id)
+  end
+
+  def can_administer_mural?(mural)
+    mural.present? && active? && can_administer_murals? && (super_admin? || can_administer_project?(mural.project))
   end
 
   private

@@ -27,7 +27,9 @@
       <%= link_to "New Resort", new_admin_resort_path, class: "btn btn-primary" %>
     <% end %>
     <% if current_admin_user.can_administer_murals? %>
-      <%= link_to "Whare Pūmanawa", admin_whare_pumanawa_murals_path, class: "btn" %>
+      <%= link_to "Whare Pūmanawa / Projects", admin_whare_pumanawa_projects_path, class: "btn" %>
+      <%= link_to "Contributors", admin_whare_pumanawa_contributors_path, class: "btn" %>
+      <%= link_to "Murals", admin_whare_pumanawa_murals_path, class: "btn" %>
     <% end %>
     <% if current_admin_user.super_admin? %>
       <%= link_to "Users", admin_users_path, class: "btn" %>

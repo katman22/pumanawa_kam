@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_16_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -328,9 +328,34 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "contributor_id"
+    t.bigint "project_id"
     t.index ["contributor_id"], name: "index_whare_pumanawa_murals_on_contributor_id"
+    t.index ["project_id"], name: "index_whare_pumanawa_murals_on_project_id"
     t.index ["slug"], name: "index_whare_pumanawa_murals_on_slug", unique: true
     t.check_constraint "\"position\" >= 0", name: "whare_pumanawa_murals_position_nonnegative"
+  end
+
+  create_table "whare_pumanawa_project_memberships", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_whare_pumanawa_project_memberships_on_admin_user_id"
+    t.index ["project_id", "admin_user_id"], name: "index_whare_project_memberships_on_project_and_admin", unique: true
+    t.index ["project_id"], name: "index_whare_pumanawa_project_memberships_on_project_id"
+  end
+
+  create_table "whare_pumanawa_projects", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "description"
+    t.string "location"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_whare_pumanawa_projects_on_slug", unique: true
+    t.check_constraint "\"position\" >= 0", name: "whare_projects_position_nonnegative"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -349,4 +374,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000001) do
   add_foreign_key "subscriptions", "users"
   add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_contributors", column: "contributor_id"
+  add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_projects", column: "project_id"
+  add_foreign_key "whare_pumanawa_project_memberships", "admin_users"
+  add_foreign_key "whare_pumanawa_project_memberships", "whare_pumanawa_projects", column: "project_id"
 end

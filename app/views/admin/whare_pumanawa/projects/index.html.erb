@@ -1,0 +1,6 @@
+<h1>Whare Pūmanawa projects</h1>
+<p><%= link_to "New project", new_admin_whare_pumanawa_project_path, class: "btn btn-primary" %> <%= link_to "Contributors", admin_whare_pumanawa_contributors_path %> · <%= link_to "Murals", admin_whare_pumanawa_murals_path %></p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Project</th><th>Location</th><th>Status</th><th>Position</th></tr></thead><tbody>
+<% @projects.each do |project| %><tr><td><%= link_to project.name, admin_whare_pumanawa_project_path(project) %></td><td><%= project.location %></td><td><%= project.active? ? "Active" : "Inactive" %></td><td><%= project.position %></td></tr><% end %>
+</tbody></table></div>
+<% if @projects.empty? %><p>No projects assigned yet. A super admin can add you to an existing project, or you can create a new one.</p><% end %>

@@ -112,6 +112,9 @@ Rails.application.routes.draw do
     resources :users, only: [ :index, :new, :create, :edit, :update ]
 
     namespace :whare_pumanawa do
+      resources :projects, except: :destroy do
+        resources :project_memberships, only: [ :create, :destroy ]
+      end
       resources :contributors, only: [ :index, :new, :create, :edit, :update ]
       resources :murals do
         resources :mural_photos, only: [ :create, :update, :destroy ]
