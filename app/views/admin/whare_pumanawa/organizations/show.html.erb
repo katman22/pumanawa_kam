@@ -1,0 +1,13 @@
+<h1><%= @organization.name %></h1>
+<p><strong><%= @organization.active? ? "Active" : "Inactive" %></strong><% if @organization.location.present? %> · <%= @organization.location %><% end %></p>
+<%= simple_format(h(@organization.description)) if @organization.description.present? %>
+<% if current_admin_user.super_admin? %><p><%= link_to "Edit organization", edit_admin_whare_pumanawa_organization_path(@organization) %></p><% end %>
+<p><%= link_to "All organizations", admin_whare_pumanawa_organizations_path %><% if @organization.active? %> · <%= link_to "Public showcase", whare_pumanawa_organization_path(@organization.slug) %><% end %></p>
+<section aria-labelledby="org-projects"><h2 id="org-projects">Projects</h2><p><%= link_to "New project in this organization", new_admin_whare_pumanawa_project_path(organization_id: @organization.id) %></p><ul><% @projects.each do |project| %><li><%= link_to project.name, admin_whare_pumanawa_project_path(project) %></li><% end %></ul></section>
+<section aria-labelledby="org-contributors"><h2 id="org-contributors">Public contributors</h2><ul><% @associations.each do |association| %><li><%= association.contributor.name %><% if current_admin_user.super_admin? %><%= button_to "Remove #{association.contributor.name}", admin_whare_pumanawa_organization_organization_contributor_path(@organization, association), method: :delete, class: "btn btn-outline-danger btn-sm", form: { class: "d-inline" } %><% end %></li><% end %></ul>
+<% if current_admin_user.super_admin? %>
+  <%= form_with url: admin_whare_pumanawa_organization_organization_contributors_path(@organization), scope: :organization_contributor do |form| %>
+    <%= form.label :contributor_id, "Associate contributor" %><%= form.collection_select :contributor_id, @contributors, :id, :name, { include_blank: "Choose a contributor" }, required: true, class: "form-select" %>
+    <%= form.submit "Associate contributor", class: "btn btn-primary" %>
+  <% end %>
+<% end %></section>

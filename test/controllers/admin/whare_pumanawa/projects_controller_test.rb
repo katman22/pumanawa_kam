@@ -2,8 +2,9 @@ require "test_helper"
 
 class Admin::WharePumanawa::ProjectsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @project = ::WharePumanawa::Project.create!(name: "Assigned project", description: "Shared work", location: "Aotearoa")
-    @other = ::WharePumanawa::Project.create!(name: "Other project")
+    @organization = ::WharePumanawa::Organization.create!(name: "Test studio")
+    @project = ::WharePumanawa::Project.create!(organization: @organization, name: "Assigned project", description: "Shared work", location: "Aotearoa")
+    @other = ::WharePumanawa::Project.create!(organization: @organization, name: "Other project")
     @editor = Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
     @owner = Admin::User.create!(username: "owner", password: "a-long-test-password", role: :super_admin)
     @project.project_memberships.create!(admin_user: @editor)
@@ -18,12 +19,12 @@ class Admin::WharePumanawa::ProjectsControllerTest < ActionDispatch::Integration
     assert_select "td a", text: @other.name
     get edit_admin_whare_pumanawa_project_path(@other)
     assert_response :success
-    patch admin_whare_pumanawa_project_path(@other), params: { whare_pumanawa_project: { name: "Renamed", active: "0", slug: "forged" } }
+    patch admin_whare_pumanawa_project_path(@other), params: { whare_pumanawa_project: { organization_id: @organization.id, name: "Renamed", active: "0", slug: "forged" } }
     assert_response :see_other
     assert_equal "other-project", @other.reload.slug
     assert_not @other.active?
     assert_no_difference "WharePumanawa::ProjectMembership.count" do
-      post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { name: "Owner project" } }
+      post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { organization_id: @organization.id, name: "Owner project" } }
     end
     assert_response :see_other
   end
@@ -43,7 +44,7 @@ class Admin::WharePumanawa::ProjectsControllerTest < ActionDispatch::Integration
       get path
       assert_response :forbidden
     end
-    patch admin_whare_pumanawa_project_path(@other), params: { whare_pumanawa_project: { name: "Denied" } }
+    patch admin_whare_pumanawa_project_path(@other), params: { whare_pumanawa_project: { organization_id: @organization.id, name: "Denied" } }
     assert_response :forbidden
     assert_equal "Other project", @other.reload.name
     patch admin_whare_pumanawa_project_path(@project), params: { whare_pumanawa_project: { description: "Edited together" } }
@@ -53,11 +54,11 @@ class Admin::WharePumanawa::ProjectsControllerTest < ActionDispatch::Integration
 
   test "mural admin creates a project with atomic initial self membership and handles errors" do
     login(@editor)
-    post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { name: "" } }
+    post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { organization_id: @organization.id, name: "" } }
     assert_response :unprocessable_entity
     assert_select "[role=alert]"
     assert_difference [ "WharePumanawa::Project.count", "WharePumanawa::ProjectMembership.count" ], 1 do
-      post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { name: "New collaboration" } }
+      post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { organization_id: @organization.id, name: "New collaboration" } }
     end
     assert_response :see_other
     project = ::WharePumanawa::Project.find_by!(name: "New collaboration")
@@ -71,7 +72,7 @@ class Admin::WharePumanawa::ProjectsControllerTest < ActionDispatch::Integration
     assert_response :forbidden
     get admin_whare_pumanawa_project_path(@project)
     assert_response :forbidden
-    post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { name: "Denied" } }
+    post admin_whare_pumanawa_projects_path, params: { whare_pumanawa_project: { organization_id: @organization.id, name: "Denied" } }
     assert_response :forbidden
     assert_raises(ActionController::RoutingError) { Rails.application.routes.recognize_path("/admin/whare_pumanawa/projects/#{@project.id}", method: :delete) }
   end

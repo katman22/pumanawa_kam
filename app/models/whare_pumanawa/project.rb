@@ -1,4 +1,9 @@
 class WharePumanawa::Project < ApplicationRecord
+  # Optional for older writers during rollout; required in admin saves.
+  belongs_to :organization, optional: true, inverse_of: :projects
+  validates :organization, presence: true, if: -> { organization_id.present? }
+  validates :organization, presence: true, on: :admin
+
   has_many :murals, class_name: "WharePumanawa::Mural", inverse_of: :project, dependent: :restrict_with_error
 
   has_many :project_memberships, dependent: :restrict_with_error, inverse_of: :project

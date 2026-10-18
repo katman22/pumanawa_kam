@@ -31,3 +31,6 @@ application.register("forecast-tabs", ForecastTabsController)
 
 import MuralGalleryController from "controllers/mural_gallery_controller"
 application.register("mural-gallery", MuralGalleryController)
+
+import AdminNavigationController from "controllers/admin_navigation_controller"
+application.register("admin-navigation", AdminNavigationController)

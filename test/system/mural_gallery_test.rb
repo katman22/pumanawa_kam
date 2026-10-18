@@ -29,7 +29,7 @@ class MuralGalleryTest < ApplicationSystemTestCase
   end
 
   test "local selection keyboard navigation and mobile layout need no requests" do
-    visit whare_pumanawa_root_path
+    visit whare_pumanawa_murals_path
     assert_selector ".whare-panel:not([hidden]) h2", text: "Artwork 1"
     # Wait for initial eager image delivery, including the hidden panels.
     page.document.synchronize(errors: [ Minitest::Assertion ]) do
@@ -68,7 +68,7 @@ class MuralGalleryTest < ApplicationSystemTestCase
     fill_in "Username", with: "artist"
     fill_in "Password", with: "a-long-test-password"
     click_button "Sign in"
-    click_link "Whare Pūmanawa / Projects", match: :first
+    click_link "Projects", match: :first
     click_link "Community collection"
     click_link "New mural in this project"
     fill_in "Title", with: "Community wall"

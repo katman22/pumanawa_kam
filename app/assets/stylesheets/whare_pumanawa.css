@@ -69,3 +69,9 @@
   .showcase-art img, .showcase-slot--portrait img { width: 100%; height: auto; max-height: 80svh; object-fit: contain; }
   .showcase-text, .showcase-signature { align-self: stretch; max-width: 100%; }
 }
+
+.organization-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 2rem; }
+.organization-directory article { border-top: 1px solid #8c2426; padding-block: 1rem; min-width: 0; }
+.organization-directory h2 { font-weight: 500; font-size: 1.5rem; }
+.organization-directory p { line-height: 1.7; }
+.organization-directory a { display: inline-block; padding-block: .5rem; }

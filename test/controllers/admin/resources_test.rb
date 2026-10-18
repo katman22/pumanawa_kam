@@ -8,6 +8,33 @@ class AdminResourcesTest < ActionDispatch::IntegrationTest
     post admin_login_path, params: { username: "editor", password: "a-long-test-password" }
   end
 
+  test "resort creation action is below the table instead of global navigation" do
+    @admin.update!(role: :super_admin)
+    original_attributes = @resort.attributes
+
+    assert_no_difference "Resort.count" do
+      get admin_resorts_path
+    end
+    assert_response :success
+    assert_equal original_attributes, @resort.reload.attributes
+    assert_select "nav a", text: "New Resort", count: 0
+    assert_select "table + .d-flex.justify-content-end a.btn.btn-primary[href=?]",
+      new_admin_resort_path(locale: :en), text: "New Resort", count: 1
+    assert_select "tr#resort_#{@resort.id}" do
+      assert_select "a.link-info[href=?]", edit_admin_resort_path(@resort, locale: :en), text: "Edit"
+      assert_select "a.link-danger[href=?][data-turbo-method='delete'][data-turbo-confirm=?]",
+        admin_resort_path(@resort, locale: :en), "Delete #{@resort.resort_name}?", text: "Delete"
+    end
+    {
+      "Mahi Tahi / Organizations" => admin_whare_pumanawa_organizations_path(locale: :en),
+      "Projects" => admin_whare_pumanawa_projects_path(locale: :en),
+      "Contributors" => admin_whare_pumanawa_contributors_path(locale: :en),
+      "Murals" => admin_whare_pumanawa_murals_path(locale: :en)
+    }.each do |label, path|
+      assert_select "nav a[href=?]", path, text: label
+    end
+  end
+
   test "existing resort pages and update still work" do
     get admin_resorts_path
     assert_response :success

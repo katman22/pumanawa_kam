@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= @contributor ? "#{@contributor.name} · " : (@mural ? "#{@mural.title} · " : "") %>Whare Pūmanawa</title>
+    <title><%= @organization ? "#{@organization.name} · " : @contributor ? "#{@contributor.name} · " : (@mural ? "#{@mural.title} · " : "") %>Mahi Tahi</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -9,7 +9,7 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="whare-portfolio">
-    <header class="whare-header"><%= link_to "Whare Pūmanawa", whare_pumanawa_root_path %></header>
+    <header class="whare-header"><%= link_to "Mahi Tahi", whare_pumanawa_root_path %><br><small>by Whare Pūmanawa</small></header>
     <main class="whare-content"><%= yield %></main>
     <footer class="whare-footer">Kia ora · Nau mai · Piki mai</footer>
   </body>

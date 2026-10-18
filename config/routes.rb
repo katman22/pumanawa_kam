@@ -96,8 +96,9 @@ Rails.application.routes.draw do
   end
 
   namespace :whare_pumanawa do
-    root "murals#index"
-    resources :murals, only: :show, param: :slug
+    root "organizations#index"
+    resources :organizations, only: [ :index, :show ], param: :slug
+    resources :murals, only: [ :index, :show ], param: :slug
     resources :contributors, only: :show, param: :slug
   end
 
@@ -112,6 +113,9 @@ Rails.application.routes.draw do
     resources :users, only: [ :index, :new, :create, :edit, :update ]
 
     namespace :whare_pumanawa do
+      resources :organizations, except: :destroy do
+        resources :organization_contributors, only: [ :create, :destroy ]
+      end
       resources :projects, except: :destroy do
         resources :project_memberships, only: [ :create, :destroy ]
       end

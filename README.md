@@ -71,9 +71,13 @@ Whare Pūmanawa mark and responsive uncropped image treatment. Originals are
 temporary curated assets; delivery optimization can be reviewed separately.
 
 
-## Whare Pūmanawa portfolio and administration
+## Mahi Tahi administration and public pages
 
-Preview the published portfolio at `/whare_pumanawa`; permalinks use
+Mahi Tahi is the collaborative showcase product, by Whare Pūmanawa. Internal
+`WharePumanawa` namespaces, asset names and existing URLs remain unchanged.
+
+Browse the organization directory at `/whare_pumanawa` and the explicit mural
+gallery at `/whare_pumanawa/murals`; individual mural permalinks use
 `/whare_pumanawa/murals/:slug`. No new production hostname is configured. Mural
 admins and super admins manage content at `/admin/whare_pumanawa/murals` inside
 the existing shared Bootstrap shell. Canyon-only admins cannot access these routes.
@@ -214,8 +218,54 @@ deployment before a later reviewed NOT NULL migration. Contributor administratio
 remains product-wide public-attribution editing. Public contributor showcases
 still compose published murals across projects, including inactive projects.
 Existing gallery/detail URLs, R2/checksum settings and mobile/API auth are unchanged.
-No private attachment delivery, Organization or generic Artwork domain is added.
+No private attachment delivery or generic Artwork domain is added.
 
 The approved design is documented in
 research/whare_pumanawa_project_collaboration.txt. Restoration provenance and
 current validation are in research/whare_pumanawa_project_baseline_restoration.txt.
+
+## Organizations above projects
+
+Mahi Tahi is the product operated by Whare Pūmanawa. `WharePumanawa::Organization` represents
+the supported artist, studio, collective or client; it is not an account.
+An explicit `OrganizationContributor` join records public affiliations, including
+contributors working with multiple organizations. It grants no login/edit access.
+`Admin::User` remains the authenticated identity and `ProjectMembership` remains
+the boundary for editing specific projects and their murals. No admin organization
+membership is introduced.
+
+Start at `/admin/whare_pumanawa/organizations`. Super admins create/edit all
+organizations, associate/remove existing contributors, and assign/reassign
+projects. Mural admins can view only organizations inferred from their editable
+projects; those organization pages list only their accessible projects. They
+cannot edit organization identity, manage affiliations or move a project between
+organizations, even when they can see both. New member-created projects must use
+an inferred organization. A super admin must bootstrap their first context.
+Existing project membership never grants access to sibling projects implicitly.
+
+Migration `20261017000001` adds organization/affiliation tables and a nullable
+project organization FK. Only when NULL-owned projects exist, it creates the
+editable **Existing Hosted Organization** migration placeholder and backfills
+only NULL ownership. This is legacy data scaffolding, not Whare Pūmanawa's
+platform identity. Rename/reassign it to the real organization after review.
+No contributor affiliations or admin permissions are inferred by the migration.
+Existing IDs, slugs, memberships, content, timestamps and attachments stay intact.
+Admin project saves require organization; older writers retain nullable
+compatibility. Final NOT NULL is deferred until a separate production audit.
+
+Public `/whare_pumanawa` and `/whare_pumanawa/organizations` list active
+organization identities without mixing artwork. Organization slug pages compose
+only published murals owned through their projects, using the same bounded,
+orientation-aware wall and existing image variants as contributor showcases.
+Inactive Project state still does not unpublish work; no new Project publication
+rule is introduced. Projects without published work are omitted from the public
+project list. Associated active contributors link to their global portfolios,
+which deliberately remain cross-organization at their existing URLs. Contributor
+affiliation never widens organization content queries.
+
+Inactive organizations disappear from the directory and their showcase returns
+404. Existing published mural/contributor URLs remain available. No public
+Project showcase, organization deletion, private image authorization, new storage
+configuration or infrastructure is added. R2 and AWS checksum compatibility
+settings are unchanged. See research/whare_pumanawa_organization_foundation.txt
+for exact files, validation and rollout considerations.

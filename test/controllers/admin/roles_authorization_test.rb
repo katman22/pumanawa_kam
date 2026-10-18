@@ -13,6 +13,12 @@ class AdminRolesAuthorizationTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_select "#canyon-admin-heading", count: canyon ? 1 : 0
       assert_select "#mural-admin-heading", count: murals ? 1 : 0
+      if murals
+        assert_select "#mural-admin-heading", "Mahi Tahi"
+        assert_select "nav a[href=?]", admin_whare_pumanawa_organizations_path(locale: :en), text: "Mahi Tahi / Organizations"
+      else
+        assert_select "nav a", text: /Mahi Tahi/, count: 0
+      end
       assert_select "a[href=?]", admin_users_path(locale: :en), count: role == :super_admin ? 2 : 0
       get admin_resorts_path
       assert_response canyon ? :success : :forbidden
