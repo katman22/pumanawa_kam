@@ -1,7 +1,7 @@
 <h1>Mahi Tahi murals</h1>
 <p><%= link_to "Projects", admin_whare_pumanawa_projects_path %></p>
 <p><%= link_to "Manage contributors", admin_whare_pumanawa_contributors_path %></p>
-<p><%= link_to "New mural", new_admin_whare_pumanawa_mural_path, class: "btn btn-primary" %> <%= link_to "View portfolio", whare_pumanawa_root_path %></p>
+<p><%= link_to "View portfolio", whare_pumanawa_root_path %></p>
 <div class="table-responsive"><table class="table align-middle">
   <thead><tr><th>Thumbnail</th><th>Title</th><th>Project</th><th>Status</th><th>Position</th><th>Manage</th></tr></thead>
   <tbody><% @murals.each do |mural| %>
@@ -13,3 +13,6 @@
   <% end %></tbody>
 </table></div>
 <% if @murals.empty? %><p>No murals yet. Create a draft to begin.</p><% end %>
+<div class="d-flex justify-content-end">
+  <%= link_to "New mural", new_admin_whare_pumanawa_mural_path, class: "btn btn-primary" %>
+</div>

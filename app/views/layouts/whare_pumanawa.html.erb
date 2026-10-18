@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= @organization ? "#{@organization.name} · " : @contributor ? "#{@contributor.name} · " : (@mural ? "#{@mural.title} · " : "") %>Mahi Tahi</title>
+    <title><%= @project ? "#{@project.name} · " : @organization ? "#{@organization.name} · " : @contributor ? "#{@contributor.name} · " : (@mural ? "#{@mural.title} · " : "") %>Mahi Tahi</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

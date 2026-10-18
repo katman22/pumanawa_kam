@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_17_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_18_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,7 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_17_000001) do
     t.string "role", default: "mural_admin", null: false
     t.index ["username"], name: "index_admin_users_on_username", unique: true
     t.check_constraint "length(password_digest::text) > 0", name: "admin_users_password_digest_present"
-    t.check_constraint "role::text = ANY (ARRAY['super_admin'::character varying, 'canyon_admin'::character varying, 'mural_admin'::character varying]::text[])", name: "admin_users_role_allowed"
+    t.check_constraint "role::text = ANY (ARRAY['super_admin'::character varying, 'canyon_admin'::character varying, 'mural_admin'::character varying, 'mahi_tahi_admin'::character varying, 'organization_admin'::character varying]::text[])", name: "admin_users_role_allowed"
     t.check_constraint "username::text = lower(btrim(username::text)) AND length(username::text) > 0", name: "admin_users_username_normalized"
   end
 
@@ -342,6 +342,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_17_000001) do
     t.index ["organization_id"], name: "idx_on_organization_id_9069deadcc"
   end
 
+  create_table "whare_pumanawa_organization_memberships", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_whare_pumanawa_organization_memberships_on_admin_user_id"
+    t.index ["organization_id", "admin_user_id"], name: "index_whare_org_memberships_on_org_and_admin", unique: true
+    t.index ["organization_id"], name: "idx_on_organization_id_606f3ed504"
+  end
+
   create_table "whare_pumanawa_organizations", force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
@@ -397,9 +407,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_17_000001) do
   add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_contributors", column: "contributor_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_projects", column: "project_id"
-  add_foreign_key "whare_pumanawa_project_memberships", "admin_users"
-  add_foreign_key "whare_pumanawa_project_memberships", "whare_pumanawa_projects", column: "project_id"
   add_foreign_key "whare_pumanawa_organization_contributors", "whare_pumanawa_contributors", column: "contributor_id"
   add_foreign_key "whare_pumanawa_organization_contributors", "whare_pumanawa_organizations", column: "organization_id"
+  add_foreign_key "whare_pumanawa_organization_memberships", "admin_users"
+  add_foreign_key "whare_pumanawa_organization_memberships", "whare_pumanawa_organizations", column: "organization_id"
+  add_foreign_key "whare_pumanawa_project_memberships", "admin_users"
+  add_foreign_key "whare_pumanawa_project_memberships", "whare_pumanawa_projects", column: "project_id"
   add_foreign_key "whare_pumanawa_projects", "whare_pumanawa_organizations", column: "organization_id"
 end

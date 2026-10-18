@@ -1,7 +1,10 @@
 <h1>Mahi Tahi projects</h1>
 <p><%= link_to "Organizations", admin_whare_pumanawa_organizations_path %></p>
-<p><%= link_to "New project", new_admin_whare_pumanawa_project_path, class: "btn btn-primary" %> <%= link_to "Contributors", admin_whare_pumanawa_contributors_path %> · <%= link_to "Murals", admin_whare_pumanawa_murals_path %></p>
-<div class="table-responsive"><table class="table"><thead><tr><th>Project</th><th>Location</th><th>Status</th><th>Position</th></tr></thead><tbody>
-<% @projects.each do |project| %><tr><td><%= link_to project.name, admin_whare_pumanawa_project_path(project) %></td><td><%= project.location %></td><td><%= project.active? ? "Active" : "Inactive" %></td><td><%= project.position %></td></tr><% end %>
+<p><%= link_to "Contributors", admin_whare_pumanawa_contributors_path %> · <%= link_to "Murals", admin_whare_pumanawa_murals_path %></p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Project</th><th>Location</th><th>Status</th><th>Position</th><th>Showcase</th></tr></thead><tbody>
+<% @projects.each do |project| %><tr><td><%= link_to project.name, admin_whare_pumanawa_project_path(project) %></td><td><%= project.location %></td><td><%= project.active? ? "Active" : "Inactive" %></td><td><%= project.position %></td><td><% if project.organization&.active? %><%= link_to "View showcase", whare_pumanawa_project_path(project.slug) %><% else %>—<% end %></td></tr><% end %>
 </tbody></table></div>
 <% if @projects.empty? %><p>No projects assigned yet. A super admin can add you to an existing project, then you can create projects within that organization.</p><% end %>
+<div class="d-flex justify-content-end">
+  <%= link_to "New project", new_admin_whare_pumanawa_project_path, class: "btn btn-primary" %>
+</div>

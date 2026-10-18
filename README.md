@@ -19,7 +19,10 @@ Web admins use `Admin::User` / `admin_users`; mobile `User`, identities, JWTs an
 entitlements remain separate. HTTP Basic and ADMIN_USER/ADMIN_PASSWORD are no
 longer used. Administrators have one product role: `super_admin` accesses both
 products and user management; `canyon_admin` accesses Canyon resources only;
-`mural_admin` accesses mural management only. Direct URLs enforce these boundaries
+`mahi_tahi_admin` manages all Mahi Tahi organizations/content without Canyon or
+platform user-management access; `organization_admin` needs explicit organization
+membership; `mural_admin` retains legacy project-membership-scoped editing.
+Direct URLs enforce these boundaries
 with HTTP 403; dashboard/layout navigation follows the same predicates.
 There is no public signup, password recovery or generic permissions framework.
 
@@ -184,7 +187,11 @@ validation results and remaining rollout considerations.
 
 `Admin::User` is the authenticated identity, `Contributor` is public attribution,
 and `WharePumanawa::Project` is the collaboration boundary above murals.
-Start at `/admin/whare_pumanawa/projects`; no public Project page is introduced.
+Start at `/admin/whare_pumanawa/projects`. Each assigned project has a public
+showcase at `/whare_pumanawa/projects/:slug` when its organization is active.
+The showcase reuses the existing exhibition wall and includes only that project's
+published murals. Project active state does not introduce a publication rule;
+unassigned legacy projects have no public showcase until organization assignment.
 
 Super admins manage every project/mural without membership. Mural admins see
 and manage only projects joined through `WharePumanawa::ProjectMembership` and
@@ -230,11 +237,11 @@ Mahi Tahi is the product operated by Whare Pūmanawa. `WharePumanawa::Organizati
 the supported artist, studio, collective or client; it is not an account.
 An explicit `OrganizationContributor` join records public affiliations, including
 contributors working with multiple organizations. It grants no login/edit access.
-`Admin::User` remains the authenticated identity and `ProjectMembership` remains
-the boundary for editing specific projects and their murals. No admin organization
-membership is introduced.
+`Admin::User` remains the authenticated identity. `OrganizationMembership` grants
+organization-wide administration to eligible `organization_admin` users, while
+`ProjectMembership` retains narrower editing for `mural_admin` users.
 
-Start at `/admin/whare_pumanawa/organizations`. Super admins create/edit all
+Start at `/admin/whare_pumanawa/organizations`. Super and Mahi Tahi admins create/edit all
 organizations, associate/remove existing contributors, and assign/reassign
 projects. Mural admins can view only organizations inferred from their editable
 projects; those organization pages list only their accessible projects. They
@@ -242,6 +249,39 @@ cannot edit organization identity, manage affiliations or move a project between
 organizations, even when they can see both. New member-created projects must use
 an inferred organization. A super admin must bootstrap their first context.
 Existing project membership never grants access to sibling projects implicitly.
+
+### Organization administrators and working dashboards
+
+The additive organization-administration migration expands the string role
+constraint and creates `whare_pumanawa_organization_memberships` with required
+foreign keys and a unique organization/admin pair. It changes no existing account
+roles, default role, project memberships, content, or attachments. Run migrations
+before enabling the new roles. Older code does not understand the two new role
+values: do not roll application code back after creating such accounts without
+deliberately reassigning them. Migration rollback refuses to discard new roles
+or organization memberships. No blanket membership backfill occurs.
+
+A platform super admin creates an active user with role **Organization admin**
+in Users, then a super admin or Mahi Tahi admin adds that user from the
+organization's **Organization admins** section. Removal immediately revokes that
+organization's access. Role alone grants no organization workspace. Product-wide
+Mahi Tahi admins need no memberships and cannot manage platform users or Canyon.
+
+All successful logins still land at `/admin`. Super, Canyon and product admins
+retain their capability-based shared dashboard. Organization admins see a
+single organization's workspace, a chooser containing only their assigned
+organizations, or an explicit no-access state. They can edit their organization,
+manage its projects/content/photos and contributor affiliations, but cannot
+grant memberships or move a project to another organization. Public URLs and
+the existing default/Canyon theme rules are unchanged.
+
+Organization admins can create contributors associated with their organizations.
+They may associate contributors already in their scope or active contributors
+with published public work; unrelated private contributor records are not
+offered. Shared public identities used outside their organizations require a
+product/platform admin to edit, while removing an affiliation never deletes the
+contributor. Legacy `mural_admin` global Contributor CRUD remains unchanged;
+the future narrower participant identity/workflow is intentionally deferred.
 
 Migration `20261017000001` adds organization/affiliation tables and a nullable
 project organization FK. Only when NULL-owned projects exist, it creates the
@@ -264,8 +304,8 @@ which deliberately remain cross-organization at their existing URLs. Contributor
 affiliation never widens organization content queries.
 
 Inactive organizations disappear from the directory and their showcase returns
-404. Existing published mural/contributor URLs remain available. No public
-Project showcase, organization deletion, private image authorization, new storage
+404; Project showcases under them also return 404. Existing published
+mural/contributor URLs remain available. No organization deletion, private image authorization, new storage
 configuration or infrastructure is added. R2 and AWS checksum compatibility
 settings are unchanged. See research/whare_pumanawa_organization_foundation.txt
 for exact files, validation and rollout considerations.

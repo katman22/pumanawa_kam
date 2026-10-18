@@ -5,11 +5,17 @@ class Admin::WharePumanawa::MuralsController < Admin::WharePumanawa::BaseControl
 
   def index
     @murals = current_admin_user.administrable_murals.ordered.includes(:project, mural_photos: { image_attachment: :blob })
+    if params[:organization_id].present?
+      organization = ::WharePumanawa::Organization.find(params[:organization_id])
+      return unless require_organization_access!(organization)
+
+      @murals = @murals.where(project_id: available_projects.where(organization_id: organization.id).select(:id))
+    end
   end
 
   def new
     @mural = ::WharePumanawa::Mural.new(project_id: params[:project_id])
-    require_project_access!(@mural.project) if @mural.project_id.present?
+    require_project_access!(::WharePumanawa::Project.find(@mural.project_id)) if @mural.project_id.present?
   end
 
   def create
@@ -63,9 +69,16 @@ class Admin::WharePumanawa::MuralsController < Admin::WharePumanawa::BaseControl
   end
 
   def authorized_assignment?
+    if @mural.contributor_id.present?
+      contributor = ::WharePumanawa::Contributor.find(@mural.contributor_id)
+      unless current_admin_user.administrable_contributors.exists?(id: contributor.id)
+        head :forbidden
+        return false
+      end
+    end
     return true if @mural.project_id.blank?
 
-    require_project_access!(@mural.project)
+    require_project_access!(::WharePumanawa::Project.find(@mural.project_id))
   end
 
   def load_projects
@@ -73,7 +86,7 @@ class Admin::WharePumanawa::MuralsController < Admin::WharePumanawa::BaseControl
   end
 
   def load_contributors
-    @contributors = ::WharePumanawa::Contributor.ordered
+    @contributors = available_contributors
   end
 
   def mural_params

@@ -1,0 +1,28 @@
+<h1>Mahi Tahi</h1>
+<p>Welcome, <%= current_admin_user.username %>.</p>
+<% if @organization %>
+  <section aria-labelledby="organization-workspace-heading">
+    <h2 id="organization-workspace-heading"><%= @organization.name %></h2>
+    <% if @organization.active? %><p><%= link_to "View showcase", whare_pumanawa_organization_path(@organization.slug) %></p><% end %>
+    <h3>Projects</h3>
+    <ul class="admin-dashboard-actions">
+      <li><%= link_to "View projects", admin_whare_pumanawa_projects_path(organization_id: @organization.id) %></li>
+      <li><%= link_to "New project", new_admin_whare_pumanawa_project_path(organization_id: @organization.id) %></li>
+    </ul>
+    <h3>Contributors</h3>
+    <ul class="admin-dashboard-actions">
+      <li><%= link_to "View contributors", admin_whare_pumanawa_contributors_path(organization_id: @organization.id) %></li>
+      <li><%= link_to "Add contributor", new_admin_whare_pumanawa_contributor_path(organization_id: @organization.id) %></li>
+    </ul>
+    <h3>Content</h3>
+    <ul class="admin-dashboard-actions"><li><%= link_to "Manage murals and photos", admin_whare_pumanawa_murals_path(organization_id: @organization.id) %></li></ul>
+    <h3>Organization</h3>
+    <ul class="admin-dashboard-actions"><li><%= link_to "Edit organization", edit_admin_whare_pumanawa_organization_path(@organization) %></li></ul>
+  </section>
+  <% if @organizations.many? %><p><%= link_to "Choose another workspace", admin_root_path %></p><% end %>
+<% elsif @organizations.any? %>
+  <h2>Your organizations</h2>
+  <ul class="admin-dashboard-actions"><% @organizations.each do |organization| %><li><%= link_to organization.name, admin_root_path(organization_id: organization.id) %></li><% end %></ul>
+<% else %>
+  <p>No organization access has been assigned. Ask a Mahi Tahi administrator to add you to an organization.</p>
+<% end %>

@@ -2,6 +2,9 @@
   <div role="alert" class="alert alert-danger"><ul><% @contributor.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
 <% end %>
 <%= form_with model: @contributor, url: @contributor.persisted? ? admin_whare_pumanawa_contributor_path(@contributor) : admin_whare_pumanawa_contributors_path do |form| %>
+  <% if @contributor.new_record? && current_admin_user.organization_admin? %>
+    <div class="mb-3"><%= label_tag :organization_id, "Organization" %><%= select_tag :organization_id, options_from_collection_for_select(@organizations, :id, :name, @organization_id), include_blank: "Choose an organization", required: true, class: "form-select" %></div>
+  <% end %>
   <div class="mb-3"><%= form.label :name %><%= form.text_field :name, required: true, class: "form-control" %></div>
   <div class="mb-3"><%= form.label :location %><%= form.text_field :location, class: "form-control" %></div>
   <div class="mb-3"><%= form.label :bio, "Bio (plain text)" %><%= form.text_area :bio, rows: 5, class: "form-control" %></div>

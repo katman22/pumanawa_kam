@@ -1,6 +1,7 @@
 class Admin::WharePumanawa::OrganizationsController < Admin::WharePumanawa::BaseController
-  before_action :require_super_admin!, only: [ :new, :create, :edit, :update ]
+  before_action :require_mahi_tahi_manager!, only: [ :new, :create ]
   before_action :set_organization, only: [ :show, :edit, :update ]
+  before_action -> { require_organization_write!(@organization) }, only: [ :edit, :update ]
 
   def index
     @organizations = available_organizations
@@ -9,7 +10,13 @@ class Admin::WharePumanawa::OrganizationsController < Admin::WharePumanawa::Base
   def show
     @projects = available_projects.where(organization_id: @organization.id)
     @associations = @organization.organization_contributors.includes(:contributor).order(:id)
-    @contributors = ::WharePumanawa::Contributor.ordered.where.not(id: @organization.organization_contributors.select(:contributor_id)) if current_admin_user.super_admin?
+    if current_admin_user.can_administer_organization?(@organization)
+      @contributors = current_admin_user.associable_contributors.ordered.where.not(id: @organization.organization_contributors.select(:contributor_id))
+    end
+    if current_admin_user.can_manage_mahi_tahi?
+      @memberships = @organization.organization_memberships.includes(:admin_user).order(:id)
+      @eligible_admins = Admin::User.where(role: :organization_admin, active: true).where.not(id: @memberships.select(:admin_user_id)).order(:username)
+    end
   end
 
   def new

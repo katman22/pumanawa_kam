@@ -1,5 +1,5 @@
 class Admin::WharePumanawa::ProjectMembershipsController < Admin::WharePumanawa::BaseController
-  before_action :require_super_admin!
+  before_action :require_mahi_tahi_manager!
   before_action :set_project
 
   def create

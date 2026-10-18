@@ -1,4 +1,7 @@
 <div class="admin-dashboard">
+<% if current_admin_user.organization_admin? %>
+  <%= render "organization_workspace" %>
+<% else %>
 <h1>Administration</h1>
 <p>Welcome, <%= current_admin_user.username %>.</p>
 <% if current_admin_user.can_administer_canyon? %>
@@ -24,5 +27,6 @@
     <h2 id="users-admin-heading">Administrators</h2>
     <ul class="admin-dashboard-actions"><li><%= link_to "Manage users", admin_users_path %></li></ul>
   </section>
+<% end %>
 <% end %>
 </div>

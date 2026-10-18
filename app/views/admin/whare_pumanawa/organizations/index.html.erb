@@ -1,7 +1,7 @@
 <h1>Mahi Tahi organizations</h1>
 <ul><% @organizations.each do |organization| %><li><%= link_to organization.name, admin_whare_pumanawa_organization_path(organization) %> · <%= organization.active? ? "Active" : "Inactive" %></li><% end %></ul>
 <% if @organizations.empty? %><p>No organizations available. A super admin can establish your project access.</p><% end %>
-<% if current_admin_user.super_admin? %>
+<% if current_admin_user.can_manage_mahi_tahi? %>
   <div class="d-flex justify-content-end">
     <%= link_to "New organization", new_admin_whare_pumanawa_organization_path, class: "btn btn-primary" %>
   </div>
