@@ -1,5 +1,9 @@
 <% if @project.errors.any? %><div role="alert" class="alert alert-danger"><ul><% @project.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
 <%= form_with model: @project, url: @project.persisted? ? admin_whare_pumanawa_project_path(@project) : admin_whare_pumanawa_projects_path do |form| %>
+  <% if current_admin_user.super_admin? || @project.new_record? %>
+    <div class="mb-3"><%= form.label :organization_id, "Organization" %><%= form.collection_select :organization_id, @organizations, :id, :name, { include_blank: "Choose an organization" }, required: true, class: "form-select" %></div>
+    <% if @organizations.empty? %><p>A super admin must establish your first organization/project context.</p><% end %>
+  <% else %><p>Organization: <%= @project.organization&.name || "Unassigned — ask a super admin to assign" %></p><% end %>
   <div class="mb-3"><%= form.label :name %><%= form.text_field :name, required: true, class: "form-control" %></div>
   <div class="mb-3"><%= form.label :description, "Description (plain text)" %><%= form.text_area :description, rows: 5, class: "form-control" %></div>
   <div class="mb-3"><%= form.label :location %><%= form.text_field :location, class: "form-control" %></div>

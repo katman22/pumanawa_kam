@@ -3,6 +3,17 @@ class Admin::WharePumanawa::BaseController < Admin::BaseController
 
   private
 
+  def available_organizations
+    current_admin_user.administrable_organizations.ordered
+  end
+
+  def require_organization_access!(organization)
+    return true if current_admin_user.can_view_organization?(organization)
+
+    head :forbidden
+    false
+  end
+
   def available_projects
     current_admin_user.administrable_projects.ordered
   end

@@ -3,7 +3,7 @@ require "test_helper"
 class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
   test "index handles zero published murals and ignores drafts" do
     WharePumanawa::Mural.create!(title: "Secret draft")
-    get whare_pumanawa_root_path
+    get whare_pumanawa_murals_path
     assert_response :success
     assert_select "h1", "Murals & stories"
     assert_select ".whare-empty", "New work will be shared here soon."
@@ -21,7 +21,7 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
     photo.image.attach(io: File.open(file_fixture("mural.png")), filename: "mural.png")
     photo.save!
     WharePumanawa::Mural.create!(title: "Private draft")
-    get whare_pumanawa_root_path
+    get whare_pumanawa_murals_path
     assert_response :success
     assert_select ".whare-panel:not([hidden]) h2", "Blue Heron"
     assert_equal [ first.title, second.title, later.title ], css_select(".whare-selector > span:last-child").map(&:text)
@@ -63,7 +63,7 @@ class WharePumanawa::MuralsControllerTest < ActionDispatch::IntegrationTest
   test "public views use preloaded photos and attachments for multiple murals" do
     3.times { |i| published_mural("Preloaded #{i}") }
     WharePumanawa::Mural.strict_loading_by_default = true
-    get whare_pumanawa_root_path
+    get whare_pumanawa_murals_path
     assert_response :success
     assert_select ".whare-hero", count: 3
   ensure

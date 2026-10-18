@@ -1,0 +1,10 @@
+<header class="showcase-intro"><p class="whare-eyebrow">Mahi Tahi · Creative communities</p><h1>Organizations</h1><p>Artists, studios and collectives. Explore their stories and work.</p></header>
+<div class="organization-directory">
+  <% @organizations.each do |organization| %>
+    <article><h2><%= link_to organization.name, whare_pumanawa_organization_path(organization.slug) %></h2>
+      <% if organization.location.present? %><p><%= organization.location %></p><% end %>
+      <% if organization.description.present? %><p><%= truncate(organization.description, length: 200, separator: " ") %></p><% end %>
+    </article>
+  <% end %>
+</div>
+<% if @organizations.empty? %><p class="whare-empty">Creative communities will be shared here soon.</p><% end %>

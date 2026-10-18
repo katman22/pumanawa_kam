@@ -1,0 +1,9 @@
+<% if @organization.errors.any? %><div role="alert" class="alert alert-danger"><ul><% @organization.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+<%= form_with model: @organization, url: @organization.persisted? ? admin_whare_pumanawa_organization_path(@organization) : admin_whare_pumanawa_organizations_path do |form| %>
+  <div class="mb-3"><%= form.label :name %><%= form.text_field :name, required: true, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :description, "Description (plain text)" %><%= form.text_area :description, rows: 5, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :location %><%= form.text_field :location, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :position %><%= form.number_field :position, min: 0, required: true, class: "form-control" %></div>
+  <div class="mb-3"><%= form.check_box :active %> <%= form.label :active %></div>
+  <%= form.submit "Save organization", class: "btn btn-primary" %> <%= link_to "Organizations", admin_whare_pumanawa_organizations_path %>
+<% end %>

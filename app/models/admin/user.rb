@@ -29,6 +29,21 @@ class Admin::User < ApplicationRecord
     projects.where(id: project_memberships.select(:project_id))
   end
 
+  # Organization context is inferred; this never grants project membership.
+  def administrable_organizations
+    organizations = ::WharePumanawa::Organization.all
+    return organizations.none unless active? && can_administer_murals?
+    return organizations if super_admin?
+
+    organizations.where(id: administrable_projects.where.not(organization_id: nil).select(:organization_id))
+  end
+
+  def can_view_organization?(organization)
+    return false unless active? && can_administer_murals? && organization&.persisted?
+
+    super_admin? || administrable_projects.exists?(organization_id: organization.id)
+  end
+
   def administrable_murals
     murals = ::WharePumanawa::Mural.all
     return murals.none unless active? && can_administer_murals?

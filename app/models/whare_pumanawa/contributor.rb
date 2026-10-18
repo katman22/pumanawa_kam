@@ -1,6 +1,9 @@
 class WharePumanawa::Contributor < ApplicationRecord
   has_many :murals, class_name: "WharePumanawa::Mural", inverse_of: :contributor, dependent: :restrict_with_error
 
+  has_many :organization_contributors, inverse_of: :contributor, dependent: :restrict_with_error
+  has_many :organizations, through: :organization_contributors
+
   attr_readonly :slug
   scope :ordered, -> { order(:position, :id) }
   scope :active, -> { where(active: true) }

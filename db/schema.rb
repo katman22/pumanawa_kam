@@ -10,11 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_17_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-  enable_extension "pgcrypto"
-  enable_extension "uuid-ossp"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -128,9 +126,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
     t.bigint "resort_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "kind", default: 1, null: false
+    t.integer "kind", default: 0, null: false
     t.index ["resort_id"], name: "index_home_resorts_on_resort_id"
-    t.index ["user_id", "kind"], name: "index_home_resorts_on_user_id_and_kind"
     t.index ["user_id", "resort_id"], name: "index_home_resorts_on_user_id_and_resort_id", unique: true
     t.index ["user_id"], name: "index_home_resorts_on_user_id"
     t.check_constraint "kind = ANY (ARRAY[0, 1])", name: "home_resorts_kind_check"
@@ -335,6 +332,29 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
     t.check_constraint "\"position\" >= 0", name: "whare_pumanawa_murals_position_nonnegative"
   end
 
+  create_table "whare_pumanawa_organization_contributors", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "contributor_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contributor_id"], name: "idx_on_contributor_id_99905d2bf8"
+    t.index ["organization_id", "contributor_id"], name: "index_whare_org_contributors_on_org_and_contributor", unique: true
+    t.index ["organization_id"], name: "idx_on_organization_id_9069deadcc"
+  end
+
+  create_table "whare_pumanawa_organizations", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "description"
+    t.string "location"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_whare_pumanawa_organizations_on_slug", unique: true
+    t.check_constraint "\"position\" >= 0", name: "whare_organizations_position_nonnegative"
+  end
+
   create_table "whare_pumanawa_project_memberships", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.bigint "admin_user_id", null: false
@@ -354,6 +374,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "organization_id"
+    t.index ["organization_id"], name: "index_whare_pumanawa_projects_on_organization_id"
     t.index ["slug"], name: "index_whare_pumanawa_projects_on_slug", unique: true
     t.check_constraint "\"position\" >= 0", name: "whare_projects_position_nonnegative"
   end
@@ -377,4 +399,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_000002) do
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_projects", column: "project_id"
   add_foreign_key "whare_pumanawa_project_memberships", "admin_users"
   add_foreign_key "whare_pumanawa_project_memberships", "whare_pumanawa_projects", column: "project_id"
+  add_foreign_key "whare_pumanawa_organization_contributors", "whare_pumanawa_contributors", column: "contributor_id"
+  add_foreign_key "whare_pumanawa_organization_contributors", "whare_pumanawa_organizations", column: "organization_id"
+  add_foreign_key "whare_pumanawa_projects", "whare_pumanawa_organizations", column: "organization_id"
 end

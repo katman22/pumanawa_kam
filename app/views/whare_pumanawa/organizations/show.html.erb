@@ -1,0 +1,5 @@
+<header class="showcase-intro"><p class="whare-eyebrow">Mahi Tahi · Organization showcase</p><h1><%= @organization.name %></h1><% if @organization.location.present? %><p><%= @organization.location %></p><% end %></header>
+<%= render "whare_pumanawa/shared/showcase_wall", showcase: @showcase, name: @organization.name, location: @organization.location, introduction: @organization.description, introduction_label: "About this organization" %>
+<% if @contributors.any? %><section aria-labelledby="organization-contributors"><h2 id="organization-contributors">Contributors</h2><p>Explore each contributor's global portfolio.</p><ul><% @contributors.each do |contributor| %><li><%= link_to contributor.name, whare_pumanawa_contributor_path(contributor.slug) %></li><% end %></ul></section><% end %>
+<% if @projects.any? %><section aria-labelledby="organization-projects"><h2 id="organization-projects">Projects</h2><ul><% @projects.each do |project| %><li><%= project.name %><% if project.location.present? %> · <%= project.location %><% end %></li><% end %></ul></section><% end %>
+<p class="showcase-return"><%= link_to "All organizations", whare_pumanawa_root_path %></p>

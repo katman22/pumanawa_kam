@@ -15,14 +15,16 @@ class ProjectCollaborationTest < ApplicationSystemTestCase
     Admin::User.create!(username: "owner", password: "a-long-test-password", role: :super_admin)
     Admin::User.create!(username: "artist", password: "a-long-test-password", role: :mural_admin)
     contributor = WharePumanawa::Contributor.create!(name: "Community artist")
+    organization = WharePumanawa::Organization.create!(name: "Community studio")
     other = WharePumanawa::Project.create!(name: "Private collaboration")
     Admin::SessionsController::LOGIN_ATTEMPTS.clear
     visit admin_login_path
     fill_in "Username", with: "owner"
     fill_in "Password", with: "a-long-test-password"
     click_button "Sign in"
-    click_link "Whare Pūmanawa / Projects"
+    click_link "Projects", match: :first
     click_link "New project"
+    select organization.name, from: "Organization"
     fill_in "Name", with: "Community collaboration"
     fill_in "Description (plain text)", with: "Painting together"
     click_button "Save project"
@@ -40,7 +42,7 @@ class ProjectCollaborationTest < ApplicationSystemTestCase
     fill_in "Username", with: "artist"
     fill_in "Password", with: "a-long-test-password"
     click_button "Sign in"
-    click_link "Whare Pūmanawa / Projects"
+    click_link "Projects", match: :first
     assert_link "Community collaboration"
     assert_no_link "Private collaboration"
     click_link "Community collaboration"

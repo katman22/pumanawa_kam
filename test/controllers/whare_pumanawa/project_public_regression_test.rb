@@ -22,7 +22,7 @@ class WharePumanawa::ProjectPublicRegressionTest < ActionDispatch::IntegrationTe
       assert_response :success
       assert_select ".whare-contributor a[href=?]", whare_pumanawa_contributor_path(contributor.slug, locale: :en)
     end
-    get whare_pumanawa_root_path
+    get whare_pumanawa_murals_path
     assert_response :success
     assert_select ".whare-selector", count: 2
     get whare_pumanawa_mural_path(draft.slug)

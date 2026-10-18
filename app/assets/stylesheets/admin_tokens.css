@@ -1,0 +1,10 @@
+/* Shared company palette; Canyon overrides these only within its admin shell. */
+.admin-entry, .admin-shell {
+  --admin-background: #faf9f6;
+  --admin-surface: #fff;
+  --admin-text: #24211f;
+  --admin-muted: #625b55;
+  --admin-accent: #8c2426;
+  --admin-accent-hover: #702022;
+  --admin-border: #9c948c;
+}

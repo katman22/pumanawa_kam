@@ -1,23 +1,28 @@
+<div class="admin-dashboard">
 <h1>Administration</h1>
 <p>Welcome, <%= current_admin_user.username %>.</p>
 <% if current_admin_user.can_administer_canyon? %>
   <section aria-labelledby="canyon-admin-heading">
     <h2 id="canyon-admin-heading">Canyon Traveller</h2>
-    <p><%= link_to "Manage resorts, cameras and parking profiles", admin_resorts_path %></p>
+    <ul class="admin-dashboard-actions"><li><%= link_to "Resort Management", admin_resorts_path %></li></ul>
   </section>
 <% end %>
 <% if current_admin_user.can_administer_murals? %>
   <section aria-labelledby="mural-admin-heading">
-    <h2 id="mural-admin-heading">Whare Pūmanawa</h2>
-    <p><%= link_to "Projects", admin_whare_pumanawa_projects_path %></p>
-    <p><%= link_to "Contributors", admin_whare_pumanawa_contributors_path %></p>
-    <p><%= link_to "Manage murals and photos", admin_whare_pumanawa_murals_path %></p>
-    <p><%= link_to "View portfolio", whare_pumanawa_root_path %></p>
+    <h2 id="mural-admin-heading">Mahi Tahi</h2>
+    <ul class="admin-dashboard-actions">
+      <li><%= link_to "Organizations", admin_whare_pumanawa_organizations_path %></li>
+      <li><%= link_to "Projects", admin_whare_pumanawa_projects_path %></li>
+      <li><%= link_to "Contributors", admin_whare_pumanawa_contributors_path %></li>
+      <li><%= link_to "Manage murals and photos", admin_whare_pumanawa_murals_path %></li>
+      <li><%= link_to "View portfolio", whare_pumanawa_root_path %></li>
+    </ul>
   </section>
 <% end %>
 <% if current_admin_user.super_admin? %>
   <section aria-labelledby="users-admin-heading">
     <h2 id="users-admin-heading">Administrators</h2>
-    <p><%= link_to "Manage admin users", admin_users_path %></p>
+    <ul class="admin-dashboard-actions"><li><%= link_to "Manage users", admin_users_path %></li></ul>
   </section>
 <% end %>
+</div>

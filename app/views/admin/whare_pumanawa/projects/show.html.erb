@@ -1,4 +1,5 @@
 <h1><%= @project.name %></h1>
+<% if @project.organization %><p>Organization: <%= link_to @project.organization.name, admin_whare_pumanawa_organization_path(@project.organization) %></p><% end %>
 <p><strong><%= @project.active? ? "Active" : "Inactive" %></strong><% if @project.location.present? %> · <%= @project.location %><% end %></p>
 <%= simple_format(h(@project.description)) if @project.description.present? %>
 <p><%= link_to "Edit project", edit_admin_whare_pumanawa_project_path(@project) %> · <%= link_to "All projects", admin_whare_pumanawa_projects_path %></p>
