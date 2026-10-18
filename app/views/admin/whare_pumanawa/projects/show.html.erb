@@ -10,8 +10,8 @@
 <section aria-labelledby="project-members-heading"><h2 id="project-members-heading">Members</h2>
 <p>Super admins have access without membership.</p>
 <ul><% @memberships.each do |membership| %><li><%= membership.admin_user.username %><% unless membership.admin_user.active? && membership.admin_user.mural_admin? %> (currently ineligible; access denied)<% end %>
-<% if current_admin_user.super_admin? %><%= button_to "Remove #{membership.admin_user.username}", admin_whare_pumanawa_project_project_membership_path(@project, membership), method: :delete, class: "btn btn-outline-danger btn-sm", form: { class: "d-inline", data: { turbo_confirm: "Remove this member's project access?" } } %><% end %></li><% end %></ul>
-<% if current_admin_user.super_admin? %>
+<% if current_admin_user.can_manage_mahi_tahi? %><%= button_to "Remove #{membership.admin_user.username}", admin_whare_pumanawa_project_project_membership_path(@project, membership), method: :delete, class: "btn btn-outline-danger btn-sm", form: { class: "d-inline", data: { turbo_confirm: "Remove this member's project access?" } } %><% end %></li><% end %></ul>
+<% if current_admin_user.can_manage_mahi_tahi? %>
   <%= form_with url: admin_whare_pumanawa_project_project_memberships_path(@project), scope: :project_membership do |form| %>
     <div class="mb-3"><%= form.label :admin_user_id, "Add mural administrator" %><%= form.collection_select :admin_user_id, @eligible_admins, :id, :username, { include_blank: "Choose a mural admin" }, required: true, class: "form-select" %></div>
     <%= form.submit "Add member", class: "btn btn-primary" %>

@@ -1,0 +1,11 @@
+<section aria-labelledby="organization-admins-heading">
+  <h2 id="organization-admins-heading">Organization admins</h2>
+  <ul><% @memberships.each do |membership| %><li><%= membership.admin_user.username %><% unless membership.admin_user.active? && membership.admin_user.organization_admin? %> (currently ineligible; access denied)<% end %>
+    <%= button_to "Remove admin #{membership.admin_user.username}", admin_whare_pumanawa_organization_organization_membership_path(@organization, membership), method: :delete, class: "btn btn-outline-danger btn-sm", form: { class: "d-inline", data: { turbo_confirm: "Remove this administrator's organization access?" } } %>
+  </li><% end %></ul>
+  <%= form_with url: admin_whare_pumanawa_organization_organization_memberships_path(@organization), scope: :organization_membership do |form| %>
+    <%= form.label :admin_user_id, "Add organization admin" %>
+    <%= form.collection_select :admin_user_id, @eligible_admins, :id, :username, { include_blank: "Choose an organization admin" }, required: true, class: "form-select" %>
+    <%= form.submit "Add organization admin", class: "btn btn-primary" %>
+  <% end %>
+</section>

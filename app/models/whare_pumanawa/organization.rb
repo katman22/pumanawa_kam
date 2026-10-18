@@ -2,6 +2,7 @@ class WharePumanawa::Organization < ApplicationRecord
   has_many :projects, inverse_of: :organization, dependent: :restrict_with_error
   has_many :organization_contributors, inverse_of: :organization, dependent: :restrict_with_error
   has_many :contributors, through: :organization_contributors
+  has_many :organization_memberships, inverse_of: :organization, dependent: :restrict_with_error
 
   attr_readonly :slug
   scope :ordered, -> { order(:position, :id) }

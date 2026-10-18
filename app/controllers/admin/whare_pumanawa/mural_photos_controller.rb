@@ -75,6 +75,7 @@ class Admin::WharePumanawa::MuralPhotosController < Admin::WharePumanawa::BaseCo
 
   def render_mural_errors
     @projects = available_projects
+    @contributors = available_contributors
     @photos = @mural.mural_photos.select(&:persisted?).map { |photo| photo.id == @photo&.id ? @photo : photo }
     render "admin/whare_pumanawa/murals/edit", status: :unprocessable_entity
   end

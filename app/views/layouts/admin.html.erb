@@ -25,7 +25,12 @@
       <%= link_to "Canyon / Resorts", admin_resorts_path, class: "btn" %>
     <% end %>
     <% if current_admin_user.can_administer_murals? %>
-      <%= link_to "Mahi Tahi / Organizations", admin_whare_pumanawa_organizations_path, class: "btn" %>
+      <% if current_admin_user.organization_admin? %>
+        <% organizations = current_admin_user.administrable_organizations.ordered.to_a %>
+        <%= link_to "Mahi Tahi / #{organizations.one? ? organizations.first.name : 'Your organizations'}", organizations.one? ? admin_root_path(organization_id: organizations.first.id) : admin_whare_pumanawa_organizations_path, class: "btn" %>
+      <% else %>
+        <%= link_to "Mahi Tahi / Organizations", admin_whare_pumanawa_organizations_path, class: "btn" %>
+      <% end %>
       <%= link_to "Projects", admin_whare_pumanawa_projects_path, class: "btn" %>
       <%= link_to "Contributors", admin_whare_pumanawa_contributors_path, class: "btn" %>
       <%= link_to "Murals", admin_whare_pumanawa_murals_path, class: "btn" %>

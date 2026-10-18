@@ -3,7 +3,13 @@ class Admin::WharePumanawa::ProjectsController < Admin::WharePumanawa::BaseContr
   before_action :set_project, only: [ :show, :edit, :update ]
 
   def index
-    @projects = available_projects
+    @projects = available_projects.includes(:organization)
+    if params[:organization_id].present?
+      organization = ::WharePumanawa::Organization.find(params[:organization_id])
+      return unless require_organization_access!(organization)
+
+      @projects = @projects.where(organization_id: organization.id)
+    end
   end
 
   def show
@@ -14,7 +20,7 @@ class Admin::WharePumanawa::ProjectsController < Admin::WharePumanawa::BaseContr
 
   def new
     @project = ::WharePumanawa::Project.new(organization_id: params[:organization_id])
-    require_organization_access!(@project.organization) if @project.organization_id.present?
+    require_organization_access!(::WharePumanawa::Organization.find(@project.organization_id)) if @project.organization_id.present?
   end
 
   def create
@@ -23,7 +29,7 @@ class Admin::WharePumanawa::ProjectsController < Admin::WharePumanawa::BaseContr
 
     saved = ::WharePumanawa::Project.transaction do
       if @project.save(context: [ :create, :admin ])
-        @project.project_memberships.create!(admin_user: current_admin_user) unless current_admin_user.super_admin?
+        @project.project_memberships.create!(admin_user: current_admin_user) if current_admin_user.mural_admin?
         true
       else
         false
@@ -44,7 +50,7 @@ class Admin::WharePumanawa::ProjectsController < Admin::WharePumanawa::BaseContr
       return unless require_project_access!(@project)
 
       attributes = project_params
-      if !current_admin_user.super_admin? && attributes.key?(:organization_id) && attributes[:organization_id].to_s != @project.organization_id.to_s
+      if !current_admin_user.can_manage_mahi_tahi? && attributes.key?(:organization_id) && attributes[:organization_id].to_s != @project.organization_id.to_s
         head :forbidden
         return
       end
@@ -74,7 +80,7 @@ class Admin::WharePumanawa::ProjectsController < Admin::WharePumanawa::BaseContr
   def authorized_organization?
     return true if @project.organization_id.blank?
 
-    require_organization_access!(@project.organization)
+    require_organization_access!(::WharePumanawa::Organization.find(@project.organization_id))
   end
 
   def project_params

@@ -1,0 +1,8 @@
+<header class="showcase-intro">
+  <p class="whare-eyebrow">Mahi Tahi · Project showcase</p>
+  <h1><%= @project.name %></h1>
+  <% if @project.location.present? %><p><%= @project.location %></p><% end %>
+  <p><%= link_to @organization.name, whare_pumanawa_organization_path(@organization.slug) %></p>
+</header>
+<%= render "whare_pumanawa/shared/showcase_wall", showcase: @showcase, name: @project.name, location: @project.location, introduction: @project.description, introduction_label: "About this project" %>
+<p class="showcase-return"><%= link_to "Organization showcase", whare_pumanawa_organization_path(@organization.slug) %></p>
