@@ -22,7 +22,7 @@ class WharePumanawa::ContributorsControllerTest < ActionDispatch::IntegrationTes
     assert_select ".showcase-intro", text: /Aotearoa/
     assert_equal [ first.title, later.title, first.title ], css_select("figcaption").map { |node| node.text.split(" · ").first }
     assert_select ".showcase-art a[href=?]", whare_pumanawa_mural_path(first.slug, locale: :en), count: 2
-    assert_select ".showcase-signature", text: /Whare Pūmanawa.*Artist.*Aotearoa/m
+    assert_select ".showcase-signature", text: /Artist.*Aotearoa/m
     assert_not_includes response.body, "Secret draft"
     assert_not_includes response.body, "Someone else"
     ids = css_select(".showcase-art").map { |node| node["data-photo-id"] }

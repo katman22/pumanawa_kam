@@ -39,6 +39,7 @@ class ProjectShowcaseTest < ApplicationSystemTestCase
     assert_current_path whare_pumanawa_organization_path(organization.slug, locale: :en)
     assert_selector "figcaption", text: "Project mural"
     assert_selector "figcaption", text: "Sibling mural"
+    assert_maker_footer
 
     visit admin_whare_pumanawa_projects_path
     assert_action_below_table("New project")
@@ -51,6 +52,7 @@ class ProjectShowcaseTest < ApplicationSystemTestCase
     assert_no_text "Sibling mural"
     assert_link "Studio A", href: whare_pumanawa_organization_path(organization.slug, locale: :en)
     assert_equal "grid", page.evaluate_script("getComputedStyle(document.querySelector('.showcase-wall')).display")
+    assert_maker_footer
     image_width = page.evaluate_async_script(<<~JS)
       const done = arguments[arguments.length - 1];
       const image = document.querySelector('.showcase-art img');
@@ -63,9 +65,11 @@ class ProjectShowcaseTest < ApplicationSystemTestCase
     assert image_width.positive?, "The existing hero variant must load"
     page.driver.browser.execute_cdp("Emulation.setDeviceMetricsOverride", width: 390, height: 844, deviceScaleFactor: 1, mobile: true)
     assert_equal "column", page.evaluate_script("getComputedStyle(document.querySelector('.showcase-wall')).flexDirection")
+    assert_maker_footer
     assert page.evaluate_script("document.documentElement.scrollWidth <= innerWidth")
     find(".showcase-art a", match: :first).click
     assert_current_path whare_pumanawa_mural_path(mural.slug, locale: :en)
+    assert_maker_footer
 
     visit admin_root_path
     assert_link "View showcase"
@@ -85,6 +89,28 @@ class ProjectShowcaseTest < ApplicationSystemTestCase
   end
 
   private
+
+  def assert_maker_footer
+    assert_no_selector ".whare-header"
+    assert_selector ".whare-footer", text: "Built by Whare Pūmanawa", count: 1
+    assert_equal 1, page.text.scan("Built by Whare Pūmanawa").size
+    assert_selector ".whare-footer img.whare-maker-mark[alt='']", count: 1
+    assert page.evaluate_script(<<~JS)
+      (() => {
+      const footer = document.querySelector('.whare-footer');
+      const main = document.querySelector('.whare-content').getBoundingClientRect();
+      const mark = footer.querySelector('img');
+      const bounds = footer.getBoundingClientRect();
+      const image = mark.getBoundingClientRect();
+      return getComputedStyle(footer).position === 'static' &&
+        getComputedStyle(footer).textAlign === 'right' &&
+        bounds.top >= main.bottom && Math.abs(bounds.right - main.right) < 2 &&
+        image.right <= bounds.right + 1 && image.width <= bounds.width &&
+        mark.complete && mark.naturalWidth > 0 &&
+        document.documentElement.scrollWidth <= innerWidth;
+      })()
+    JS
+  end
 
   def assert_action_below_table(label)
     link = find("a.btn.btn-primary", text: label, exact_text: true)

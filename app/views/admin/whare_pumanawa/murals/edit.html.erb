@@ -1,5 +1,5 @@
 <h1>Edit mural</h1>
-<p><strong><%= @mural.published? ? "Published" : "Draft" %></strong> · Stable slug: <code><%= @mural.slug %></code></p>
+<p><strong><%= @mural.published? ? "Published" : "Draft" %></strong> · Stable slug: <code><%= @mural.slug %></code> || <%= link_to "Back to murals", admin_whare_pumanawa_murals_path %></p>
 <% if @mural.published? %><p><%= link_to "Open public permalink", whare_pumanawa_mural_path(@mural.slug) %></p><% end %>
 <%= render "admin/whare_pumanawa/murals/form" %>
 <hr>

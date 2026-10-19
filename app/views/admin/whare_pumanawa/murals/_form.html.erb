@@ -16,5 +16,5 @@
   </div>
   <div class="mb-3"><%= form.label :description, "Story / description (plain text)" %><%= form.text_area :description, rows: 6, class: "form-control" %></div>
   <div class="mb-3"><%= form.check_box :published %> <%= form.label :published, "Published — visible in the public portfolio" %><p class="form-text">Publishing requires a valid image and descriptive alt text for every photo.</p></div>
-  <%= form.submit "Save mural", class: "btn btn-primary" %> <%= link_to "Back to murals", admin_whare_pumanawa_murals_path %>
+  <%= form.submit "Save mural", class: "btn btn-primary" %>
 <% end %>

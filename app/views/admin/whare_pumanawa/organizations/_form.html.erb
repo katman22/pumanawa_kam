@@ -5,5 +5,5 @@
   <div class="mb-3"><%= form.label :location %><%= form.text_field :location, class: "form-control" %></div>
   <div class="mb-3"><%= form.label :position %><%= form.number_field :position, min: 0, required: true, class: "form-control" %></div>
   <div class="mb-3"><%= form.check_box :active %> <%= form.label :active %></div>
-  <%= form.submit "Save organization", class: "btn btn-primary" %> <%= link_to "Organizations", admin_whare_pumanawa_organizations_path %>
+  <%= form.submit "Save organization", class: "btn btn-primary" %>
 <% end %>

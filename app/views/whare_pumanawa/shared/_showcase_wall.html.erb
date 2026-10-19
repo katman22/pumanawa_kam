@@ -18,6 +18,6 @@
         <aside class="showcase-text showcase-story"><h2><%= mural.title %></h2><p class="showcase-caption"><%= [mural.location, mural.year, mural.client].select(&:present?).join(" · ") %></p><p><%= truncate(mural.description, length: 240, separator: " ") %></p><%= link_to "Read the story", whare_pumanawa_mural_path(mural.slug) %></aside>
       <% end %>
     <% end %>
-    <div class="showcase-signature"><p>Built by Whare Pūmanawa</p><p><%= name %></p><% if location.present? %><p><%= location %></p><% end %></div>
+    <div class="showcase-signature"><p><%= name %></p><% if location.present? %><p><%= location %></p><% end %></div>
   </div>
 <% end %>
