@@ -40,8 +40,10 @@ class OrganizationShowcaseTest < ApplicationSystemTestCase
     fill_in "Name", with: "Artist A"
     click_button "Save contributor"
     visit admin_whare_pumanawa_organization_path(organization)
-    select "Artist A", from: "Associate contributor"
-    click_button "Associate contributor"
+    within "form[action*='/organization_contributors']" do
+      select "Artist A", from: "organization_contributor_contributor_id"
+      find("input[type='submit']").click
+    end
     assert_text "Contributor associated"
     click_link "New project in this organization"
     fill_in "Name", with: "Project A"

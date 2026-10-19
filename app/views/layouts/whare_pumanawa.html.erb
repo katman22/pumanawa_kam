@@ -9,8 +9,10 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="whare-portfolio">
-    <header class="whare-header"><%= link_to "Mahi Tahi", whare_pumanawa_root_path %><br><small>by Whare Pūmanawa</small></header>
     <main class="whare-content"><%= yield %></main>
-    <footer class="whare-footer">Kia ora · Nau mai · Piki mai</footer>
+    <footer class="whare-footer">
+      <p>Built by Whare Pūmanawa</p>
+      <%= image_tag "whare_pumanawa_mark_v2.svg", alt: "", class: "whare-maker-mark", aria: { hidden: true } %>
+    </footer>
   </body>
 </html>

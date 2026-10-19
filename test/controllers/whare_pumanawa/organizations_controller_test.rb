@@ -17,6 +17,29 @@ class WharePumanawa::OrganizationsControllerTest < ActionDispatch::IntegrationTe
     @second.update!(project: @foreign)
   end
 
+  test "all public pages share one bottom maker footer without a top brand lockup" do
+    [
+      [ whare_pumanawa_root_path, "Organizations", "Creative communities" ],
+      [ whare_pumanawa_organizations_path, "Organizations", "Creative communities" ],
+      [ whare_pumanawa_organization_path(@a.slug), "Studio A", "Organization showcase" ],
+      [ whare_pumanawa_project_path(@project.slug), "Project A", "Project showcase" ],
+      [ whare_pumanawa_contributor_path(@contributor.slug), "Shared artist", "Contributor showcase" ],
+      [ whare_pumanawa_murals_path, "Murals & stories", "Selected work" ],
+      [ whare_pumanawa_mural_path(@first.slug), "Murals & stories", "Selected work" ]
+    ].each do |path, heading, context|
+      get path
+      assert_response :success
+      assert_select "h1", heading
+      assert_select ".whare-eyebrow", text: "Mahi Tahi · #{context}"
+      assert_select ".whare-header", count: 0
+      assert_select "main.whare-content + footer.whare-footer", count: 1
+      assert_select ".whare-footer p", text: "Built by Whare Pūmanawa", count: 1
+      assert_select ".whare-footer img.whare-maker-mark[src*='whare_pumanawa_mark_v2'][alt=''][aria-hidden='true']", count: 1
+      assert_select ".showcase-signature", text: /Whare Pūmanawa/, count: 0
+      assert_equal 1, response.body.scan("Whare Pūmanawa").size
+    end
+  end
+
   test "root and explicit directory list active identities without artwork collage" do
     @b.update!(active: false)
     [ whare_pumanawa_root_path, whare_pumanawa_organizations_path ].each do |path|
@@ -24,8 +47,8 @@ class WharePumanawa::OrganizationsControllerTest < ActionDispatch::IntegrationTe
       assert_response :success
       assert_select "h1", "Organizations"
       assert_select "title", "Mahi Tahi"
-      assert_select ".whare-header a[href=?]", whare_pumanawa_root_path(locale: :en), text: "Mahi Tahi"
-      assert_select ".whare-header small", "by Whare Pūmanawa"
+      assert_select ".whare-header", count: 0
+      assert_select ".whare-footer p", "Built by Whare Pūmanawa"
       assert_select "a[href=?]", whare_pumanawa_organization_path(@a.slug, locale: :en), text: "Studio A"
       assert_select ".organization-directory img", count: 0
       assert_select ".whare-selector, .showcase-art", count: 0
@@ -44,7 +67,7 @@ class WharePumanawa::OrganizationsControllerTest < ActionDispatch::IntegrationTe
     assert_response :success
     assert_select "h1", "Studio A"
     assert_select "title", "Studio A · Mahi Tahi"
-    assert_select ".showcase-signature p", text: "Built by Whare Pūmanawa"
+    assert_select ".showcase-signature p", text: "Studio A"
     assert_select ".showcase-bio", text: /Stories of our community/
     assert_select ".showcase-art", count: 2
     assert_select ".showcase-art a[href=?]", whare_pumanawa_mural_path(@first.slug, locale: :en), count: 2

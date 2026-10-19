@@ -1,8 +1,10 @@
 /* Artist portfolio, isolated from Aura, Canyon and the admin shell. */
 .whare-portfolio { margin: 0; background: #faf9f6; color: #24211f; font-family: system-ui, sans-serif; }
 .whare-portfolio * { box-sizing: border-box; }
-.whare-header, .whare-content, .whare-footer { width: min(90vw, 1100px); margin-inline: auto; padding: 1.5rem 0; }
-.whare-header a { font-size: 1.35rem; font-weight: 650; text-decoration: none; letter-spacing: .06em; }
+.whare-content, .whare-footer { width: min(90vw, 1100px); margin-inline: auto; padding: 1.5rem 0; }
+.whare-footer { margin-top: 3rem; text-align: right; font-size: .8rem; }
+.whare-footer p { margin: 0 0 .5rem; }
+.whare-maker-mark { display: block; width: 110px; max-width: 100%; height: auto; margin-left: auto; transform: scaleX(-1); }
 .whare-portfolio a { color: inherit; }
 .whare-portfolio :focus-visible { outline: 3px solid #8c2426; outline-offset: 4px; }
 .whare-portfolio h1 { font-weight: 500; }
@@ -32,7 +34,7 @@
 .whare-panel h2 { font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -.025em; font-weight: 500; }
 .whare-hero { margin: 0 auto 2rem; background: #f0ede7; }
 @media (max-width: 600px) {
-  .whare-header, .whare-content, .whare-footer { width: 92vw; padding-block: 1rem; }
+  .whare-content, .whare-footer { width: 92vw; padding-block: 1rem; }
   .whare-selector { flex-basis: 120px; min-height: 44px; }
   .whare-selector img, .whare-thumbnail-empty { width: 120px; height: 90px; }
   .whare-selector-strip { gap: .75rem; margin-bottom: 1rem; }
