@@ -113,6 +113,17 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :users, only: [ :index, :new, :create, :edit, :update ]
 
+    get "weather_monitoring", to: "weather_monitoring#index", as: :weather_monitoring
+    scope "weather_monitoring", as: :weather_monitoring do
+      resources :resorts, only: :show, controller: "weather_monitoring" do
+        patch :enable, on: :member
+        patch :disable, on: :member
+        post :evaluate, on: :member
+        post :probe, on: :member
+        resources :observations, only: :show, controller: "weather_forecast_observations"
+      end
+    end
+
     namespace :whare_pumanawa do
       resources :organizations, except: :destroy do
         resources :organization_contributors, only: [ :create, :destroy ]

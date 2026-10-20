@@ -13,9 +13,12 @@
     rel="stylesheet"
   >
   <%= stylesheet_link_tag "admin_tokens", "admin_shell", "data-turbo-track": "reload" %>
+  <% if %w[admin/weather_monitoring admin/weather_forecast_observations].include?(controller_path) %>
+    <%= stylesheet_link_tag "admin_weather_monitoring", "data-turbo-track": "reload" %>
+  <% end %>
 
 </head>
-<body class="admin-shell admin-shell--<%= %w[admin/resorts admin/resort_filters admin/cameras admin/parking_profiles].include?(controller_path) ? 'canyon' : 'default' %>">
+<body class="admin-shell admin-shell--<%= %w[admin/resorts admin/resort_filters admin/cameras admin/parking_profiles admin/weather_monitoring admin/weather_forecast_observations].include?(controller_path) ? 'canyon' : 'default' %>">
 <div class="admin-frame">
 <header class="admin-header" data-controller="admin-navigation" data-action="keydown.esc->admin-navigation#close">
   <button type="button" class="admin-menu-toggle" hidden aria-expanded="false" aria-controls="admin-navigation" data-admin-navigation-target="button" data-action="admin-navigation#toggle"><span aria-hidden="true">☰</span> Menu</button>
@@ -23,6 +26,7 @@
     <%= link_to "Dashboard", admin_root_path, class: "btn" %>
     <% if current_admin_user.can_administer_canyon? %>
       <%= link_to "Canyon / Resorts", admin_resorts_path, class: "btn" %>
+      <%= link_to "Weather Monitoring", admin_weather_monitoring_path, class: "btn" %>
     <% end %>
     <% if current_admin_user.can_administer_murals? %>
       <% if current_admin_user.organization_admin? %>

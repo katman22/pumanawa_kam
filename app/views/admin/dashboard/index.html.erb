@@ -7,7 +7,10 @@
 <% if current_admin_user.can_administer_canyon? %>
   <section aria-labelledby="canyon-admin-heading">
     <h2 id="canyon-admin-heading">Canyon Traveller</h2>
-    <ul class="admin-dashboard-actions"><li><%= link_to "Resort Management", admin_resorts_path %></li></ul>
+    <ul class="admin-dashboard-actions">
+      <li><%= link_to "Resort Management", admin_resorts_path %></li>
+      <li><%= link_to "Weather Monitoring", admin_weather_monitoring_path %></li>
+    </ul>
   </section>
 <% end %>
 <% if current_admin_user.can_administer_murals? %>

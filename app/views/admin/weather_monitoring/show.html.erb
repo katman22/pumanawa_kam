@@ -1,0 +1,99 @@
+<div class="weather-monitoring">
+  <p><%= link_to "Weather Monitoring", admin_weather_monitoring_path %> / <%= link_to "Resort administration", admin_resort_path(@resort) %></p>
+  <h1><%= @resort.resort_name %> · Weather Monitoring</h1>
+  <nav class="weather-section-links" aria-label="Monitor sections">
+    <a href="#monitor-state">State</a><a href="#current-forecast">Forecast</a><a href="#monitor-decision">Decision</a><a href="#source-quality">Source / quality</a><a href="#forecast-history">Forecast history</a><a href="#alert-history">Alerts</a>
+  </nav>
+  <section id="monitor-state" class="weather-panel" aria-labelledby="monitor-state-heading">
+    <h2 id="monitor-state-heading">Current monitor state</h2>
+    <% unless @monitor.persisted? %><p>No monitor is configured. Reading this page does not create one.</p><% end %>
+    <dl class="weather-facts">
+      <div><dt>Monitoring</dt><dd><%= weather_state(@monitor.enabled? ? "enabled" : "disabled") %></dd></div>
+      <div><dt>Provider</dt><dd><%= @monitor.provider.upcase %></dd></div>
+      <div><dt>Level</dt><dd><%= weather_level_label(@monitor.monitoring_level) %></dd></div>
+      <div><dt>Next detailed check</dt><dd data-due="check"><%= weather_time(@monitor.next_check_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Next discovery probe</dt><dd data-due="probe"><%= weather_time(@monitor.next_probe_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Acceleration until</dt><dd><%= weather_time(@monitor.acceleration_until, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Last checked</dt><dd><%= weather_time(@monitor.last_checked_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Last successful evaluation</dt><dd><%= weather_time(@monitor.last_success_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Failure count</dt><dd><%= @monitor.failure_count %></dd></div>
+      <div><dt>Last error</dt><dd class="weather-error"><%= @monitor.last_error_code.presence || "None recorded" %><small><%= weather_time(@monitor.last_error_at, mapping: @monitor.mapping) %></small></dd></div>
+      <div><dt>Mapping checked</dt><dd><%= weather_time(@monitor.mapping_checked_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Alerts</dt><dd><%= weather_alert_status(@monitor) %><small><%= weather_time(@monitor.last_alert_checked_at, mapping: @monitor.mapping) %></small></dd></div>
+    </dl>
+    <% if @resort.slug == "brighton" %>
+      <div class="weather-controls" aria-label="Brighton pilot controls">
+        <% if @monitor.enabled? %>
+          <%= button_to "Disable Brighton monitoring", disable_admin_weather_monitoring_resort_path(@resort), method: :patch, class: "btn btn-outline-primary" %>
+        <% else %>
+          <%= button_to "Enable Brighton monitoring", enable_admin_weather_monitoring_resort_path(@resort), method: :patch, class: "btn btn-primary" %>
+        <% end %>
+        <%= button_to "Run evaluation", evaluate_admin_weather_monitoring_resort_path(@resort), method: :post, disabled: !@monitor.enabled?, class: "btn btn-primary" %>
+        <%= button_to "Run discovery probe", probe_admin_weather_monitoring_resort_path(@resort), method: :post, disabled: !@monitor.enabled?, class: "btn btn-outline-primary" %>
+      </div>
+      <p class="weather-note">Pilot actions run synchronously and record evidence. Enable monitoring before evaluating. No scheduler is configured.</p>
+    <% else %>
+      <p>Manual controls are limited to the Brighton pilot.</p>
+    <% end %>
+  </section>
+
+  <section id="current-forecast" class="weather-panel" aria-labelledby="current-forecast-heading">
+    <h2 id="current-forecast-heading">Current forecast evidence</h2>
+    <% if @observation %>
+      <%= render "forecast", observation: @observation, mapping: @monitor.mapping %>
+      <p><%= link_to "Inspect this forecast revision", admin_weather_monitoring_resort_observation_path(@resort, @observation) %></p>
+    <% else %><p>UNKNOWN · No forecast observation has been recorded.</p><% end %>
+  </section>
+
+  <section id="monitor-decision" class="weather-panel" aria-labelledby="monitor-decision-heading">
+    <h2 id="monitor-decision-heading">Cadence / decision</h2>
+    <p>Latest persisted evaluation: <%= weather_time(@monitor.last_decision["evaluation_at"], mapping: @monitor.mapping) %></p>
+    <p>Latest decision quality: <%= weather_state(@monitor.last_decision["quality"]) %></p>
+    <ul><% weather_decision_labels(@monitor).each do |label| %><li><%= label %></li><% end %></ul>
+    <p class="weather-note">Decision timing can be newer than the immutable snapshot above when NOAA returned the same revision. These are persisted service results; this page does not recalculate cadence.</p>
+    <details class="weather-diagnostics"><summary>Raw persisted decision</summary><pre><%= JSON.pretty_generate(@monitor.last_decision) %></pre></details>
+  </section>
+
+  <section id="source-quality" class="weather-panel" aria-labelledby="source-quality-heading">
+    <h2 id="source-quality-heading">NOAA source / quality</h2>
+    <dl class="weather-facts">
+      <div><dt>Mapped coordinates</dt><dd><%= @monitor.mapping.values_at("latitude", "longitude").compact.join(", ").presence || "Not recorded" %></dd></div>
+      <div><dt>CWA / grid</dt><dd><%= @monitor.mapping.values_at("cwa", "gridId").compact.join(" / ").presence || "Not recorded" %></dd></div>
+      <div><dt>Grid X / Y</dt><dd><%= @monitor.mapping.values_at("gridX", "gridY").compact.join(" / ").presence || "Not recorded" %></dd></div>
+      <div><dt>Forecast zone</dt><dd><%= @zone_ids.join(", ").presence || "Not recorded" %></dd></div>
+      <div><dt>Grid elevation</dt><dd><%= weather_grid_elevation(@observation&.source_metadata) %></dd></div>
+    </dl>
+    <% if @observation %><%= render "quality", observation: @observation, mapping: @monitor.mapping %><% end %>
+    <details class="weather-diagnostics"><summary>Raw point mapping</summary><pre><%= JSON.pretty_generate(@monitor.mapping) %></pre></details>
+  </section>
+
+  <section id="forecast-history" class="weather-panel" aria-labelledby="forecast-history-heading">
+    <h2 id="forecast-history-heading">Recent forecast history</h2>
+    <p class="weather-note">Latest <%= Admin::WeatherMonitoringController::HISTORY_LIMIT %> revisions, newest first. Each row has its own forecast window; changing rolling-window totals alone do not measure forecast accuracy.</p>
+    <% if @history.empty? %><p>No forecast history yet.</p><% else %>
+      <div class="weather-table-scroll" role="region" aria-label="Forecast history" tabindex="0">
+        <table class="table weather-table">
+          <caption>Immutable forecast revisions. Follow a revision to inspect its original window and intervals.</caption>
+          <thead><tr><th scope="col">First fetched</th><th scope="col">NOAA updated</th><th scope="col">Source</th><th scope="col">FORECAST snow · 120h</th><th scope="col">First accumulation</th><th scope="col">Quality</th><th scope="col">Revision</th></tr></thead>
+          <tbody>
+            <% @history.each do |observation| %>
+              <tr data-observation-id="<%= observation.id %>">
+                <td><%= link_to weather_time(observation.first_fetched_at, mapping: @monitor.mapping), admin_weather_monitoring_resort_observation_path(@resort, observation) %></td>
+                <td><%= weather_time(observation.source_updated_at, mapping: @monitor.mapping) %></td>
+                <td><%= observation.source_key %></td>
+                <td><%= weather_snowfall(observation.summary["snowfall"], freshness: observation.quality["freshness"]) %></td>
+                <td><%= weather_window(observation.summary["first_accumulating_snow"], mapping: @monitor.mapping) %></td>
+                <td><%= weather_state(weather_overall_quality(observation.quality)) %></td>
+                <td><code title="<%= observation.content_sha256 %>"><%= observation.content_sha256.first(12) %></code><small>Normalization v<%= observation.normalization_version %></small></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+  <section id="alert-history" class="weather-panel" aria-labelledby="alert-history-heading">
+    <h2 id="alert-history-heading">Relevant NOAA alert history</h2>
+    <%= render "alerts" %>
+  </section>
+</div>

@@ -1,0 +1,34 @@
+<div class="weather-monitoring">
+  <p><%= link_to "Back to #{@resort.resort_name} monitoring", admin_weather_monitoring_resort_path(@resort) %></p>
+  <h1>Forecast revision · <%= @resort.resort_name %></h1>
+  <p><code><%= @observation.content_sha256 %></code></p>
+  <section class="weather-panel" aria-labelledby="observation-forecast-heading">
+    <h2 id="observation-forecast-heading">Recorded forecast</h2>
+    <%= render "admin/weather_monitoring/forecast", observation: @observation, mapping: @monitor.mapping %>
+  </section>
+  <section class="weather-panel" aria-labelledby="observation-quality-heading">
+    <h2 id="observation-quality-heading">Source / quality</h2>
+    <%= render "admin/weather_monitoring/quality", observation: @observation, mapping: @monitor.mapping %>
+  </section>
+  <section class="weather-panel" aria-labelledby="observation-intervals-heading">
+    <h2 id="observation-intervals-heading">Normalized source intervals</h2>
+    <p class="weather-note">Canonical units are shown for diagnostics. Retained source timelines may extend beyond the recorded 120-hour product window. Null values remain unknown.</p>
+    <div class="weather-table-scroll" role="region" aria-label="Normalized forecast intervals" tabindex="0">
+      <table class="table weather-table">
+        <caption>Original interval boundaries are preserved; accumulation values are amounts over the interval, not hourly rates.</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Start</th><th scope="col">End</th><th scope="col">Value</th><th scope="col">Unit</th><th scope="col">Semantic</th></tr></thead>
+        <tbody>
+          <% @observation.selected_intervals.each do |field, rows| %>
+            <% rows.each do |row| %>
+              <tr>
+                <th scope="row"><%= field %></th><td><%= weather_time(row["start_at"], mapping: @monitor.mapping) %></td><td><%= weather_time(row["end_at"], mapping: @monitor.mapping) %></td>
+                <td><%= weather_interval_value(row) %></td><td><%= row["unit"].presence || "Categorical" %></td><td><%= row["semantic"] %><small>Source duration: <%= row["duration"] %></small></td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <details class="weather-diagnostics"><summary>Raw selected intervals</summary><pre><%= JSON.pretty_generate(@observation.selected_intervals) %></pre></details>
+  </section>
+</div>

@@ -1,0 +1,9 @@
+{
+    "@context": {
+        "@version": "1.1"
+    },
+    "type": "FeatureCollection",
+    "features": [],
+    "title": "Current watches, warnings, and advisories for 40.5986 N, 111.5845 W",
+    "updated": "2026-10-20T16:40:57+00:00"
+}
