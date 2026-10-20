@@ -1,0 +1,112 @@
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegion",
+            "distance": {
+                "@id": "s:Distance",
+                "@type": "s:QuantitativeValue"
+            },
+            "bearing": {
+                "@type": "s:QuantitativeValue"
+            },
+            "value": {
+                "@id": "s:value"
+            },
+            "unitCode": {
+                "@id": "s:unitCode",
+                "@type": "@id"
+            },
+            "forecastOffice": {
+                "@type": "@id"
+            },
+            "forecastGridData": {
+                "@type": "@id"
+            },
+            "publicZone": {
+                "@type": "@id"
+            },
+            "county": {
+                "@type": "@id"
+            }
+        }
+    ],
+    "id": "https://api.weather.gov/points/40.5986,-111.5845",
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            -111.5845,
+            40.5986
+        ]
+    },
+    "properties": {
+        "@id": "https://api.weather.gov/points/40.5986,-111.5845",
+        "@type": "wx:Point",
+        "cwa": "SLC",
+        "type": "land",
+        "forecastOffice": "https://api.weather.gov/offices/SLC",
+        "gridId": "SLC",
+        "gridX": 110,
+        "gridY": 167,
+        "forecast": "https://api.weather.gov/gridpoints/SLC/110,167/forecast",
+        "forecastHourly": "https://api.weather.gov/gridpoints/SLC/110,167/forecast/hourly",
+        "forecastGridData": "https://api.weather.gov/gridpoints/SLC/110,167",
+        "observationStations": "https://api.weather.gov/gridpoints/SLC/110,167/stations",
+        "relativeLocation": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -111.6039233,
+                    40.6106555
+                ]
+            },
+            "properties": {
+                "city": "Brighton",
+                "state": "UT",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 0
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 0
+                }
+            }
+        },
+        "forecastZone": "https://api.weather.gov/zones/forecast/UTZ111",
+        "county": "https://api.weather.gov/zones/county/UTC035",
+        "fireWeatherZone": "https://api.weather.gov/zones/fire/UTZ479",
+        "timeZone": "America/Denver",
+        "radarStation": "KMTX",
+        "astronomicalData": {
+            "sunrise": "2026-10-20T07:43:12-06:00",
+            "sunset": "2026-10-20T18:38:55-06:00",
+            "transit": "2026-10-20T13:11:04-06:00",
+            "civilTwilightBegin": "2026-10-20T07:15:34-06:00",
+            "civilTwilightEnd": "2026-10-20T19:06:34-06:00",
+            "nauticalTwilightBegin": "2026-10-20T06:43:46-06:00",
+            "nauticalTwilightEnd": "2026-10-20T19:38:22-06:00",
+            "astronomicalTwilightBegin": "2026-10-20T06:12:08-06:00",
+            "astronomicalTwilightEnd": "2026-10-20T20:09:59-06:00"
+        },
+        "nwr": {
+            "transmitter": "KEC78",
+            "sameCode": "049035",
+            "areaBroadcast": "https://api.weather.gov/radio/KEC78/broadcast",
+            "pointBroadcast": "https://api.weather.gov/points/40.5986,-111.5845/radio"
+        }
+    }
+}

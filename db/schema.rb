@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_18_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_21_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -217,6 +217,36 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_18_000001) do
     t.index ["resort_id"], name: "index_resort_filters_on_resort_id"
   end
 
+  create_table "resort_weather_monitors", force: :cascade do |t|
+    t.bigint "resort_id", null: false
+    t.string "provider", default: "noaa", null: false
+    t.boolean "enabled", default: false, null: false
+    t.datetime "next_check_at"
+    t.datetime "next_probe_at"
+    t.datetime "last_checked_at"
+    t.datetime "last_success_at"
+    t.datetime "last_source_updated_at"
+    t.datetime "mapping_checked_at"
+    t.datetime "acceleration_until"
+    t.datetime "last_error_at"
+    t.datetime "last_alert_checked_at"
+    t.bigint "current_forecast_observation_id"
+    t.jsonb "mapping", default: {}, null: false
+    t.jsonb "last_decision", default: {}, null: false
+    t.jsonb "active_alert_identifiers", default: [], null: false
+    t.string "monitoring_level"
+    t.string "last_error_code"
+    t.integer "failure_count", default: 0, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["current_forecast_observation_id"], name: "weather_monitor_current_forecast"
+    t.index ["enabled", "next_check_at"], name: "index_resort_weather_monitors_on_enabled_and_next_check_at"
+    t.index ["enabled", "next_probe_at"], name: "index_resort_weather_monitors_on_enabled_and_next_probe_at"
+    t.index ["resort_id"], name: "index_resort_weather_monitors_on_resort_id", unique: true
+    t.check_constraint "failure_count >= 0", name: "weather_monitor_failures_nonnegative"
+  end
+
   create_table "resorts", force: :cascade do |t|
     t.string "resort_name", limit: 50, null: false
     t.string "slug", limit: 36, null: false
@@ -274,6 +304,49 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_18_000001) do
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["status"], name: "index_users_on_status"
+  end
+
+  create_table "weather_alert_observations", force: :cascade do |t|
+    t.string "provider", null: false
+    t.string "source_identifier", null: false
+    t.string "content_sha256", null: false
+    t.string "event", null: false
+    t.string "status", null: false
+    t.string "message_type", null: false
+    t.datetime "first_seen_at", null: false
+    t.datetime "source_sent_at", null: false
+    t.datetime "effective_at"
+    t.datetime "onset_at"
+    t.datetime "expires_at"
+    t.datetime "ends_at"
+    t.string "severity"
+    t.string "certainty"
+    t.string "urgency"
+    t.jsonb "affected_zone_ids", default: [], null: false
+    t.jsonb "evidence", default: {}, null: false
+    t.index ["provider", "source_identifier", "content_sha256"], name: "weather_alert_revision_unique", unique: true
+    t.index ["source_sent_at"], name: "index_weather_alert_observations_on_source_sent_at"
+  end
+
+  create_table "weather_forecast_observations", force: :cascade do |t|
+    t.bigint "resort_id", null: false
+    t.string "provider", null: false
+    t.string "source_key", null: false
+    t.datetime "source_updated_at", null: false
+    t.datetime "first_fetched_at", null: false
+    t.datetime "forecast_window_start", null: false
+    t.datetime "forecast_window_end", null: false
+    t.string "content_sha256", limit: 64, null: false
+    t.integer "normalization_version", null: false
+    t.jsonb "selected_intervals", default: {}, null: false
+    t.jsonb "summary", default: {}, null: false
+    t.jsonb "quality", default: {}, null: false
+    t.jsonb "source_metadata", default: {}, null: false
+    t.index ["resort_id", "first_fetched_at"], name: "weather_forecast_resort_history"
+    t.index ["resort_id", "provider", "source_key", "source_updated_at", "content_sha256", "normalization_version"], name: "weather_forecast_revision_unique", unique: true
+    t.index ["resort_id"], name: "index_weather_forecast_observations_on_resort_id"
+    t.check_constraint "forecast_window_end > forecast_window_start", name: "weather_forecast_valid_window"
+    t.check_constraint "normalization_version > 0", name: "weather_forecast_version_positive"
   end
 
   create_table "webhook_events", force: :cascade do |t|
@@ -403,7 +476,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_18_000001) do
   add_foreign_key "parking_profiles", "resorts"
   add_foreign_key "receipts", "users"
   add_foreign_key "resort_filters", "resorts"
+  add_foreign_key "resort_weather_monitors", "resorts"
+  add_foreign_key "resort_weather_monitors", "weather_forecast_observations", column: "current_forecast_observation_id"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "weather_forecast_observations", "resorts"
   add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_contributors", column: "contributor_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_projects", column: "project_id"

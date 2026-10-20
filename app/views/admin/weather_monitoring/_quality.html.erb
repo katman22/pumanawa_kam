@@ -1,0 +1,30 @@
+<dl class="weather-facts">
+  <div><dt>Source / grid</dt><dd><%= observation.source_key %></dd></div>
+  <div><dt>Normalization version</dt><dd><%= observation.normalization_version %></dd></div>
+  <div><dt>First fetched</dt><dd><%= weather_time(observation.first_fetched_at, mapping: mapping) %></dd></div>
+  <div><dt>Freshness at recording</dt><dd><%= weather_state(observation.quality["freshness"]) %></dd></div>
+</dl>
+<div class="weather-table-scroll" role="region" aria-label="Source coverage and diagnostics" tabindex="0">
+  <table class="table weather-table">
+    <caption>Coverage and diagnostics for each retained NOAA layer in this snapshot.</caption>
+    <thead><tr><th scope="col">Field</th><th scope="col">State</th><th scope="col">Known coverage</th><th scope="col">Gaps / warnings</th></tr></thead>
+    <tbody>
+      <% observation.quality.fetch("layers", {}).each do |name, layer| %>
+        <tr>
+          <th scope="row"><%= name %></th><td><%= weather_state(layer["state"]) %></td>
+          <td><%= weather_coverage(layer["coverage_seconds"]) %></td>
+          <td>
+            <% if Array(layer["gaps"]).empty? && Array(layer["diagnostics"]).empty? %>No gaps or warnings recorded<% end %>
+            <% Array(layer["diagnostics"]).each do |code| %><p class="weather-error"><%= code.to_s.humanize %></p><% end %>
+            <% Array(layer["gaps"]).each do |gap| %><p>Gap: <%= weather_window(gap, mapping: mapping) %></p><% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<details class="weather-diagnostics"><summary>Raw quality, summary and source metadata</summary>
+  <h3>Quality JSON</h3><pre><%= JSON.pretty_generate(observation.quality) %></pre>
+  <h3>Summary JSON</h3><pre><%= JSON.pretty_generate(observation.summary) %></pre>
+  <h3>Source metadata JSON</h3><pre><%= JSON.pretty_generate(observation.source_metadata) %></pre>
+</details>

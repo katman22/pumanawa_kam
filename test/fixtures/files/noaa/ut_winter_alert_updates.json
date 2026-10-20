@@ -1,0 +1,909 @@
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "@vocab": "https://api.weather.gov/ontology#"
+        }
+    ],
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.846b967bbe830f7d6799524c19462e835b4069ad.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.846b967bbe830f7d6799524c19462e835b4069ad.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.846b967bbe830f7d6799524c19462e835b4069ad.001.1",
+                "areaDesc": "Eastern Juab/Millard Counties; Sanpete Valley; Sevier Valley",
+                "geocode": {
+                    "SAME": [
+                        "049023",
+                        "049027",
+                        "049039",
+                        "049041"
+                    ],
+                    "UGC": [
+                        "UTZ116",
+                        "UTZ118",
+                        "UTZ119"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ116",
+                    "https://api.weather.gov/zones/forecast/UTZ118",
+                    "https://api.weather.gov/zones/forecast/UTZ119"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ebc741a68787ae959e9fea99a53be98b545c4c7c.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.ebc741a68787ae959e9fea99a53be98b545c4c7c.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-15T22:26:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-16T08:32:00-06:00",
+                "effective": "2026-10-16T08:32:00-06:00",
+                "onset": "2026-10-16T08:32:00-06:00",
+                "expires": "2026-10-16T09:45:00-06:00",
+                "ends": "2026-10-16T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Freeze Warning issued October 16 at 8:32AM MDT until October 16 at 9:00AM MDT by NWS Salt Lake City UT",
+                "description": "The threat of widespread freeze conditions has ended, and\ntemperatures will continue to gradually warm.",
+                "instruction": null,
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 161432"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING WILL EXPIRE AT 9 AM MDT THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXP.KSLC.FZ.W.0022.000000T0000Z-261016T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-16T09:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1,2026-10-15T11:09:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ebc741a68787ae959e9fea99a53be98b545c4c7c.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.ebc741a68787ae959e9fea99a53be98b545c4c7c.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.ebc741a68787ae959e9fea99a53be98b545c4c7c.001.1",
+                "areaDesc": "Eastern Juab/Millard Counties; Sanpete Valley; Sevier Valley",
+                "geocode": {
+                    "SAME": [
+                        "049023",
+                        "049027",
+                        "049039",
+                        "049041"
+                    ],
+                    "UGC": [
+                        "UTZ116",
+                        "UTZ118",
+                        "UTZ119"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ116",
+                    "https://api.weather.gov/zones/forecast/UTZ118",
+                    "https://api.weather.gov/zones/forecast/UTZ119"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-15T11:09:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-15T22:26:00-06:00",
+                "effective": "2026-10-15T22:26:00-06:00",
+                "onset": "2026-10-15T22:26:00-06:00",
+                "expires": "2026-10-16T09:00:00-06:00",
+                "ends": "2026-10-16T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Freeze Warning issued October 15 at 10:26PM MDT until October 16 at 9:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Sub-freezing temperatures as low as 30.\n\n* WHERE...Eastern Juab/Millard Counties, Sanpete Valley, and Sevier\nValley.\n\n* WHEN...Until 9 AM MDT Friday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
+                "instruction": "Take steps now to protect tender plants from the cold.\n\nDrain in-ground sprinkler systems and cover above ground pipes.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 160426"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING REMAINS IN EFFECT UNTIL 9 AM MDT FRIDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KSLC.FZ.W.0022.000000T0000Z-261016T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-16T09:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                },
+                "replacedBy": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.846b967bbe830f7d6799524c19462e835b4069ad.001.1",
+                "replacedAt": "2026-10-16T08:32:00-06:00"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.598497230c29b593aa00bec84b3a6737bbdda734.001.1",
+                "areaDesc": "Eastern Juab/Millard Counties; Sanpete Valley; Sevier Valley",
+                "geocode": {
+                    "SAME": [
+                        "049023",
+                        "049027",
+                        "049039",
+                        "049041"
+                    ],
+                    "UGC": [
+                        "UTZ116",
+                        "UTZ118",
+                        "UTZ119"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ116",
+                    "https://api.weather.gov/zones/forecast/UTZ118",
+                    "https://api.weather.gov/zones/forecast/UTZ119"
+                ],
+                "references": [],
+                "sent": "2026-10-15T11:09:00-06:00",
+                "effective": "2026-10-15T11:09:00-06:00",
+                "onset": "2026-10-15T21:00:00-06:00",
+                "expires": "2026-10-16T02:15:00-06:00",
+                "ends": "2026-10-16T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Freeze Warning issued October 15 at 11:09AM MDT until October 16 at 9:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Sub-freezing temperatures as low as 31 expected.\n\n* WHERE...Eastern Juab/Millard Counties, Sanpete Valley, and Sevier\nValley.\n\n* WHEN...From 9 PM this evening to 9 AM MDT Friday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
+                "instruction": "Take steps now to protect tender plants from the cold.\n\nDrain in-ground sprinkler systems and cover above ground pipes.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 151709"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING IN EFFECT FROM 9 PM THIS EVENING TO 9 AM MDT FRIDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSLC.FZ.W.0022.261016T0300Z-261016T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-16T09:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                },
+                "replacedBy": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.846b967bbe830f7d6799524c19462e835b4069ad.001.1",
+                "replacedAt": "2026-10-16T08:32:00-06:00"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.002.1",
+                "areaDesc": "Southwest Utah",
+                "geocode": {
+                    "SAME": [
+                        "049001",
+                        "049021",
+                        "049053"
+                    ],
+                    "UGC": [
+                        "UTZ122"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ122"
+                ],
+                "references": [],
+                "sent": "2026-10-14T06:38:00-06:00",
+                "effective": "2026-10-14T06:38:00-06:00",
+                "onset": "2026-10-14T06:38:00-06:00",
+                "expires": "2026-10-14T09:00:00-06:00",
+                "ends": "2026-10-14T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Freeze Warning issued October 14 at 6:38AM MDT until October 14 at 9:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Sub-freezing temperatures as low as 30.\n\n* WHERE...Southwest Utah.\n\n* WHEN...Until 9 AM MDT this morning.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
+                "instruction": "Take steps now to protect tender plants from the cold.\n\nDrain in-ground sprinkler systems and cover above ground pipes.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 141238"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING REMAINS IN EFFECT UNTIL 9 AM MDT THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KSLC.FZ.W.0021.000000T0000Z-261014T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T09:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e5d3ff94783e4b177bdbaaf35c65668cebd8aa9f.001.1,2026-10-13T10:52:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.001.1",
+                "areaDesc": "Eastern Box Elder County; Western Millard and Juab Counties; Eastern Juab/Millard Counties; Sanpete Valley",
+                "geocode": {
+                    "SAME": [
+                        "049003",
+                        "049023",
+                        "049027",
+                        "049039"
+                    ],
+                    "UGC": [
+                        "UTZ103",
+                        "UTZ115",
+                        "UTZ116",
+                        "UTZ118"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ103",
+                    "https://api.weather.gov/zones/forecast/UTZ115",
+                    "https://api.weather.gov/zones/forecast/UTZ116",
+                    "https://api.weather.gov/zones/forecast/UTZ118"
+                ],
+                "references": [],
+                "sent": "2026-10-14T06:38:00-06:00",
+                "effective": "2026-10-14T06:38:00-06:00",
+                "onset": "2026-10-14T06:38:00-06:00",
+                "expires": "2026-10-14T06:53:39-06:00",
+                "ends": "2026-10-14T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Minor",
+                "certainty": "Observed",
+                "urgency": "Past",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "The Freeze Warning has been cancelled.",
+                "description": "The Freeze Warning has been cancelled and is no longer in effect.",
+                "instruction": null,
+                "response": "AllClear",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 141238"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING IS CANCELLED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CAN.KSLC.FZ.W.0021.000000T0000Z-261014T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T09:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.e5d3ff94783e4b177bdbaaf35c65668cebd8aa9f.001.1,2026-10-13T10:52:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.001.1",
+                "areaDesc": "Wasatch Mountains South of I-80",
+                "geocode": {
+                    "SAME": [
+                        "049023",
+                        "049035",
+                        "049043",
+                        "049049",
+                        "049051"
+                    ],
+                    "UGC": [
+                        "UTZ111"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ111"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-13T14:48:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-14T05:57:00-06:00",
+                "effective": "2026-10-14T05:57:00-06:00",
+                "onset": "2026-10-14T05:57:00-06:00",
+                "expires": "2026-10-14T07:00:00-06:00",
+                "ends": "2026-10-14T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Winter Weather Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Winter Weather Advisory issued October 14 at 5:57AM MDT until October 14 at 6:00AM MDT by NWS Salt Lake City UT",
+                "description": "Lingering snow showers will continue through the day today with\nlittle additional accumulation expected.",
+                "instruction": null,
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "WSWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS45 KSLC 141157"
+                    ],
+                    "NWSheadline": [
+                        "WINTER WEATHER ADVISORY WILL EXPIRE AT 6 AM MDT EARLY THIS MORNING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXP.KSLC.WW.Y.0014.000000T0000Z-261014T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.001.1,2026-10-12T21:59:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba6f6430767f1a61105fb257d574433839be8fde.002.1,2026-10-12T13:51:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WWY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.002.1",
+                "areaDesc": "Western Uinta Mountains",
+                "geocode": {
+                    "SAME": [
+                        "049013",
+                        "049043",
+                        "049051"
+                    ],
+                    "UGC": [
+                        "UTZ112"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ112"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-13T14:48:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-14T05:57:00-06:00",
+                "effective": "2026-10-14T05:57:00-06:00",
+                "onset": "2026-10-14T05:57:00-06:00",
+                "expires": "2026-10-14T21:00:00-06:00",
+                "ends": "2026-10-14T21:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Winter Weather Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Winter Weather Advisory issued October 14 at 5:57AM MDT until October 14 at 9:00PM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Snow. Additional snow accumulations 2 to 5 inches.\n\n* WHERE...Western Uinta Mountains.\n\n* WHEN...Until 9 PM MDT this evening.\n\n* IMPACTS...Winter driving conditions are expected.\n\n* ADDITIONAL DETAILS...Northerly upslope flow along the back side of\na low pressure system will bring periods of snow through this\nevening along the north slopes of the Uintas.",
+                "instruction": "Slow down and use caution while traveling. For winter road conditions\nfrom the Utah Department of Transportation, visit\nhttp://www.udottraffic.utah.gov.\n\nFor graphical depictions of the snowfall forecast, including Official\nNWS Forecast, High End Amount, and Low End Amount, visit\nweather.gov/slc/winter.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "WSWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS45 KSLC 141157"
+                    ],
+                    "NWSheadline": [
+                        "WINTER WEATHER ADVISORY NOW IN EFFECT UNTIL 9 PM MDT THIS EVENING"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.EXT.KSLC.WW.Y.0014.000000T0000Z-261015T0300Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T21:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.002.1,2026-10-12T21:59:00-06:00 w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba6f6430767f1a61105fb257d574433839be8fde.001.1,2026-10-12T13:51:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WWY"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.002.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.002.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.002.1",
+                "areaDesc": "Western Uinta Mountains",
+                "geocode": {
+                    "SAME": [
+                        "049013",
+                        "049043",
+                        "049051"
+                    ],
+                    "UGC": [
+                        "UTZ112"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ112"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.002.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.002.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-12T21:59:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-13T14:48:00-06:00",
+                "effective": "2026-10-13T14:48:00-06:00",
+                "onset": "2026-10-13T14:48:00-06:00",
+                "expires": "2026-10-14T06:00:00-06:00",
+                "ends": "2026-10-14T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Winter Weather Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Winter Weather Advisory issued October 13 at 2:48PM MDT until October 14 at 6:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Snow. Additional snow accumulations up to two to four\ninches.\n\n* WHERE...Western Uinta Mountains.\n\n* WHEN...Until 6 AM MDT Wednesday.\n\n* IMPACTS...Winter driving conditions are expected.\n\n* ADDITIONAL DETAILS...Seasonal roads such as Bald Mountain Pass\nremain open at this time and may pose a significant risk to\nunder-prepared travelers. If traveling along high elevation routes,\nbe prepared for periods of accumulating road snow.",
+                "instruction": "Slow down and use caution while traveling. For winter road conditions\nfrom the Utah Department of Transportation, visit\nhttp://www.udottraffic.utah.gov.\n\nFor graphical depictions of the snowfall forecast, including Official\nNWS Forecast, High End Amount, and Low End Amount, visit\nweather.gov/slc/winter.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "WSWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS45 KSLC 132048"
+                    ],
+                    "NWSheadline": [
+                        "WINTER WEATHER ADVISORY REMAINS IN EFFECT UNTIL 6 AM MDT WEDNESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KSLC.WW.Y.0014.000000T0000Z-261014T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba6f6430767f1a61105fb257d574433839be8fde.001.1,2026-10-12T13:51:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WWY"
+                    ]
+                },
+                "replacedBy": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.002.1",
+                "replacedAt": "2026-10-14T05:57:00-06:00"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.2a8c31a227fb1565a755e6cf326018ecb9804069.001.1",
+                "areaDesc": "Wasatch Mountains South of I-80",
+                "geocode": {
+                    "SAME": [
+                        "049023",
+                        "049035",
+                        "049043",
+                        "049049",
+                        "049051"
+                    ],
+                    "UGC": [
+                        "UTZ111"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ111"
+                ],
+                "references": [
+                    {
+                        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.001.1",
+                        "identifier": "urn:oid:2.49.0.1.840.0.09ecfd3d1219bbd797ed42b2beb017676c16b464.001.1",
+                        "sender": "w-nws.webmaster@noaa.gov",
+                        "sent": "2026-10-12T21:59:00-06:00"
+                    }
+                ],
+                "sent": "2026-10-13T14:48:00-06:00",
+                "effective": "2026-10-13T14:48:00-06:00",
+                "onset": "2026-10-13T14:48:00-06:00",
+                "expires": "2026-10-14T06:00:00-06:00",
+                "ends": "2026-10-14T06:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Update",
+                "category": "Met",
+                "severity": "Moderate",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Winter Weather Advisory",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Winter Weather Advisory issued October 13 at 2:48PM MDT until October 14 at 6:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Snow expected, particularly for elevations above 8,500ft.\nTotal snow accumulations of 3 to 6 inches in upper Little and Big\nCottonwood, with higher amounts expected for elevations above\n9,000ft.\n\n* WHERE...Wasatch Mountains South of I-80.\n\n* WHEN...Until 6 AM MDT Wednesday.\n\n* IMPACTS...Winter driving conditions are expected.\n\n* ADDITIONAL DETAILS...Early season snowfall on roadways may pose a\nsignificant risk to under-prepared travelers. While minor snow\naccumulations are expected for upper Little and Big Cottonwood\nCanyon, Guardsman Pass will likely see higher snowfall potential.\nIf traveling along this route, be prepared for winter driving\nconditions.",
+                "instruction": "Slow down and use caution while traveling. For winter road conditions\nfrom the Utah Department of Transportation, visit\nhttp://www.udottraffic.utah.gov.\n\nFor graphical depictions of the snowfall forecast, including Official\nNWS Forecast, High End Amount, and Low End Amount, visit\nweather.gov/slc/winter.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "WSWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS45 KSLC 132048"
+                    ],
+                    "NWSheadline": [
+                        "WINTER WEATHER ADVISORY REMAINS IN EFFECT UNTIL 6 AM MDT WEDNESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.CON.KSLC.WW.Y.0014.000000T0000Z-261014T1200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T06:00:00-06:00"
+                    ],
+                    "expiredReferences": [
+                        "w-nws.webmaster@noaa.gov,urn:oid:2.49.0.1.840.0.ba6f6430767f1a61105fb257d574433839be8fde.002.1,2026-10-12T13:51:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "WWY"
+                    ]
+                },
+                "replacedBy": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.2965b0a1bb4bf2a78b62c013cb3be6c8496179d9.001.1",
+                "replacedAt": "2026-10-14T05:57:00-06:00"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e5d3ff94783e4b177bdbaaf35c65668cebd8aa9f.001.1",
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e5d3ff94783e4b177bdbaaf35c65668cebd8aa9f.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.e5d3ff94783e4b177bdbaaf35c65668cebd8aa9f.001.1",
+                "areaDesc": "Eastern Box Elder County; Western Millard and Juab Counties; Eastern Juab/Millard Counties; Sanpete Valley; Southwest Utah",
+                "geocode": {
+                    "SAME": [
+                        "049003",
+                        "049023",
+                        "049027",
+                        "049039",
+                        "049001",
+                        "049021",
+                        "049053"
+                    ],
+                    "UGC": [
+                        "UTZ103",
+                        "UTZ115",
+                        "UTZ116",
+                        "UTZ118",
+                        "UTZ122"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/forecast/UTZ103",
+                    "https://api.weather.gov/zones/forecast/UTZ115",
+                    "https://api.weather.gov/zones/forecast/UTZ116",
+                    "https://api.weather.gov/zones/forecast/UTZ118",
+                    "https://api.weather.gov/zones/forecast/UTZ122"
+                ],
+                "references": [],
+                "sent": "2026-10-13T10:52:00-06:00",
+                "effective": "2026-10-13T10:52:00-06:00",
+                "onset": "2026-10-13T21:00:00-06:00",
+                "expires": "2026-10-14T02:00:00-06:00",
+                "ends": "2026-10-14T09:00:00-06:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Likely",
+                "urgency": "Expected",
+                "event": "Freeze Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Salt Lake City UT",
+                "headline": "Freeze Warning issued October 13 at 10:52AM MDT until October 14 at 9:00AM MDT by NWS Salt Lake City UT",
+                "description": "* WHAT...Sub-freezing temperatures as low as 32 expected.\n\n* WHERE...Eastern Juab/Millard Counties, Sanpete Valley, Western\nMillard and Juab Counties, Eastern Box Elder County, and Southwest\nUtah.\n\n* WHEN...From 9 PM this evening to 9 AM MDT Wednesday.\n\n* IMPACTS...Frost and freeze conditions could kill crops, other\nsensitive vegetation and possibly damage unprotected outdoor\nplumbing.",
+                "instruction": "Take steps now to protect tender plants from the cold.\n\nDrain in-ground sprinkler systems and cover above ground pipes.",
+                "response": "Execute",
+                "note": null,
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "NPWSLC"
+                    ],
+                    "WMOidentifier": [
+                        "WWUS75 KSLC 131652"
+                    ],
+                    "NWSheadline": [
+                        "FREEZE WARNING IN EFFECT FROM 9 PM THIS EVENING TO 9 AM MDT WEDNESDAY"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSLC.FZ.W.0021.261014T0300Z-261014T1500Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2026-10-14T09:00:00-06:00"
+                    ]
+                },
+                "scope": "Public",
+                "code": "IPAWSv1.0",
+                "language": "en-US",
+                "web": "http://www.weather.gov",
+                "eventCode": {
+                    "SAME": [
+                        "NWS"
+                    ],
+                    "NationalWeatherService": [
+                        "FZW"
+                    ]
+                },
+                "replacedBy": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d4dba95eb62993c1c189346ab93c835b46f9aec7.002.1",
+                "replacedAt": "2026-10-14T06:38:00-06:00"
+            }
+        }
+    ],
+    "title": "Watches, warnings, and advisories for Utah",
+    "updated": "2026-10-16T14:32:51+00:00",
+    "pagination": {
+        "next": "https://api.weather.gov/alerts?area%5B0%5D=UT&limit=100&cursor=eyJ0IjoxNzkxOTEwMzIwLCJpIjoidXJuOm9pZDoyLjQ5LjAuMS44NDAuMC5lNWQzZmY5NDc4M2U0YjE3N2JkYmFhZjM1YzY1NjY4Y2ViZDhhYTlmLjAwMS4xIn0%3D"
+    }
+}

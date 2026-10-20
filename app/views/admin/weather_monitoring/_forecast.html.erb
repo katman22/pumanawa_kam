@@ -1,0 +1,29 @@
+<% summary = observation.summary %>
+<% quality = observation.quality %>
+<p class="weather-note">FORECAST snowfall in inches. This immutable snapshot was recorded at <%= weather_time(observation.first_fetched_at, mapping: mapping) %>. Its values have not been recalculated for the current time.</p>
+<dl class="weather-facts">
+  <div><dt>120-hour window</dt><dd><%= weather_time(observation.forecast_window_start, mapping: mapping) %> – <%= weather_time(observation.forecast_window_end, mapping: mapping) %></dd></div>
+  <div><dt>FORECAST snowfall · 120h</dt><dd class="weather-snow-total"><%= weather_snowfall(summary["snowfall"], freshness: quality["freshness"]) %></dd></div>
+  <div><dt>Quality / freshness at recording</dt><dd><%= weather_state(weather_overall_quality(quality)) %> <%= weather_state(quality["freshness"]) %></dd></div>
+  <div><dt>NOAA source updated</dt><dd><%= weather_time(observation.source_updated_at, mapping: mapping) %><small><%= weather_source_age(observation.source_updated_at) %> now</small></dd></div>
+  <div><dt>First possible snow weather</dt><dd><%= weather_window(summary["first_possible_snow"], mapping: mapping) %></dd></div>
+  <div><dt>First accumulating snow block</dt><dd><%= weather_window(summary["first_accumulating_snow"], mapping: mapping) %></dd></div>
+  <div><dt>Maximum precipitation probability · recorded window</dt><dd><%= summary["maximum_pop_percent"].nil? ? "UNKNOWN" : "#{summary['maximum_pop_percent']}%" %></dd></div>
+  <div><dt>Snow-level range · recorded window</dt><dd><%= weather_snow_level(summary["snow_level_m"]) %></dd></div>
+</dl>
+<div class="weather-table-scroll" role="region" aria-label="Forecast snowfall buckets" tabindex="0">
+  <table class="table weather-table">
+    <caption>Forecast snowfall by time from the recorded evaluation anchor. Bounded ranges are allocation bounds, not confidence intervals.</caption>
+    <thead><tr><th scope="col">Bucket</th><th scope="col">FORECAST snow</th><th scope="col">Coverage</th></tr></thead>
+    <tbody>
+      <% Array(summary["buckets"]).each do |bucket| %>
+        <tr data-bucket="<%= Array(bucket['hours']).join('-') %>">
+          <th scope="row"><%= Array(bucket["hours"]).join("–") %>h</th>
+          <td><%= weather_snowfall(bucket, freshness: quality["freshness"]) %></td>
+          <td><%= weather_state(bucket["state"]) %> · <%= weather_coverage(bucket["coverage_seconds"]) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<p class="weather-note">A snowfall block may cross a bucket boundary. Adjacent bounds are coupled; adding their upper limits can double-count the same block. Precipitation probability is not snow probability.</p>

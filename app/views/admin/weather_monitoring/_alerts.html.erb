@@ -1,0 +1,24 @@
+<p>NOAA alert messages are monitoring signals. Forecast snowfall comes from grid data.</p>
+<p class="weather-note">Active-state labels refer only to the last successful alert probe. An identifier absent from that list is not proof of cancellation. Historical revisions remain evidence.</p>
+<% if @zone_ids.empty? %>
+  <p>Forecast zone mapping is not recorded; relevant alert history is unknown.</p>
+<% else %>
+  <p>Matching forecast zones: <%= @zone_ids.join(", ") %>. Latest <%= Admin::WeatherMonitoringController::HISTORY_LIMIT %> retained messages.</p>
+  <% if @alerts.empty? %><p>No matching alert evidence has been retained.</p><% end %>
+  <% @alerts.each do |alert| %>
+    <article class="weather-alert" id="<%= dom_id(alert) %>">
+      <h3><%= alert.event %></h3>
+      <p><%= alert.evidence["headline"] %></p>
+      <p><%= @monitor.last_alert_checked_at ? (@monitor.active_alert_identifiers.include?(alert.source_identifier) ? "Identifier listed active at last successful probe" : "Identifier not listed active at last successful probe") : "Active state unknown — no successful probe recorded" %></p>
+      <dl class="weather-facts">
+        <div><dt>Status / message type</dt><dd><%= alert.status %> · <%= alert.message_type %></dd></div>
+        <div><dt>Source sent</dt><dd><%= weather_time(alert.source_sent_at, mapping: @monitor.mapping) %></dd></div>
+        <div><dt>Onset</dt><dd><%= weather_time(alert.onset_at, mapping: @monitor.mapping) %></dd></div>
+        <div><dt>Ends / expires</dt><dd><%= weather_time(alert.ends_at, mapping: @monitor.mapping) %> / <%= weather_time(alert.expires_at, mapping: @monitor.mapping) %></dd></div>
+        <div><dt>Severity / certainty / urgency</dt><dd><%= [alert.severity, alert.certainty, alert.urgency].compact.join(" · ").presence || "Not recorded" %></dd></div>
+        <div><dt>Source identifier</dt><dd><code><%= alert.source_identifier %></code></dd></div>
+      </dl>
+      <details class="weather-diagnostics"><summary>Update references and source evidence</summary><pre><%= JSON.pretty_generate(alert.evidence) %></pre></details>
+    </article>
+  <% end %>
+<% end %>

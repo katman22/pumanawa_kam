@@ -1,0 +1,39 @@
+<div class="weather-monitoring">
+  <h1>Weather Monitoring</h1>
+  <p>Canyon Traveller · NOAA monitoring pilot</p>
+  <p class="weather-note">Snowfall is shown in inches. Forecast figures are stored snapshots of their recorded 120-hour windows. Opening this page does not refresh NOAA data. Times use the resort mapping timezone, or Mountain Time when unavailable.</p>
+
+  <% if @pilot_resort %>
+    <p class="weather-notice">Brighton has no monitor configured. <%= link_to "Open Brighton pilot", admin_weather_monitoring_resort_path(@pilot_resort) %> to enable it explicitly.</p>
+  <% end %>
+  <% if @monitors.empty? %>
+    <p>No weather monitors are configured.</p>
+  <% end %>
+
+  <% @monitors.each do |monitor| %>
+    <% observation = @observations[monitor.current_forecast_observation_id] %>
+    <article class="weather-panel" id="<%= dom_id(monitor) %>">
+      <header class="weather-panel-heading">
+        <h2><%= link_to monitor.resort.resort_name, admin_weather_monitoring_resort_path(monitor.resort) %></h2>
+        <%= weather_state(monitor.enabled? ? "enabled" : "disabled") %>
+      </header>
+      <dl class="weather-facts">
+        <div><dt>Provider</dt><dd><%= monitor.provider.upcase %></dd></div>
+        <div><dt>Monitoring level</dt><dd><%= weather_level_label(monitor.monitoring_level) %></dd></div>
+        <div><dt>FORECAST snow · recorded 120h</dt><dd data-snowfall="current"><%= weather_monitor_snowfall(monitor, observation) %></dd></div>
+        <div><dt>Snapshot quality</dt><dd><%= weather_state(observation ? weather_overall_quality(observation.quality) : "unknown") %></dd></div>
+        <div><dt>First accumulating snow</dt><dd><%= weather_window(observation&.summary&.fetch("first_accumulating_snow", nil), mapping: monitor.mapping) %></dd></div>
+        <div><dt>Snapshot window</dt><dd><%= weather_observation_window(observation, mapping: monitor.mapping) %></dd></div>
+        <div><dt>NOAA source updated</dt><dd><%= weather_time(observation&.source_updated_at, mapping: monitor.mapping) %><small><%= weather_source_age(observation&.source_updated_at) %></small></dd></div>
+        <div><dt>Last checked</dt><dd><%= weather_time(monitor.last_checked_at, mapping: monitor.mapping) %></dd></div>
+        <div><dt>Last successful evaluation</dt><dd><%= weather_time(monitor.last_success_at, mapping: monitor.mapping) %></dd></div>
+        <div><dt>Next detailed check</dt><dd data-due="check"><%= weather_time(monitor.next_check_at, mapping: monitor.mapping) %></dd></div>
+        <div><dt>Next discovery probe</dt><dd data-due="probe"><%= weather_time(monitor.next_probe_at, mapping: monitor.mapping) %></dd></div>
+        <div><dt>Alert state</dt><dd><%= weather_alert_status(monitor) %><small>Last successful probe: <%= weather_time(monitor.last_alert_checked_at, mapping: monitor.mapping) %></small></dd></div>
+        <div><dt>Latest decision quality</dt><dd><%= weather_state(monitor.last_decision["quality"]) %></dd></div>
+        <div><dt>Decision</dt><dd><%= weather_decision_labels(monitor).join(" · ") %></dd></div>
+        <div><dt>Failures</dt><dd><%= monitor.failure_count %><% if monitor.last_error_code.present? %><small class="weather-error"><%= monitor.last_error_code %></small><% end %></dd></div>
+      </dl>
+    </article>
+  <% end %>
+</div>
