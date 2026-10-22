@@ -21,12 +21,15 @@ module Noaa
 
       2.times do |attempt|
         begin
+
           response = HTTParty.get(@url, headers: {
             "User-Agent" => "canyon_traveller (#{ENV['APPLICATION_EMAIL']})",
             "Accept" => "application/geo+json"
-          }.merge(@headers), timeout: TIMEOUT, follow_redirects: false)
+          }.merge(normalize_request_headers(@headers)), timeout: TIMEOUT, follow_redirects: false)
           status = response.code.to_i
-          headers = response.headers.to_h.transform_keys { |key| key.to_s.downcase }
+          headers = response.headers.to_h.transform_keys(&:downcase).transform_values do |values|
+            values.one? ? values.first : values
+          end
           if status >= 500 && attempt.zero?
             sleep 0.2
             next
@@ -57,6 +60,12 @@ module Noaa
       Time.httpdate(value.to_s)
     rescue ArgumentError
       Time.current + 15.minutes
+    end
+
+    def normalize_request_headers(headers)
+      headers.transform_values do |value|
+        value.is_a?(Array) && value.one? ? value.first : value
+      end
     end
   end
 end
