@@ -71,7 +71,15 @@ module WeatherMonitoring
       @observation_disposition = "dry_run"
       if @persist
         outcome = commit_success
-        return outcome if outcome.failure?
+        if outcome.failure?
+          return outcome if outcome.value[:code] == "superseded_evaluation"
+
+          # Update may have rolled back after changing this Ruby object's
+          # attributes (including lock_version). Reload committed truth before
+          # failure bookkeeping; the captured run version still guards writes.
+          @monitor.reload
+          return record_failure(outcome)
+        end
         @observation_disposition = outcome.value[:observation_disposition]
       end
       successful(resort: @resort.slug, persisted: @persist, source_updated_at: @normalized["source_updated_at"],

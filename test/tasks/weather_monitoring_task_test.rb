@@ -20,7 +20,7 @@ class WeatherMonitoringTaskTest < ActiveSupport::TestCase
   end
 
   test "manual task defaults to synchronous dry run" do
-    WeatherMonitoring::EvaluateResort.expects(:call).with(resort: @resort, persist: false, probe: false).returns(ServiceResult.new(success: true, value: { resort: "brighton", persisted: false }))
+    WeatherMonitoring::RunEvaluation.expects(:call).with(resort: @resort, persist: false, probe: false).returns(ServiceResult.new(success: true, value: { resort: "brighton", persisted: false }))
     output, = capture_io { Rake::Task["weather_monitoring:brighton"].invoke }
     assert_includes output, "brighton"
     assert_equal 0, ResortWeatherMonitor.count
@@ -33,7 +33,7 @@ class WeatherMonitoringTaskTest < ActiveSupport::TestCase
     assert_equal 0, ResortWeatherMonitor.count
     ENV.delete("ENABLE")
     Rake::Task["weather_monitoring:brighton"].reenable
-    WeatherMonitoring::EvaluateResort.stubs(:call).returns(ServiceResult.new(success: false, value: { code: "transport_error" }))
+    WeatherMonitoring::RunEvaluation.stubs(:call).returns(ServiceResult.new(success: false, value: { code: "transport_error" }))
     error = assert_raises(SystemExit) { capture_io { Rake::Task["weather_monitoring:brighton"].invoke } }
     refute error.success?
   end

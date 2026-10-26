@@ -33,7 +33,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
 
   test "index is Canyon themed and displays distinct check and probe state without writes" do
     @monitor.update!(failure_count: 2, last_error_code: "transport_error", last_error_at: ANCHOR)
-    WeatherMonitoring::EvaluateResort.expects(:call).never
+    WeatherMonitoring::RunEvaluation.expects(:call).never
     before = @resort.attributes
     assert_no_difference [ "ResortWeatherMonitor.count", "WeatherForecastObservation.count", "WeatherAlertObservation.count" ] do
       get admin_weather_monitoring_path
@@ -187,7 +187,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
 
   test "manual evaluation and probe call existing service synchronously" do
     [ [ false, evaluate_admin_weather_monitoring_resort_path(@resort) ], [ true, probe_admin_weather_monitoring_resort_path(@resort) ] ].each do |probe, path|
-      WeatherMonitoring::EvaluateResort.expects(:call).with(resort: @resort, persist: true, probe: probe).returns(ServiceResult.new(success: true, value: {}))
+      WeatherMonitoring::RunEvaluation.expects(:call).with(resort: @resort, persist: true, probe: probe).returns(ServiceResult.new(success: true, value: {}))
       post path
       assert_redirected_to admin_weather_monitoring_resort_path(@resort, locale: :en)
       assert_response :see_other
@@ -195,7 +195,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "service failure is displayed with a safe code and no provider body" do
-    WeatherMonitoring::EvaluateResort.expects(:call).returns(ServiceResult.new(success: false, value: { code: "transport_error", details: "PRIVATE PROVIDER BODY" }))
+    WeatherMonitoring::RunEvaluation.expects(:call).returns(ServiceResult.new(success: false, value: { code: "transport_error", details: "PRIVATE PROVIDER BODY" }))
     post evaluate_admin_weather_monitoring_resort_path(@resort)
     follow_redirect!
     assert_select "[role='status']", text: /transport_error/
@@ -203,7 +203,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET cannot mutate controls and non Brighton pilot actions are forbidden" do
-    WeatherMonitoring::EvaluateResort.expects(:call).never
+    WeatherMonitoring::RunEvaluation.expects(:call).never
     paths = [ enable_admin_weather_monitoring_resort_path(@resort), disable_admin_weather_monitoring_resort_path(@resort),
       evaluate_admin_weather_monitoring_resort_path(@resort), probe_admin_weather_monitoring_resort_path(@resort) ]
     paths.each do |path|
@@ -235,7 +235,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     patch enable_admin_weather_monitoring_resort_path(@resort), params: { authenticity_token: token }
     assert_response :see_other
     assert @monitor.reload.enabled?
-    WeatherMonitoring::EvaluateResort.expects(:call).never
+    WeatherMonitoring::RunEvaluation.expects(:call).never
     post evaluate_admin_weather_monitoring_resort_path(@resort)
     assert_response :unprocessable_entity
     post probe_admin_weather_monitoring_resort_path(@resort)

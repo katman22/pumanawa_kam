@@ -233,10 +233,145 @@ class WeatherEvaluateResortTest < ActiveSupport::TestCase
   end
 
   test "Update failure result propagates unchanged" do
-    enabled_monitor
+    monitor = enabled_monitor
+    before = monitor.attributes
     failure = ServiceResult.new(success: false, value: { code: "superseded_evaluation" })
     WeatherMonitoring::Update.expects(:call).once.returns(failure)
     assert_same failure, evaluate(persist: true)
+    assert_equal before, monitor.reload.attributes
+  end
+
+  test "failed Update records retry without replacing committed forecast truth" do
+    monitor = enabled_monitor
+    assert evaluate(persist: true).success?
+    before = monitor.reload.current_forecast_observation.attributes
+    success_at = monitor.last_success_at
+    failure_at = ANCHOR + 15.minutes
+    @grid["properties"]["snowfallAmount"]["values"][14]["value"] += 25.4
+    WeatherMonitoring::RecordObservation.expects(:call).raises(ActiveRecord::StatementInvalid, "test DB failure")
+    assert_no_difference "WeatherForecastObservation.count" do
+      result = evaluate(persist: true, evaluation_at: failure_at)
+      assert result.failure?
+      assert_equal "persistence_error", result.value[:code]
+    end
+    monitor.reload
+    assert_equal 1, monitor.failure_count
+    assert_equal "persistence_error", monitor.last_error_code
+    assert_equal failure_at, monitor.last_error_at
+    assert_equal failure_at, monitor.last_checked_at
+    assert_equal success_at, monitor.last_success_at
+    assert_equal failure_at + 1.hour, monitor.next_check_at
+    assert_equal failure_at + 1.hour, monitor.next_probe_at
+    assert_equal before, monitor.current_forecast_observation.attributes
+  end
+
+  test "failure after Update saves rolls back and reloads dirty lock version before retry bookkeeping" do
+    monitor = enabled_monitor
+    original_save = ResortWeatherMonitor.instance_method(:save!)
+    failed_once = false
+    updater = WeatherMonitoring::Update.method(:call)
+    replacement = lambda do |**inputs|
+      instance = inputs[:monitor]
+      instance.define_singleton_method(:save!) do
+        original_save.bind_call(self)
+        unless failed_once
+          failed_once = true
+          raise ActiveRecord::StatementInvalid, "failure after save"
+        end
+      end
+      updater.call(**inputs)
+    end
+    WeatherMonitoring::Update.stub(:call, replacement) do
+      assert_no_difference "WeatherForecastObservation.count" do
+        result = evaluate(persist: true)
+        assert_equal "persistence_error", result.value[:code]
+      end
+    end
+    assert failed_once
+    assert_equal 1, monitor.reload.failure_count
+    assert_nil monitor.current_forecast_observation_id
+    assert_nil monitor.last_success_at
+    assert_equal ANCHOR + 1.hour, monitor.next_check_at
+    assert_equal ANCHOR + 1.hour, monitor.next_probe_at
+  end
+
+  test "older NOAA revision keeps newer evidence and schedules reconciliation retry" do
+    monitor = enabled_monitor
+    assert evaluate(persist: true).success?
+    original = monitor.reload.current_forecast_observation.attributes
+    monitor.update!(last_source_updated_at: Time.iso8601(@grid["properties"]["updateTime"]) + 1.hour)
+    source_at = monitor.last_source_updated_at
+    assert_no_difference "WeatherForecastObservation.count" do
+      result = evaluate(persist: true)
+      assert_equal "older_source_revision", result.value[:code]
+    end
+    assert_equal 1, monitor.reload.failure_count
+    assert_equal source_at, monitor.last_source_updated_at
+    assert_equal original, monitor.current_forecast_observation.attributes
+    assert_equal ANCHOR + 1.hour, monitor.next_check_at
+  end
+
+  test "failed commit cannot overwrite a concurrently completed or disabled monitor" do
+    monitor = enabled_monitor
+    [ { enabled: false }, { last_checked_at: ANCHOR + 1.minute, next_check_at: ANCHOR + 12.hours } ].each do |attributes|
+      monitor.update!(enabled: true)
+      expected = nil
+      replacement = lambda do |**_inputs|
+        ResortWeatherMonitor.find(monitor.id).update!(**attributes)
+        expected = monitor.reload.attributes
+        ServiceResult.new(success: false, value: { code: "persistence_error" })
+      end
+      WeatherMonitoring::Update.stub(:call, replacement) do
+        assert_no_difference "WeatherForecastObservation.count" do
+          result = evaluate(persist: true)
+          assert_equal "superseded_evaluation", result.value[:code]
+        end
+      end
+      assert_equal expected, monitor.reload.attributes
+    end
+  end
+
+  test "failed Update still acknowledges alert revisions once without committing forecast evidence" do
+    monitor = enabled_monitor
+    monitor.update!(next_check_at: ANCHOR + 72.hours)
+    Noaa::Alerts::Fetch.stubs(:call).returns(success(fixture("ut_winter_alert_updates")))
+    WeatherMonitoring::Update.expects(:call).twice.returns(ServiceResult.new(success: false, value: { code: "observation_invalid" }))
+    assert_no_difference "WeatherForecastObservation.count" do
+      assert_equal "observation_invalid", evaluate(persist: true).value[:code]
+      assert_equal ANCHOR, monitor.reload.next_check_at
+      assert_equal 2, monitor.last_decision["processed_alert_revisions"].size
+      assert_equal ANCHOR, monitor.last_alert_checked_at
+      assert_equal "observation_invalid", evaluate(persist: true).value[:code]
+      assert_equal ANCHOR + 1.hour, monitor.reload.next_check_at
+      assert_equal 2, monitor.failure_count
+      assert_equal 2, WeatherAlertObservation.count
+    end
+  end
+
+  test "unexpected Update failure remains a failure and receives retry bookkeeping" do
+    monitor = enabled_monitor
+    WeatherMonitoring::Update.expects(:call).returns(ServiceResult.new(success: false,
+      value: { code: "unexpected_error", error_class: "ArgumentError" }))
+    result = evaluate(persist: true)
+    assert result.failure?
+    assert_equal "unexpected_error", result.value[:code]
+    assert_equal "ArgumentError", result.value[:error_class]
+    assert_equal 1, monitor.reload.failure_count
+    assert_equal ANCHOR + 1.hour, monitor.next_check_at
+    assert_equal ANCHOR + 1.hour, monitor.next_probe_at
+  end
+
+  test "failure bookkeeping database error returns failure and rolls back monitor changes" do
+    monitor = enabled_monitor
+    before = monitor.attributes
+    WeatherMonitoring::Update.expects(:call).returns(ServiceResult.new(success: false, value: { code: "observation_invalid" }))
+    ResortWeatherMonitor.any_instance.expects(:save!).raises(ActiveRecord::StatementInvalid, "test DB unavailable")
+    assert_no_difference "WeatherForecastObservation.count" do
+      result = evaluate(persist: true)
+      assert result.failure?
+      assert_equal "persistence_error", result.value[:code]
+    end
+    assert_equal before, monitor.reload.attributes
   end
 
   test "mapping cache expires or refreshes on coordinate changes" do
