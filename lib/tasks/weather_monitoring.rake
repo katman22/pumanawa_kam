@@ -10,7 +10,7 @@ namespace :weather_monitoring do
       monitor = ResortWeatherMonitor.find_or_create_by!(resort_id: resort.id)
       monitor.update!(enabled: true)
     end
-    result = WeatherMonitoring::EvaluateResort.call(resort: resort, persist: persist, probe: ENV["PROBE"] == "1")
+    result = WeatherMonitoring::RunEvaluation.call(resort: resort, persist: persist, probe: ENV["PROBE"] == "1")
     if result.success?
       value = result.value
       puts JSON.pretty_generate(resort: value[:resort], persisted: value[:persisted],

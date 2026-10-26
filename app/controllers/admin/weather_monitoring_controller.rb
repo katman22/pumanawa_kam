@@ -61,7 +61,7 @@ class Admin::WeatherMonitoringController < Admin::BaseController
   end
 
   def run_evaluation(probe:)
-    result = ::WeatherMonitoring::EvaluateResort.call(resort: @resort, persist: true, probe: probe)
+    result = ::WeatherMonitoring::RunEvaluation.call(resort: @resort, persist: true, probe: probe)
     if result.success?
       redirect_to admin_weather_monitoring_resort_path(@resort), notice: "#{probe ? 'Discovery probe' : 'Detailed evaluation'} completed. Review the stored decision below.", status: :see_other
     else
