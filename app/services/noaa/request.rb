@@ -27,8 +27,8 @@ module Noaa
             "Accept" => "application/geo+json"
           }.merge(normalize_request_headers(@headers)), timeout: TIMEOUT, follow_redirects: false)
           status = response.code.to_i
-          headers = response.headers.to_h.transform_keys(&:downcase).transform_values do |values|
-            values.one? ? values.first : values
+          headers = response.headers.to_h.transform_keys { |key| key.to_s.downcase }.transform_values do |values|
+            values.is_a?(Array) && values.one? ? values.first : values
           end
           if status >= 500 && attempt.zero?
             sleep 0.2

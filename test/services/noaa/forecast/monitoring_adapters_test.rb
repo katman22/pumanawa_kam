@@ -77,4 +77,31 @@ class NoaaMonitoringAdaptersTest < Minitest::Test
     HTTParty.expects(:get).returns(http_response(raw))
     assert Noaa::Forecast::GridData.call(mapping: fixture("brighton_points")["properties"]).failure?
   end
+  def test_response_validator_headers_accept_strings_and_one_element_arrays
+    mapping = fixture("brighton_points")["properties"]
+    stamp = "Tue, 20 Oct 2026 06:31:29 GMT"
+    [ stamp, [ stamp ] ].each do |value|
+      HTTParty.expects(:get).returns(http_response(fixture("brighton_grid"), headers: { "Last-Modified" => value, "ETag" => value.is_a?(Array) ? [ 'W/"grid"' ] : 'W/"grid"' }))
+      result = Noaa::Forecast::GridData.call(mapping: mapping)
+      assert result.success?, result.value.inspect
+      assert_equal stamp, result.value["headers"]["last-modified"]
+      assert_equal 'W/"grid"', result.value["headers"]["etag"]
+      assert_kind_of String, result.value["headers"]["last-modified"]
+    end
+  end
+
+  def test_legacy_persisted_validator_arrays_reach_httparty_as_strings
+    stamp = "Tue, 20 Oct 2026 06:31:29 GMT"
+    HTTParty.expects(:get).with do |_url, options|
+      headers = options.fetch(:headers)
+      assert_equal stamp, headers["If-Modified-Since"]
+      assert_equal 'W/"grid"', headers["If-None-Match"]
+      refute_kind_of Array, headers["If-Modified-Since"]
+      true
+    end.returns(http_response("", code: 304, headers: { "Last-Modified" => [ stamp ], "ETag" => [ 'W/"grid"' ] }))
+    result = Noaa::Forecast::GridData.call(mapping: fixture("brighton_points")["properties"],
+      validators: { "If-Modified-Since" => [ stamp ], "If-None-Match" => [ 'W/"grid"' ] }, retained: fixture("brighton_grid"))
+    assert result.success?
+    assert_equal 304, result.value["status"]
+  end
 end
