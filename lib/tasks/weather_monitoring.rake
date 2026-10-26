@@ -1,4 +1,19 @@
 namespace :weather_monitoring do
+  desc "Synchronously evaluate existing enabled NOAA pilot monitors whose checks or probes are due."
+  task run_due: :environment do
+    run_id = SecureRandom.uuid
+    puts JSON.generate(event: "weather_monitoring.started", run_id: run_id, started_at: Time.current.utc)
+    begin
+      result = WeatherMonitoring::ScheduledRunner.call(run_id: run_id)
+      puts JSON.generate(event: "weather_monitoring.completed", success: result.success?, **result.value)
+    rescue StandardError => error
+      puts JSON.generate(event: "weather_monitoring.completed", run_id: run_id, success: false,
+        completed_at: Time.current.utc, errors: [ { code: "task_error", error_class: error.class.name } ])
+      abort "Scheduled weather monitoring failed."
+    end
+    abort "Scheduled weather monitoring failed." if result.failure?
+  end
+
   desc "Brighton NOAA pilot; dry run by default. PERSIST=1 writes; ENABLE=1 PERSIST=1 explicitly enables Brighton. PROBE=1 demonstrates discovery."
   task brighton: :environment do
     resort = Resort.find_by(slug: "brighton")
