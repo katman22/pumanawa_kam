@@ -181,6 +181,62 @@ class WeatherMonitoringRunEvaluationTest < ActiveSupport::TestCase
     assert_equal ANCHOR, monitor.reload.last_success_at
   end
 
+  test "scheduled due recheck bypasses cached state changed at lock acquisition" do
+    travel_to ANCHOR
+    monitor = ResortWeatherMonitor.create!(resort: @resort, enabled: true, next_check_at: ANCHOR, next_probe_at: ANCHOR)
+    WeatherMonitoring::EvaluateResort.expects(:call).never
+    ResortWeatherMonitor.connection_pool.with_connection do |connection|
+      query = connection.method(:select_value)
+      intercept = lambda do |sql, *args, **kwargs|
+        acquired = query.call(sql, *args, **kwargs)
+        if sql.include?("pg_try_advisory_lock") && acquired
+          Thread.new do
+            ResortWeatherMonitor.connection_pool.with_connection do
+              ResortWeatherMonitor.find(monitor.id).update!(next_check_at: ANCHOR + 1.day, next_probe_at: ANCHOR + 12.hours)
+            end
+          end.value
+        end
+        acquired
+      end
+      connection.cache do
+        ResortWeatherMonitor.find_by(resort_id: @resort.id) # prime this session's query cache
+        connection.stub(:select_value, intercept) do
+          result = WeatherMonitoring::RunEvaluation.call(resort: @resort, scheduled: true)
+          assert result.success?
+          assert_equal "not_due", result.value[:code]
+          assert_equal false, result.value[:execution][:invoked]
+        end
+      end
+    end
+    assert_unlocked_from_another_session
+  ensure
+    travel_back
+  end
+
+  test "scheduled evaluation captures time after lock and overrides caller mode and persistence" do
+    travel_to ANCHOR
+    ResortWeatherMonitor.create!(resort: @resort, enabled: true)
+    ResortWeatherMonitor.connection_pool.with_connection do |connection|
+      query = connection.method(:select_value)
+      intercept = lambda do |sql, *args, **kwargs|
+        acquired = query.call(sql, *args, **kwargs)
+        travel_to ANCHOR + 3.minutes if sql.include?("pg_try_advisory_lock") && acquired
+        acquired
+      end
+      WeatherMonitoring::EvaluateResort.expects(:call).with(resort: @resort, persist: true, probe: false,
+        evaluation_at: ANCHOR + 3.minutes).returns(success)
+      connection.stub(:select_value, intercept) do
+        result = WeatherMonitoring::RunEvaluation.call(resort: @resort, scheduled: true, persist: false, probe: true, evaluation_at: ANCHOR - 1.day)
+        assert result.success?
+        assert_equal "detailed", result.value[:execution][:mode]
+        assert_equal ANCHOR + 3.minutes, result.value[:execution][:evaluation_at]
+      end
+    end
+    assert_unlocked_from_another_session
+  ensure
+    travel_back
+  end
+
   private
 
   def assert_unlocked_from_another_session
