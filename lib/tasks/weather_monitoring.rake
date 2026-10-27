@@ -7,8 +7,7 @@ namespace :weather_monitoring do
       result = WeatherMonitoring::ScheduledRunner.call(run_id: run_id)
       puts JSON.generate(event: "weather_monitoring.completed", success: result.success?, **result.value)
     rescue StandardError => error
-      puts JSON.generate(event: "weather_monitoring.completed", run_id: run_id, success: false,
-        completed_at: Time.current.utc, errors: [ { code: "task_error", error_class: error.class.name } ])
+      Rails.error.report(error, handled: true)
       abort "Scheduled weather monitoring failed."
     end
     abort "Scheduled weather monitoring failed." if result.failure?
