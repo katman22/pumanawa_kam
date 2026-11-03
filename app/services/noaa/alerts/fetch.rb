@@ -3,15 +3,22 @@
 module Noaa
   module Alerts
     class Fetch < ApplicationService
-      def initialize(latitude:, longitude:)
+      def initialize(latitude:, longitude:, active: true, since: nil)
         @latitude, @longitude = latitude, longitude
+        @active, @since = active, since
       end
 
       def call
         lat, lon = Float(@latitude), Float(@longitude)
         return failed(code: "invalid_coordinates") unless lat.finite? && lon.finite? && lat.between?(-90, 90) && lon.between?(-180, 180)
 
-        url = "https://api.weather.gov/alerts?active=true&point=#{lat},#{lon}"
+        return failed(code: "invalid_alert_window") unless [ true, false ].include?(@active) && (@active || @since.is_a?(Time))
+
+        url = if @active
+          "https://api.weather.gov/alerts?active=true&point=#{lat},#{lon}"
+        else
+          "https://api.weather.gov/alerts?#{URI.encode_www_form(point: "#{lat},#{lon}", start: @since.utc.iso8601)}"
+        end
         features, seen = [], []
         while url
           return failed(code: "alert_pagination_invalid") if seen.include?(url) || seen.size >= 10 || !Noaa::Request.valid_url?(url)

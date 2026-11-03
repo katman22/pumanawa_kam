@@ -1,4 +1,11 @@
 namespace :weather_monitoring do
+  desc "Manually fetch Brighton NOAA alerts and persist alert evidence/signals; requires an enabled pilot monitor. No notifications or scheduling."
+  task brighton_alert_signals: :environment do
+    result = WeatherMonitoring::DetectAlertSignals.call(resort: Resort.find_by(slug: "brighton"))
+    puts JSON.generate(event: "weather_monitoring.alert_signals", **result.to_h)
+    abort "Brighton alert signal detection failed." if result.failure?
+  end
+
   desc "Synchronously evaluate existing enabled NOAA pilot monitors whose checks or probes are due."
   task run_due: :environment do
     run_id = SecureRandom.uuid

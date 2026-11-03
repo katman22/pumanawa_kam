@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_21_000003) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -328,6 +328,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_21_000003) do
     t.index ["source_sent_at"], name: "index_weather_alert_observations_on_source_sent_at"
   end
 
+  create_table "weather_alert_signal_resorts", force: :cascade do |t|
+    t.bigint "weather_alert_signal_id", null: false
+    t.bigint "resort_id", null: false
+    t.datetime "associated_at", null: false
+    t.jsonb "evidence", default: {}, null: false
+    t.index ["resort_id"], name: "index_weather_alert_signal_resorts_on_resort_id"
+    t.index ["weather_alert_signal_id", "resort_id"], name: "weather_signal_resort_unique", unique: true
+  end
+
+  create_table "weather_alert_signals", force: :cascade do |t|
+    t.bigint "weather_alert_observation_id", null: false
+    t.bigint "previous_observation_id"
+    t.string "signal_type", null: false
+    t.datetime "detected_at", null: false
+    t.jsonb "change_details", default: {}, null: false
+    t.index ["detected_at"], name: "index_weather_alert_signals_on_detected_at"
+    t.index ["previous_observation_id"], name: "weather_signal_previous"
+    t.index ["weather_alert_observation_id"], name: "weather_signal_observation_unique", unique: true
+    t.check_constraint "signal_type::text = ANY (ARRAY['issued'::character varying::text, 'updated'::character varying::text, 'corrected'::character varying::text, 'cancelled'::character varying::text, 'material_content_changed'::character varying::text])", name: "weather_signal_type_valid"
+  end
+
   create_table "weather_forecast_observations", force: :cascade do |t|
     t.bigint "resort_id", null: false
     t.string "provider", null: false
@@ -479,6 +500,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_21_000003) do
   add_foreign_key "resort_weather_monitors", "resorts"
   add_foreign_key "resort_weather_monitors", "weather_forecast_observations", column: "current_forecast_observation_id"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "weather_alert_signal_resorts", "resorts"
+  add_foreign_key "weather_alert_signal_resorts", "weather_alert_signals"
+  add_foreign_key "weather_alert_signals", "weather_alert_observations"
+  add_foreign_key "weather_alert_signals", "weather_alert_observations", column: "previous_observation_id"
   add_foreign_key "weather_forecast_observations", "resorts"
   add_foreign_key "whare_pumanawa_mural_photos", "whare_pumanawa_murals", column: "mural_id"
   add_foreign_key "whare_pumanawa_murals", "whare_pumanawa_contributors", column: "contributor_id"

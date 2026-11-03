@@ -11,6 +11,7 @@ class WeatherMonitoringTaskTest < ActiveSupport::TestCase
     Rake::Task.define_task(:environment)
     Rake::Task["weather_monitoring:brighton"].reenable
     Rake::Task["weather_monitoring:run_due"].reenable
+    Rake::Task["weather_monitoring:brighton_alert_signals"].reenable
     @environment = ENV.to_h.slice("PERSIST", "ENABLE", "PROBE")
     %w[PERSIST ENABLE PROBE].each { |key| ENV.delete(key) }
   end
@@ -25,6 +26,27 @@ class WeatherMonitoringTaskTest < ActiveSupport::TestCase
     output, = capture_io { Rake::Task["weather_monitoring:brighton"].invoke }
     assert_includes output, "brighton"
     assert_equal 0, ResortWeatherMonitor.count
+  end
+
+  test "manual alert detection uses separate service and returns structured result" do
+    WeatherMonitoring::DetectAlertSignals.expects(:call).with(resort: @resort).returns(ServiceResult.new(success: true,
+      value: { created_count: 1, outcomes: [ { signal_type: "issued" } ] }))
+    WeatherMonitoring::RunEvaluation.expects(:call).never
+    output, = capture_io { Rake::Task["weather_monitoring:brighton_alert_signals"].invoke }
+    message = JSON.parse(output)
+    assert_equal true, message["success"]
+    assert_equal 1, message["value"]["created_count"]
+    assert_equal "weather_monitoring.alert_signals", message["event"]
+  end
+
+  test "manual alert detection failure exits nonzero" do
+    WeatherMonitoring::DetectAlertSignals.expects(:call).returns(ServiceResult.new(success: false, value: { code: "rate_limited" }))
+    error = nil
+    output, = capture_io do
+      error = assert_raises(SystemExit) { Rake::Task["weather_monitoring:brighton_alert_signals"].invoke }
+    end
+    refute error.success?
+    assert_equal "rate_limited", JSON.parse(output)["value"]["code"]
   end
 
   test "enable requires persistence and failures exit nonzero" do
