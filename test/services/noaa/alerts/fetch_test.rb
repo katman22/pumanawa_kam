@@ -37,4 +37,21 @@ class NoaaAlertsFetchTest < Minitest::Test
     HTTParty.expects(:get).once.returns(http_response(body))
     assert Noaa::Alerts::Fetch.call(latitude: 40, longitude: -111).failure?
   end
+
+  def test_bounded_history_query_is_opt_in_and_preserves_explicit_cancellation
+    body = fixture("brighton_alert_signal")
+    body["features"][0]["properties"]["messageType"] = "Cancel"
+    HTTParty.expects(:get).with do |url, _options|
+      query = URI.decode_www_form(URI(url).query).to_h
+      assert_equal "40.5986,-111.5845", query["point"]
+      assert_equal ANCHOR.iso8601, query["start"]
+      refute query.key?("active")
+      true
+    end.returns(http_response(body))
+    result = Noaa::Alerts::Fetch.call(latitude: 40.5986, longitude: -111.5845, active: false, since: ANCHOR)
+    assert result.success?
+    assert_equal "Cancel", result.value["features"][0]["properties"]["messageType"]
+    HTTParty.expects(:get).never
+    assert_equal "invalid_alert_window", Noaa::Alerts::Fetch.call(latitude: 40, longitude: -111, active: false).value[:code]
+  end
 end

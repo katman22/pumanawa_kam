@@ -58,4 +58,32 @@ class WeatherRecordAlertsTest < ActiveSupport::TestCase
     assert result.failure?
     assert_equal 0, WeatherAlertObservation.count
   end
+
+  test "opt in complete evidence preserves text geometry and native types without changing legacy policy" do
+    body = fixture("brighton_alert_signal")
+    old = WeatherMonitoring::RecordAlertObservations.call(collection: body, zone_ids: [ "UTZ111" ], seen_at: ANCHOR)
+    assert old.success?
+    assert_empty old.value[:records], "forecast recorder still uses its winter-only allowlist"
+    full = WeatherMonitoring::RecordAlertObservations.call(collection: body, zone_ids: [], seen_at: ANCHOR, signal_evidence: true)
+    assert full.success?, full.value.inspect
+    record = full.value[:records].first
+    assert_equal "High Wind Warning", record.event
+    assert_equal body["features"][0]["properties"]["description"], record.evidence["description"]
+    assert_equal "Avoid exposed ridgelines.", record.evidence["instruction"]
+    assert record.evidence.key?("geometry")
+    assert_equal 1, record.evidence["signal_evidence_version"]
+  end
+
+  test "complete evidence and legacy revisions coexist without rewriting historical rows" do
+    body = fixture("brighton_alert_signal")
+    body["features"][0]["properties"]["event"] = "Winter Storm Warning"
+    first = WeatherMonitoring::RecordAlertObservations.call(collection: body, zone_ids: [ "UTZ111" ], seen_at: ANCHOR).value[:records].first
+    before = first.attributes
+    full = WeatherMonitoring::RecordAlertObservations.call(collection: body, zone_ids: [], seen_at: ANCHOR, signal_evidence: true).value[:records].first
+    refute_equal first.id, full.id
+    assert_equal before, first.reload.attributes
+    again = WeatherMonitoring::RecordAlertObservations.call(collection: body, zone_ids: [ "UTZ111" ], seen_at: ANCHOR).value[:records].first
+    assert_equal first.id, again.id
+    assert_equal 2, WeatherAlertObservation.count
+  end
 end

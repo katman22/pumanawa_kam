@@ -4,8 +4,9 @@ module WeatherMonitoring
   class RecordAlertObservations < ApplicationService
     EVENTS = [ "Winter Storm Watch", "Winter Storm Warning", "Winter Weather Advisory", "Blizzard Warning" ].freeze
 
-    def initialize(collection:, zone_ids:, seen_at:, persist: true)
+    def initialize(collection:, zone_ids:, seen_at:, persist: true, signal_evidence: false)
       @collection, @zones, @at, @persist = collection, zone_ids, seen_at, persist
+      @signal_evidence = signal_evidence
     end
 
     def call
@@ -14,7 +15,7 @@ module WeatherMonitoring
       return failed(code: "invalid_alert_evidence") unless features.is_a?(Array) && features.all? { |item| item.is_a?(Hash) && item["properties"].is_a?(Hash) }
       eligible = features.select do |feature|
         properties = feature["properties"]
-        properties["status"] == "Actual" && EVENTS.include?(properties["event"]) && %w[Alert Update Cancel].include?(properties["messageType"])
+        properties["status"] == "Actual" && (@signal_evidence || (EVENTS.include?(properties["event"]) && %w[Alert Update Cancel].include?(properties["messageType"])))
       end
       return failed(code: "invalid_alert_evidence") unless eligible.all? { |feature| feature["properties"]["id"].is_a?(String) && feature["properties"]["id"].present? }
 
@@ -23,9 +24,9 @@ module WeatherMonitoring
           properties = feature.fetch("properties")
 
           zones = Array(properties["affectedZones"]).map { |zone| String(zone).split("/").last } | Array(properties.dig("geocode", "UGC"))
-          next if (zones & @zones).empty?
+          next if !@signal_evidence && (zones & @zones).empty?
 
-          attributes = attributes_for(properties, zones)
+          attributes = attributes_for(properties, zones, feature["geometry"])
           key = attributes.slice(:provider, :source_identifier, :content_sha256)
           revisions << "#{attributes[:source_identifier]}:#{attributes[:content_sha256]}"
           existing = WeatherAlertObservation.find_by(key)
@@ -45,8 +46,14 @@ module WeatherMonitoring
 
     private
 
-    def attributes_for(properties, zones)
+    def attributes_for(properties, zones, geometry)
       evidence = properties.slice("headline", "areaDesc", "sender", "references", "replacedBy", "replacedAt", "parameters", "geocode")
+      if @signal_evidence
+        # Opt-in: preserve the deployed forecast recorder's hash/allowlist and
+        # alert wake behavior. Old observations remain immutable and incomplete.
+        evidence.merge!(properties.slice("description", "instruction", "affectedZones", "category", "response", "scope", "language", "note", "eventCode", "senderName"))
+        evidence.merge!("geometry" => geometry, "signal_evidence_version" => 1)
+      end
       content = properties.slice("id", "sent", "event", "status", "messageType", "effective", "onset", "expires", "ends", "severity", "certainty", "urgency").merge("zones" => zones.sort, "evidence" => evidence)
       attributes = { provider: "noaa", source_identifier: properties.fetch("id"),
         content_sha256: Digest::SHA256.hexdigest(JSON.generate(canonical(content))), first_seen_at: @at,
