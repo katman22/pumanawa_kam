@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_28_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_04_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -304,6 +304,35 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_000002) do
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["status"], name: "index_users_on_status"
+  end
+
+  create_table "weather_alert_acquisitions", force: :cascade do |t|
+    t.string "provider", default: "noaa", null: false
+    t.string "scope_key", null: false
+    t.jsonb "query", default: {}, null: false
+    t.boolean "enabled", default: false, null: false
+    t.datetime "last_attempt_at"
+    t.datetime "last_success_at"
+    t.datetime "covered_from_at"
+    t.datetime "covered_through_at"
+    t.datetime "next_check_at"
+    t.datetime "lease_expires_at"
+    t.uuid "lease_token"
+    t.integer "consecutive_failures", default: 0, null: false
+    t.string "last_error_code"
+    t.jsonb "coverage_gaps", default: [], null: false
+    t.jsonb "last_result", default: {}, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "initial_window_start_at"
+    t.jsonb "pending_evidence"
+    t.index ["enabled", "next_check_at"], name: "weather_alert_acquisition_due"
+    t.index ["provider", "scope_key"], name: "weather_alert_scope_unique", unique: true
+    t.check_constraint "(lease_token IS NULL) = (lease_expires_at IS NULL)", name: "weather_alert_lease_pair"
+    t.check_constraint "consecutive_failures >= 0", name: "weather_alert_failures_nonnegative"
+    t.check_constraint "jsonb_typeof(coverage_gaps) = 'array'::text", name: "weather_alert_gaps_array"
+    t.check_constraint "pending_evidence IS NULL OR jsonb_typeof(pending_evidence) = 'object'::text", name: "weather_alert_pending_object"
   end
 
   create_table "weather_alert_observations", force: :cascade do |t|

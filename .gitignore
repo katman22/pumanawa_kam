@@ -34,3 +34,6 @@
 /config/master.key
 .idea/
 *.iml
+
+# Keep local research notes and future research files out of version control.
+/research/

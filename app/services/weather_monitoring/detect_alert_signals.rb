@@ -16,13 +16,8 @@ module WeatherMonitoring
       fetched = Noaa::Alerts::Fetch.call(latitude: @resort.latitude, longitude: @resort.longitude, active: false, since: @at - 24.hours)
       return fetched if fetched.failure?
 
-      recorded = RecordAlertObservations.call(collection: fetched.value, zone_ids: [], seen_at: @at, signal_evidence: true)
-      return recorded if recorded.failure?
-
-      records = recorded.value[:records]
-      GenerateAlertSignals.call(observations: records, resorts: [ @resort ], detected_at: @at,
-        point_matches: { @resort.id => { latitude: @resort.latitude, longitude: @resort.longitude, observation_ids: records.map(&:id),
-          queried_at: @at, since_at: @at - 24.hours } })
+      ProcessAlertCollection.call(collection: fetched.value, detected_at: @at, since: @at - 24.hours, resorts: [ @resort ],
+        query: { "type" => "point", "latitude" => @resort.latitude, "longitude" => @resort.longitude })
     end
   end
 end

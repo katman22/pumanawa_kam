@@ -11,7 +11,7 @@ namespace :weather_monitoring do
     run_id = SecureRandom.uuid
     puts JSON.generate(event: "weather_monitoring.started", run_id: run_id, started_at: Time.current.utc)
     begin
-      result = WeatherMonitoring::ScheduledRunner.call(run_id: run_id)
+      result = WeatherMonitoring::ScheduledRun.call(run_id: run_id)
       puts JSON.generate(event: "weather_monitoring.completed", success: result.success?, **result.value)
     rescue StandardError => error
       Rails.error.report(error, handled: true)
