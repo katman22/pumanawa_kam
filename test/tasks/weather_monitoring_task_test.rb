@@ -123,4 +123,19 @@ class WeatherMonitoringTaskTest < ActiveSupport::TestCase
     assert_equal "ArgumentError", messages.last["errors"].first["error_class"]
     refute_includes output, "PRIVATE PROVIDER BODY"
   end
+
+  test "alert failure exits nonzero while due forecast work still completes" do
+    WeatherMonitoring::ScheduledRunner.expects(:call).returns(ServiceResult.new(success: true, value: { successful_count: 1 }))
+    WeatherMonitoring::ScheduledAlertRunner.expects(:call).returns(ServiceResult.new(success: false, value: { code: "rate_limited" }))
+    exit_error = nil
+    output, = capture_io do
+      exit_error = assert_raises(SystemExit) { Rake::Task["weather_monitoring:run_due"].invoke }
+    end
+    refute exit_error.success?
+    summary = JSON.parse(output.lines.last)
+    assert_equal false, summary["success"]
+    assert_equal true, summary["forecast_success"]
+    assert_equal 1, summary["successful_count"]
+    assert_equal false, summary["alert_acquisition"]["success"]
+  end
 end

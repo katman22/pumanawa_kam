@@ -125,7 +125,8 @@ module WeatherMonitoring
         point = @point_matches[resort.id]
         if point && point[:latitude] == resort.latitude && point[:longitude] == resort.longitude && Array(point[:observation_ids]).include?(record.id)
           next [ resort, { "method" => "noaa_point_query", "latitude" => resort.latitude, "longitude" => resort.longitude,
-            "queried_at" => point[:queried_at]&.iso8601, "since_at" => point[:since_at]&.iso8601 } ]
+            "queried_at" => point[:queried_at]&.iso8601, "since_at" => point[:since_at]&.iso8601,
+            "through_at" => point[:through_at]&.iso8601 } ]
         end
         mapping = monitor.mapping
         next unless mapping["latitude"] == resort.latitude && mapping["longitude"] == resort.longitude
