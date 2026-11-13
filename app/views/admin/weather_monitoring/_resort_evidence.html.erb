@@ -1,0 +1,32 @@
+  <section id="current-forecast" class="weather-panel" aria-labelledby="current-forecast-heading">
+    <h2 id="current-forecast-heading">Current forecast evidence</h2>
+    <% if @observation %>
+      <%= render "forecast", observation: @observation, mapping: @monitor.mapping %>
+      <p><%= link_to "Inspect this forecast revision", admin_weather_monitoring_resort_observation_path(@resort, @observation) %></p>
+    <% else %><p>UNKNOWN · No forecast observation has been recorded.</p><% end %>
+  </section>
+  <section id="forecast-history" class="weather-panel" aria-labelledby="forecast-history-heading">
+    <h2 id="forecast-history-heading">Recent forecast history</h2>
+    <p class="weather-note">Latest <%= Admin::WeatherMonitoringController::HISTORY_LIMIT %> revisions, newest first. Each row has its own forecast window; changing rolling-window totals alone do not measure forecast accuracy.</p>
+    <% if @history.empty? %><p>No forecast history yet.</p><% else %>
+      <div class="weather-table-scroll" role="region" aria-label="Forecast history" tabindex="0">
+        <table class="table weather-table">
+          <caption>Immutable forecast revisions. Follow a revision to inspect its original window and intervals.</caption>
+          <thead><tr><th scope="col">First fetched</th><th scope="col">NOAA updated</th><th scope="col">Source</th><th scope="col">FORECAST snow · 120h</th><th scope="col">First accumulation</th><th scope="col">Quality</th><th scope="col">Revision</th></tr></thead>
+          <tbody>
+            <% @history.each do |observation| %>
+              <tr data-observation-id="<%= observation.id %>">
+                <td><%= link_to weather_time(observation.first_fetched_at, mapping: @monitor.mapping), admin_weather_monitoring_resort_observation_path(@resort, observation) %></td>
+                <td><%= weather_time(observation.source_updated_at, mapping: @monitor.mapping) %></td>
+                <td><%= observation.source_key %></td>
+                <td><%= weather_snowfall(observation.summary["snowfall"], freshness: observation.quality["freshness"]) %></td>
+                <td><%= weather_window(observation.summary["first_accumulating_snow"], mapping: @monitor.mapping) %></td>
+                <td><%= weather_state(weather_overall_quality(observation.quality)) %></td>
+                <td><code title="<%= observation.content_sha256 %>"><%= observation.content_sha256.first(12) %></code><small>Normalization v<%= observation.normalization_version %></small></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>

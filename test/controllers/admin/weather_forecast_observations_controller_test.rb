@@ -24,6 +24,7 @@ class AdminWeatherForecastObservationsControllerTest < ActionDispatch::Integrati
     assert_response :success
     assert_select "body.admin-shell--canyon"
     assert_select "h1", "Forecast revision · #{@resort.resort_name}"
+    assert_select "a[href=?]", admin_weather_monitoring_resort_path(@resort, tab: "evidence", anchor: "forecast-history", locale: :en)
     assert_select "table thead th", text: "Semantic"
     assert_select "td", text: "UNKNOWN (null)"
     assert_select "th[scope='row']", text: "snowfallAmount"

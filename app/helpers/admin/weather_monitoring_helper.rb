@@ -144,4 +144,25 @@ module Admin::WeatherMonitoringHelper
 
     "#{monitor.active_alert_identifiers.size} identifiers listed at last probe"
   end
+
+  def weather_acquisition_geography(acquisition)
+    query = acquisition.query
+    return "Point · #{query['latitude']}, #{query['longitude']}" if query["type"] == "point"
+
+    "Geographic query · #{query['type'].presence || 'not recorded'}"
+  end
+
+  def weather_acquisition_lease(acquisition, at: Time.current)
+    return "None" unless acquisition.lease_expires_at
+
+    acquisition.lease_expires_at > at ? "Active" : "Expired"
+  end
+
+  def weather_acquisition_result(acquisition)
+    case acquisition.last_result["success"]
+    when true then "Successful"
+    when false then "Failed"
+    else "Not recorded"
+    end
+  end
 end

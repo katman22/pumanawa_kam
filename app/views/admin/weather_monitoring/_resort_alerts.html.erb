@@ -1,0 +1,5 @@
+<p class="weather-note">Resort-specific forecast-associated NOAA observations matched to forecast zone <%= @zone_ids.join(", ").presence || "not recorded" %>. This is separate from <%= link_to "geographic acquisition and signals", admin_weather_monitoring_alerts_path %>; no geographic acquisition controls appear here.</p>
+  <section id="alert-history" class="weather-panel" aria-labelledby="alert-history-heading">
+    <h2 id="alert-history-heading">Relevant NOAA alert history</h2>
+    <%= render "alerts" %>
+  </section>

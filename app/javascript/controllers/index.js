@@ -34,3 +34,6 @@ application.register("mural-gallery", MuralGalleryController)
 
 import AdminNavigationController from "controllers/admin_navigation_controller"
 application.register("admin-navigation", AdminNavigationController)
+
+import WeatherDetailLinksController from "controllers/weather_detail_links_controller"
+application.register("weather-detail-links", WeatherDetailLinksController)

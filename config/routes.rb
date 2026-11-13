@@ -115,6 +115,8 @@ Rails.application.routes.draw do
 
     get "weather_monitoring", to: "weather_monitoring#index", as: :weather_monitoring
     scope "weather_monitoring", as: :weather_monitoring do
+      get "alerts", to: "weather_monitoring#alerts", as: :alerts
+      get "history", to: "weather_monitoring#history", as: :history
       resources :resorts, only: :show, controller: "weather_monitoring" do
         patch :enable, on: :member
         patch :disable, on: :member

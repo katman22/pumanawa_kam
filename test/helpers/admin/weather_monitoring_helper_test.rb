@@ -28,4 +28,19 @@ class AdminWeatherMonitoringHelperTest < ActionView::TestCase
     assert_equal "Unsupported unit or value", weather_reason_label("unsupported_unit_or_value")
     assert_equal "UNKNOWN (null)", weather_interval_value({ "value" => nil })
   end
+
+  test "acquisition presentation distinguishes leases and unknown completion without exposing receipts" do
+    state = WeatherAlertAcquisition.new(query: { type: "point", latitude: 40.5986, longitude: -111.5845 })
+    at = Time.utc(2026, 11, 13, 12)
+    assert_equal "Point · 40.5986, -111.5845", weather_acquisition_geography(state)
+    assert_equal "None", weather_acquisition_lease(state, at: at)
+    assert_equal "Not recorded", weather_acquisition_result(state)
+    state.lease_expires_at = at + 1.minute
+    assert_equal "Active", weather_acquisition_lease(state, at: at)
+    assert_equal "Expired", weather_acquisition_lease(state, at: at + 1.minute)
+    state.last_result = { success: false }
+    assert_equal "Failed", weather_acquisition_result(state)
+    state.last_result = { success: true }
+    assert_equal "Successful", weather_acquisition_result(state)
+  end
 end

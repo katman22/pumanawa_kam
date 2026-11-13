@@ -1,0 +1,19 @@
+<h2>Forecast history and evidence</h2>
+<p class="weather-note">Open the existing resort evidence page to inspect its latest 25 immutable snapshots, last persisted evaluation/change decision and geographic NOAA alert observations. Evaluation decisions are current state, not a separate historical evaluation log.</p>
+<% if @monitors.empty? %><p>No forecast monitors are configured; there is no resort history to inspect.</p><% else %>
+  <div class="weather-table-scroll" role="region" aria-label="Forecast evidence navigation" tabindex="0">
+    <table class="table weather-table">
+      <thead><tr><th scope="col">Resort</th><th scope="col">Snapshots</th><th scope="col">Evaluation / change</th><th scope="col">NOAA observations</th></tr></thead>
+      <tbody>
+        <% @monitors.each do |monitor| %>
+          <tr>
+            <td><%= monitor.resort.resort_name %></td>
+            <td><%= link_to "Forecast snapshots", admin_weather_monitoring_resort_path(monitor.resort, tab: "evidence", anchor: "forecast-history") %></td>
+            <td><%= link_to "Latest evaluation / change", admin_weather_monitoring_resort_path(monitor.resort, tab: "decisions", anchor: "monitor-decision") %></td>
+            <td><%= link_to "Alert observations", admin_weather_monitoring_resort_path(monitor.resort, tab: "alerts", anchor: "alert-history") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

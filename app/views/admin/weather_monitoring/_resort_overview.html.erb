@@ -1,0 +1,53 @@
+  <section id="monitor-state" class="weather-panel" aria-labelledby="monitor-state-heading">
+    <h2 id="monitor-state-heading">Current monitor state</h2>
+    <% unless @monitor.persisted? %><p>No monitor is configured. Reading this page does not create one.</p><% end %>
+    <dl class="weather-facts">
+      <div><dt>Monitoring</dt><dd><%= weather_state(@monitor.enabled? ? "enabled" : "disabled") %></dd></div>
+      <div><dt>Provider</dt><dd><%= @monitor.provider.upcase %></dd></div>
+      <div><dt>Level</dt><dd><%= weather_level_label(@monitor.monitoring_level) %></dd></div>
+      <div><dt>Next detailed check</dt><dd data-due="check"><%= weather_time(@monitor.next_check_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Next discovery probe</dt><dd data-due="probe"><%= weather_time(@monitor.next_probe_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Acceleration until</dt><dd><%= weather_time(@monitor.acceleration_until, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Last checked</dt><dd><%= weather_time(@monitor.last_checked_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Last successful evaluation</dt><dd><%= weather_time(@monitor.last_success_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Failure count</dt><dd><%= @monitor.failure_count %></dd></div>
+      <div><dt>Last error</dt><dd class="weather-error"><%= @monitor.last_error_code.presence || "None recorded" %><small><%= weather_time(@monitor.last_error_at, mapping: @monitor.mapping) %></small></dd></div>
+      <div><dt>Mapping checked</dt><dd><%= weather_time(@monitor.mapping_checked_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Alerts</dt><dd><%= weather_alert_status(@monitor) %><small><%= weather_time(@monitor.last_alert_checked_at, mapping: @monitor.mapping) %></small></dd></div>
+    </dl>
+    <% if @resort.slug == "brighton" %>
+      <div class="weather-controls" aria-label="Brighton pilot controls">
+        <% if @monitor.enabled? %>
+          <%= button_to "Disable Brighton monitoring", disable_admin_weather_monitoring_resort_path(@resort), method: :patch, class: "btn btn-outline-primary" %>
+        <% else %>
+          <%= button_to "Enable Brighton monitoring", enable_admin_weather_monitoring_resort_path(@resort), method: :patch, class: "btn btn-primary" %>
+        <% end %>
+        <%= button_to "Run evaluation", evaluate_admin_weather_monitoring_resort_path(@resort), method: :post, disabled: !@monitor.enabled?, class: "btn btn-primary" %>
+        <%= button_to "Run discovery probe", probe_admin_weather_monitoring_resort_path(@resort), method: :post, disabled: !@monitor.enabled?, class: "btn btn-outline-primary" %>
+      </div>
+      <p class="weather-note">These forecast pilot actions run synchronously and record evidence. Geographic alert acquisition is separate and read-only in <%= link_to "Alerts", admin_weather_monitoring_alerts_path %>.</p>
+    <% else %>
+      <p>Manual controls are limited to the Brighton pilot.</p>
+    <% end %>
+  </section>
+  <section class="weather-panel" aria-labelledby="forecast-summary-heading">
+    <h2 id="forecast-summary-heading">Current forecast summary</h2>
+    <dl class="weather-facts">
+      <div><dt>FORECAST snow · recorded 120h</dt><dd><%= weather_monitor_snowfall(@monitor, @observation) %></dd></div>
+      <div><dt>Snapshot quality</dt><dd><%= weather_state(@observation ? weather_overall_quality(@observation.quality) : "unknown") %></dd></div>
+      <div><dt>NOAA source updated</dt><dd><%= weather_time(@observation&.source_updated_at, mapping: @monitor.mapping) %></dd></div>
+    </dl>
+    <%= link_to "Inspect forecast evidence", admin_weather_monitoring_resort_path(@resort, tab: "evidence", anchor: "current-forecast") %>
+  </section>
+  <section id="source-quality" class="weather-panel" aria-labelledby="source-quality-heading">
+    <h2 id="source-quality-heading">NOAA source / quality</h2>
+    <dl class="weather-facts">
+      <div><dt>Mapped coordinates</dt><dd><%= @monitor.mapping.values_at("latitude", "longitude").compact.join(", ").presence || "Not recorded" %></dd></div>
+      <div><dt>CWA / grid</dt><dd><%= @monitor.mapping.values_at("cwa", "gridId").compact.join(" / ").presence || "Not recorded" %></dd></div>
+      <div><dt>Grid X / Y</dt><dd><%= @monitor.mapping.values_at("gridX", "gridY").compact.join(" / ").presence || "Not recorded" %></dd></div>
+      <div><dt>Forecast zone</dt><dd><%= @zone_ids.join(", ").presence || "Not recorded" %></dd></div>
+      <div><dt>Grid elevation</dt><dd><%= weather_grid_elevation(@observation&.source_metadata) %></dd></div>
+    </dl>
+    <% if @observation %><%= render "quality", observation: @observation, mapping: @monitor.mapping %><% end %>
+    <details class="weather-diagnostics"><summary>Raw point mapping</summary><pre><%= JSON.pretty_generate(@monitor.mapping) %></pre></details>
+  </section>

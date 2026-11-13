@@ -1,5 +1,5 @@
 <div class="weather-monitoring">
-  <p><%= link_to "Back to #{@resort.resort_name} monitoring", admin_weather_monitoring_resort_path(@resort) %></p>
+  <p><%= link_to "Back to #{@resort.resort_name} monitoring", admin_weather_monitoring_resort_path(@resort, tab: "evidence", anchor: "forecast-history") %></p>
   <h1>Forecast revision · <%= @resort.resort_name %></h1>
   <p><code><%= @observation.content_sha256 %></code></p>
   <section class="weather-panel" aria-labelledby="observation-forecast-heading">
