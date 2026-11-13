@@ -1,0 +1,54 @@
+<h2>Geographic alert acquisition</h2>
+<p class="weather-note">Read-only geographic scopes, independent of resort forecast controls. The latest heartbeat scheduling decision is in cron logs; the result below is the last completed acquisition.</p>
+<% if @acquisitions.empty? %><p>No geographic alert acquisition scopes are configured.</p><% end %>
+<% @acquisitions.each do |acquisition| %>
+  <article class="weather-panel" id="<%= dom_id(acquisition) %>">
+    <header class="weather-panel-heading">
+      <h3><%= acquisition.scope_key %></h3>
+      <%= weather_state(acquisition.enabled? ? "enabled" : "disabled") %>
+    </header>
+    <p><%= acquisition.provider.upcase %> · <%= weather_acquisition_geography(acquisition) %></p>
+    <dl class="weather-facts">
+      <div><dt>Last attempt</dt><dd><%= weather_time(acquisition.last_attempt_at) %></dd></div>
+      <div><dt>Last success</dt><dd><%= weather_time(acquisition.last_success_at) %></dd></div>
+      <div><dt>Next eligible check</dt><dd><%= weather_time(acquisition.next_check_at) %><% unless acquisition.next_check_at %><small>No deadline recorded; enabled approved scopes are bootstrap eligible.</small><% end %></dd></div>
+      <div><dt>Last completed acquisition</dt><dd><%= weather_acquisition_result(acquisition) %><small><%= acquisition.last_result["code"] %></small></dd></div>
+      <div><dt>Consecutive failures</dt><dd><%= acquisition.consecutive_failures %><small class="weather-error"><%= acquisition.last_error_code %></small></dd></div>
+      <div><dt>Lease state</dt><dd><%= weather_acquisition_lease(acquisition) %><small>Expiry: <%= weather_time(acquisition.lease_expires_at) %></small></dd></div>
+      <div><dt>Recovery evidence</dt><dd><%= acquisition.pending_evidence.nil? ? "No pending evidence" : "Pending evidence retained" %></dd></div>
+      <div><dt>Successful coverage start</dt><dd><%= weather_time(acquisition.covered_from_at) %></dd></div>
+      <div><dt>Successful coverage through</dt><dd><%= weather_time(acquisition.covered_through_at) %></dd></div>
+    </dl>
+    <% if acquisition.consecutive_failures.positive? %><p class="weather-error">Retry/backoff uses the next eligible check. Prior successful coverage is retained.</p><% end %>
+    <details class="weather-diagnostics">
+      <summary>Recovery and coverage · <%= acquisition.coverage_gaps.size %> permanent gaps</summary>
+      <p>Initial recovery anchor: <%= weather_time(acquisition.initial_window_start_at) %></p>
+      <p class="weather-note">Coverage describes successfully processed query windows, not a complete NOAA archive. Later success does not erase permanent gaps.</p>
+      <% if acquisition.coverage_gaps.empty? %><p>No permanent coverage gaps recorded.</p><% end %>
+      <ul><% acquisition.coverage_gaps.each do |gap| %><li><%= weather_time(gap["from"]) %> – <%= weather_time(gap["through"]) %></li><% end %></ul>
+    </details>
+  </article>
+<% end %>
+
+<h2>Recent NOAA alert signals</h2>
+<p class="weather-note">Latest <%= Admin::WeatherMonitoringController::HISTORY_LIMIT %> signals across scopes. NOAA source evidence is shared; resort associations establish relevance. Signals are not notifications.</p>
+<% if @signals.empty? %><p>No alert signals have been recorded.</p><% else %>
+  <div class="weather-table-scroll" role="region" aria-label="Recent NOAA alert signals" tabindex="0">
+    <table class="table weather-table">
+      <thead><tr><th scope="col">Signal / event</th><th scope="col">NOAA identity</th><th scope="col">NOAA source time</th><th scope="col">Detected</th><th scope="col">Material changes</th><th scope="col">Associated resorts</th></tr></thead>
+      <tbody>
+        <% @signals.each do |signal| %>
+          <% source = signal.weather_alert_observation %>
+          <tr data-signal-id="<%= signal.id %>">
+            <td><%= signal.signal_type.humanize %><small><%= source.event %></small></td>
+            <td><%= source.provider.upcase %><small><code><%= source.source_identifier %></code></small><small><%= source.message_type %> · <%= source.status %></small></td>
+            <td><%= weather_time(source.source_sent_at) %></td>
+            <td><%= weather_time(signal.detected_at) %></td>
+            <td><%= Array(signal.change_details["fields"]).join(", ").presence || "None recorded" %></td>
+            <td><%= signal.resorts.map(&:resort_name).sort.join(", ").presence || "No resort associations recorded" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

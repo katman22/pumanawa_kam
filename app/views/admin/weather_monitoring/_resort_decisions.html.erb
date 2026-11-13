@@ -1,0 +1,18 @@
+  <section id="monitor-decision" class="weather-panel" aria-labelledby="monitor-decision-heading">
+    <h2 id="monitor-decision-heading">Cadence / decision</h2>
+    <p>Latest persisted evaluation: <%= weather_time(@monitor.last_decision["evaluation_at"], mapping: @monitor.mapping) %></p>
+    <p>Latest decision quality: <%= weather_state(@monitor.last_decision["quality"]) %></p>
+    <ul><% weather_decision_labels(@monitor).each do |label| %><li><%= label %></li><% end %></ul>
+    <p class="weather-note">Decision timing can be newer than the immutable snapshot in Forecast Evidence when NOAA returned the same revision. These are persisted service results; this page does not recalculate cadence.</p>
+    <details class="weather-diagnostics"><summary>Raw persisted decision</summary><pre><%= JSON.pretty_generate(@monitor.last_decision) %></pre></details>
+  </section>
+  <section class="weather-panel" aria-labelledby="decision-scheduling-heading">
+    <h2 id="decision-scheduling-heading">Persisted scheduling diagnostics</h2>
+    <dl class="weather-facts">
+      <div><dt>Next detailed check</dt><dd><%= weather_time(@monitor.next_check_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Next discovery probe</dt><dd><%= weather_time(@monitor.next_probe_at, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Acceleration until</dt><dd><%= weather_time(@monitor.acceleration_until, mapping: @monitor.mapping) %></dd></div>
+      <div><dt>Last error</dt><dd><%= @monitor.last_error_code.presence || "None recorded" %><small><%= weather_time(@monitor.last_error_at, mapping: @monitor.mapping) %></small></dd></div>
+    </dl>
+    <p class="weather-note">These are current persisted forecast deadlines, not a historical execution log or the independent geographic acquisition schedule.</p>
+  </section>

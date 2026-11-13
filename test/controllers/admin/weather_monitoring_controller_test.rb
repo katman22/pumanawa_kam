@@ -27,8 +27,8 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_root_path(locale: :en)
   end
 
-  def monitor_path(resort = @resort)
-    admin_weather_monitoring_resort_path(resort)
+  def monitor_path(resort = @resort, tab: nil)
+    admin_weather_monitoring_resort_path(resort, tab: tab)
   end
 
   test "index is Canyon themed and displays distinct check and probe state without writes" do
@@ -62,19 +62,21 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-snowfall='current']", "UNKNOWN · inspect recorded evidence"
   end
 
-  test "detail renders bounded snowfall decisions quality and immutable snapshot window" do
-    get monitor_path
+  test "detail tabs retain bounded snowfall decisions quality and immutable snapshot window" do
+    get monitor_path(tab: "evidence")
     assert_response :success
     assert_select "#current-forecast .weather-snow-total", "4.2″"
     assert_select "tr[data-bucket='48-72'] td", text: "0–2.1″ (bounded)"
     assert_select "tr[data-bucket='72-120'] td", text: "2.1–4.2″ (bounded)"
+    assert_select "#current-forecast", text: /immutable snapshot/
+    assert_select "#current-forecast", text: /Maximum precipitation probability · recorded window/
+    get monitor_path(tab: "decisions")
     assert_select "#monitor-decision li", "Snow candidate 48–72 hours away"
     assert_select "#monitor-decision li", "No previous forecast baseline"
-    assert_select "#source-quality", text: /2669 m \(NOAA grid\)/
-    assert_select "#current-forecast", text: /immutable snapshot/
     assert_select "details summary", text: "Raw persisted decision"
+    get monitor_path
+    assert_select "#source-quality", text: /2669 m \(NOAA grid\)/
     assert_select "#source-quality table", text: /120 h known/
-    assert_select "#current-forecast", text: /Maximum precipitation probability · recorded window/
   end
 
   test "partial and unsupported snow evidence remain diagnosable on detail" do
@@ -83,16 +85,18 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     data = normalized(raw)
     observation = WeatherMonitoring::RecordObservation.call(resort: @resort, normalized: data, snapshot: snapshot(data), fetched_at: ANCHOR).value[:observation]
     @monitor.update!(current_forecast_observation: observation, last_decision: { quality: "partial" })
-    get monitor_path
+    get monitor_path(tab: "evidence")
     assert_response :success
     assert_select "#current-forecast .weather-snow-total", text: /PARTIAL/
+    get monitor_path
     assert_select "#source-quality", text: /Gap:/
     raw["properties"]["snowfallAmount"]["uom"] = "unknown_unit"
     data = normalized(raw)
     observation = WeatherMonitoring::RecordObservation.call(resort: @resort, normalized: data, snapshot: snapshot(data), fetched_at: ANCHOR).value[:observation]
     @monitor.update!(current_forecast_observation: observation, last_decision: { quality: "unknown" })
-    get monitor_path
+    get monitor_path(tab: "evidence")
     assert_select "#current-forecast .weather-snow-total", "UNKNOWN"
+    get monitor_path
     assert_select "#source-quality", text: /Unsupported unit or value/
   end
 
@@ -101,7 +105,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
       WeatherForecastObservation.create!(@observation.attributes.except("id").merge("first_fetched_at" => ANCHOR + index.minutes,
         "content_sha256" => Digest::SHA256.hexdigest("weather-history-#{index}")))
     end
-    get monitor_path
+    get monitor_path(tab: "evidence")
     assert_response :success
     assert_select "#forecast-history tbody tr", count: 25
     assert_equal records.reverse.first(25).map(&:id).map(&:to_s), css_select("#forecast-history tr[data-observation-id]").map { |row| row["data-observation-id"] }
@@ -115,7 +119,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     WeatherAlertObservation.create!(related.attributes.except("id").merge("source_identifier" => "unrelated-alert",
       "affected_zone_ids" => [ "UTZ1110" ], "evidence" => { "headline" => "Unrelated mountain message" }))
     @monitor.update!(active_alert_identifiers: [ related.source_identifier ])
-    get monitor_path
+    get monitor_path(tab: "alerts")
     assert_response :success
     assert_select "#alert-history .weather-alert", count: 2
     assert_select "#alert-history", text: /Identifier listed active at last successful probe/
@@ -144,8 +148,10 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
       assert_select "nav a[href=?]", admin_weather_monitoring_path(locale: :en), count: allowed ? 1 : 0
       get admin_weather_monitoring_path
       assert_response allowed ? :success : :forbidden
-      get monitor_path
-      assert_response allowed ? :success : :forbidden
+      %w[overview evidence decisions alerts].each do |tab|
+        get monitor_path(tab: tab)
+        assert_response allowed ? :success : :forbidden
+      end
       get admin_weather_monitoring_resort_observation_path(@resort, @observation)
       assert_response allowed ? :success : :forbidden
       next if allowed
@@ -177,10 +183,12 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
       patch enable_admin_weather_monitoring_resort_path(@resort), params: { resort_weather_monitor: { mapping: { gridId: "forged" } } }
       assert_response :see_other
       assert @monitor.reload.enabled?
+      assert_redirected_to admin_weather_monitoring_resort_path(@resort, locale: :en)
       assert_equal "SLC", @monitor.mapping["gridId"]
       patch disable_admin_weather_monitoring_resort_path(@resort)
       assert_response :see_other
       refute @monitor.reload.enabled?
+      assert_redirected_to admin_weather_monitoring_resort_path(@resort, locale: :en)
     end
     assert_equal before, @resort.reload.attributes
   end
@@ -189,7 +197,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
     [ [ false, evaluate_admin_weather_monitoring_resort_path(@resort) ], [ true, probe_admin_weather_monitoring_resort_path(@resort) ] ].each do |probe, path|
       WeatherMonitoring::RunEvaluation.expects(:call).with(resort: @resort, persist: true, probe: probe).returns(ServiceResult.new(success: true, value: {}))
       post path
-      assert_redirected_to admin_weather_monitoring_resort_path(@resort, locale: :en)
+      assert_redirected_to admin_weather_monitoring_resort_path(@resort, locale: :en, tab: "decisions")
       assert_response :see_other
     end
   end
@@ -197,6 +205,7 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
   test "service failure is displayed with a safe code and no provider body" do
     WeatherMonitoring::RunEvaluation.expects(:call).returns(ServiceResult.new(success: false, value: { code: "transport_error", details: "PRIVATE PROVIDER BODY" }))
     post evaluate_admin_weather_monitoring_resort_path(@resort)
+    assert_redirected_to admin_weather_monitoring_resort_path(@resort, tab: "decisions", locale: :en)
     follow_redirect!
     assert_select "[role='status']", text: /transport_error/
     assert_no_match /PRIVATE PROVIDER BODY/, response.body
@@ -257,6 +266,62 @@ class AdminWeatherMonitoringControllerTest < ActionDispatch::IntegrationTest
   test "missing resort returns not found" do
     get admin_weather_monitoring_resort_path(-1)
     assert_response :not_found
+  end
+
+  test "resort tab URLs select only their own sections and preserve native legacy fallback links" do
+    sections = { "overview" => "monitor-state", "evidence" => "forecast-history",
+      "decisions" => "monitor-decision", "alerts" => "alert-history" }
+    before = @monitor.attributes
+    WeatherMonitoring::RunEvaluation.expects(:call).never
+    assert_no_difference [ "ResortWeatherMonitor.count", "WeatherForecastObservation.count", "WeatherAlertObservation.count", "WeatherAlertAcquisition.count" ] do
+      sections.each do |tab, section|
+        get monitor_path(tab: tab)
+        assert_response :success
+        assert_select "nav.weather-tabs a[aria-current='page']", text: { "overview" => "Overview", "evidence" => "Forecast Evidence", "decisions" => "Decisions", "alerts" => "Alert History" }.fetch(tab), count: 1
+        assert_select "section##{section}", count: 1
+        sections.except(tab).each_value { |other| assert_select "section##{other}", count: 0 }
+        assert_select ".weather-controls", count: tab == "overview" ? 1 : 0
+        assert_select "[data-weather-detail-links-tab-value=?]", tab
+      end
+    end
+    assert_equal before, @monitor.reload.attributes
+    get monitor_path
+    assert_select "noscript a#forecast-history[href=?]", admin_weather_monitoring_resort_path(@resort, tab: "evidence", anchor: "forecast-history", locale: :en)
+    get monitor_path(tab: "../../other")
+    assert_response :not_found
+  end
+
+  test "resort tabs avoid hidden history and large normalized interval reads" do
+    queries = []
+    listener = ->(_name, _start, _finish, _id, payload) { queries << payload[:sql] if payload[:sql].start_with?("SELECT") && payload[:name] != "SCHEMA" }
+    %w[overview evidence decisions alerts].each do |tab|
+      queries.clear
+      ActiveSupport::Notifications.subscribed(listener, "sql.active_record") { get monitor_path(tab: tab) }
+      assert_response :success
+      forecasts = queries.select { |sql| sql.include?('FROM "weather_forecast_observations"') }
+      alerts = queries.select { |sql| sql.include?('FROM "weather_alert_observations"') }
+      assert_equal({ "overview" => 1, "evidence" => 2, "decisions" => 0, "alerts" => 0 }.fetch(tab), forecasts.size)
+      assert_empty alerts unless tab == "alerts"
+      assert_equal 1, alerts.size if tab == "alerts"
+      assert_no_match /selected_intervals/, forecasts.join
+      assert_match /LIMIT/, forecasts.last if tab == "evidence"
+    end
+  end
+
+  test "all resort tabs safely handle missing monitor and empty evidence without creating state" do
+    other = Resort.create!(resort_name: "Unconfigured resort", slug: "unconfigured-tabs", latitude: 40, longitude: -111)
+    assert_no_difference "ResortWeatherMonitor.count" do
+      %w[overview evidence decisions alerts].each do |tab|
+        get monitor_path(other, tab: tab)
+        assert_response :success
+        assert_select ".weather-controls", count: 0
+      end
+    end
+    get monitor_path(other, tab: "evidence")
+    assert_select "#current-forecast", text: /No forecast observation/
+    assert_select "#forecast-history", text: /No forecast history/
+    get monitor_path(other, tab: "alerts")
+    assert_select "#alert-history", text: /Forecast zone mapping is not recorded/
   end
 
   def monitoring_queries
