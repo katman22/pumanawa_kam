@@ -37,3 +37,6 @@
 
 # Keep local research notes and future research files out of version control.
 /research/
+
+# Keep machine-specific database configuration local.
+/config/database.yml

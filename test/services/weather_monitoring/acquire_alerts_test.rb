@@ -114,6 +114,28 @@ class WeatherAcquireAlertsTest < ActiveSupport::TestCase
     assert_nil @state.last_error_code
   end
 
+  test "malformed pagination cannot advance successful coverage or persist partial evidence" do
+    assert acquire.success?
+    before = @state.reload.attributes
+    travel_to ANCHOR + 10.minutes
+    Noaa::Alerts::Fetch.unstub(:call)
+    body = fixture("brighton_alert_signal").merge("pagination" => {})
+    HTTParty.expects(:get).once.returns(http_response(body))
+    WeatherMonitoring::CheckpointAlertEvidence.expects(:call).never
+    assert_no_difference [ "WeatherAlertObservation.count", "WeatherAlertSignal.count" ] do
+      result = acquire
+      assert result.failure?
+      assert_equal "alert_pagination_invalid", result.value[:code]
+    end
+    @state.reload
+    assert_equal before["covered_through_at"], @state.covered_through_at
+    assert_equal before["covered_from_at"], @state.covered_from_at
+    assert_equal before["last_success_at"], @state.last_success_at
+    assert_nil @state.pending_evidence
+    assert_equal 1, @state.consecutive_failures
+    assert_equal "alert_pagination_invalid", @state.last_error_code
+  end
+
   test "signal failure retains source evidence and retry is idempotent" do
     Noaa::Alerts::Fetch.stubs(:call).returns(success(fixture("brighton_alert_signal")))
     WeatherMonitoring::GenerateAlertSignals.expects(:call).returns(ServiceResult.new(success: false, value: { code: "alert_signal_persistence_error" }))

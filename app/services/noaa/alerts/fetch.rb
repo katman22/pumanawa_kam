@@ -36,8 +36,9 @@ module Noaa
 
           features.concat(body["features"])
           pagination = body["pagination"]
-          return failed(code: "alert_pagination_invalid") unless pagination.nil? || pagination.is_a?(Hash)
+          return failed(code: "alert_pagination_invalid") unless pagination.nil? || (pagination.is_a?(Hash) && pagination.key?("next"))
 
+          # Explicit null is an adapter tolerance, not a verified NOAA terminal format.
           url = pagination&.fetch("next", nil)
           return failed(code: "alert_pagination_invalid") unless url.nil? || (url.is_a?(String) && url.present?)
         end

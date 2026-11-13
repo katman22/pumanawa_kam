@@ -84,6 +84,37 @@ class NoaaAlertsFetchTest < Minitest::Test
     Noaa::Alerts::Fetch.call(latitude: 40, longitude: -111, active: false, since: ANCHOR - 24.hours, through: ANCHOR)
   end
 
+  def test_present_pagination_requires_next_and_never_returns_partial_features
+    [ {}, { "previous" => "https://api.weather.gov/alerts?cursor=previous" } ].each do |pagination|
+      body = fixture("brighton_alert_signal").merge("pagination" => pagination)
+      HTTParty.expects(:get).once.returns(http_response(body))
+      result = bounded_fetch
+      assert result.failure?
+      assert_equal "alert_pagination_invalid", result.value[:code]
+      refute result.value.key?("features")
+    end
+  end
+
+  def test_malformed_pagination_on_a_later_page_discards_the_entire_collection
+    first = fixture("brighton_alert_signal").merge("pagination" => { "next" => continuation })
+    HTTParty.expects(:get).twice.returns(http_response(first), http_response("features" => [], "pagination" => {}))
+    result = bounded_fetch
+    assert result.failure?
+    assert_equal "alert_pagination_invalid", result.value[:code]
+    refute result.value.key?("features")
+  end
+
+  def test_absent_pagination_and_null_next_remain_terminal_for_history_and_active_queries
+    [ {}, { "pagination" => { "next" => nil } } ].each do |metadata|
+      [ true, false ].each do |active|
+        HTTParty.expects(:get).once.returns(http_response({ "features" => [] }.merge(metadata)))
+        result = active ? Noaa::Alerts::Fetch.call(latitude: 40, longitude: -111) : bounded_fetch
+        assert result.success?, result.value.inspect
+        assert_empty result.value["features"]
+      end
+    end
+  end
+
   def continuation(**overrides)
     "https://api.weather.gov/alerts?#{URI.encode_www_form({ point: '40.0,-111.0', start: (ANCHOR - 24.hours).iso8601,
       end: ANCHOR.iso8601, cursor: 'next' }.merge(overrides))}"
