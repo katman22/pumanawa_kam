@@ -165,6 +165,7 @@ Rails.application.routes.draw do
       get  "version-check",           to: "mobile_api#version_check"
 
       # Weather
+      get "weather/monitor", to: "weather_monitors#show"
       get "weather/index"
       get "weather/forecasts"
       get "weather/hourly"
