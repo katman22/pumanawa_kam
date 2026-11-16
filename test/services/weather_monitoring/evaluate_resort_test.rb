@@ -469,4 +469,113 @@ class WeatherEvaluateResortTest < ActiveSupport::TestCase
     end
     assert_equal original, observation.reload.attributes
   end
+
+  test "legacy normalization fetches once without old validators then reuses current version on probe 304" do
+    monitor, old = legacy_normalization_monitor
+    before = old.attributes.deep_dup
+    Noaa::Forecast::GridData.unstub(:call)
+    Noaa::Forecast::Point.expects(:call).never
+    requests = []
+    HTTParty.expects(:get).twice.with do |url, options|
+      assert_equal @mapping["forecastGridData"], url
+      requests << options[:headers].dup
+      true
+    end.returns(http_response(@grid, headers: { "ETag" => 'W/"version-two"' }), http_response("", code: 304))
+    assert_difference "WeatherForecastObservation.count", 1 do
+      result = evaluate(persist: true, fetch_alerts: false)
+      assert result.success?, result.value.inspect
+      assert_equal "incompatible_source", result.value[:change]["disposition"]
+    end
+    current = monitor.reload.current_forecast_observation
+    assert_equal 2, current.normalization_version
+    assert_equal old.source_updated_at, current.source_updated_at
+    assert_equal old.content_sha256, current.content_sha256
+    assert_no_difference "WeatherForecastObservation.count" do
+      result = evaluate(persist: true, probe: true, fetch_alerts: false)
+      assert result.success?, result.value.inspect
+      assert_equal "existing", result.value[:observation]
+    end
+    refute requests.first.key?("If-Modified-Since")
+    refute requests.first.key?("If-None-Match")
+    assert_equal 'W/"version-two"', requests.last["If-None-Match"]
+    assert_equal before, old.reload.attributes
+  end
+
+  test "unexpected 304 during version migration has one unconditional recovery and never relabels history" do
+    monitor, old = legacy_normalization_monitor
+    before = old.attributes.deep_dup
+    Noaa::Forecast::GridData.unstub(:call)
+    HTTParty.expects(:get).twice.with do |_url, options|
+      refute options[:headers].key?("If-Modified-Since")
+      refute options[:headers].key?("If-None-Match")
+      true
+    end.returns(http_response("", code: 304), http_response(@grid))
+    assert evaluate(persist: true, fetch_alerts: false).success?
+    assert_equal 2, monitor.reload.current_forecast_observation.normalization_version
+    assert_equal before, old.reload.attributes
+  end
+
+  test "migration repeated 304 is a failure retaining version one and ordinary failure bookkeeping" do
+    monitor, old = legacy_normalization_monitor
+    before = old.attributes.deep_dup
+    Noaa::Forecast::GridData.unstub(:call)
+    HTTParty.expects(:get).twice.returns(http_response("", code: 304))
+    assert_no_difference "WeatherForecastObservation.count" do
+      result = evaluate(persist: true, fetch_alerts: false)
+      assert result.failure?
+      assert_equal "unusable_not_modified", result.value[:code]
+    end
+    assert_equal old.id, monitor.reload.current_forecast_observation_id
+    assert_equal 1, monitor.failure_count
+    assert_equal ANCHOR + 1.hour, monitor.next_probe_at
+    assert_equal before, old.reload.attributes
+  end
+
+  test "rate limit during version migration retains old observation and existing backoff" do
+    monitor, old = legacy_normalization_monitor
+    before = old.attributes.deep_dup
+    Noaa::Forecast::GridData.unstub(:call)
+    travel_to ANCHOR do
+      HTTParty.expects(:get).once.returns(http_response({}, code: 429, headers: { "Retry-After" => "7200" }))
+      assert_no_difference "WeatherForecastObservation.count" do
+        result = evaluate(persist: true, fetch_alerts: false)
+        assert result.failure?
+        assert_equal "rate_limited", result.value[:code]
+      end
+      assert_equal old.id, monitor.reload.current_forecast_observation_id
+      assert_equal ANCHOR + 2.hours, monitor.next_probe_at
+      HTTParty.expects(:get).never
+      assert_equal "rate_limited", evaluate(persist: true, fetch_alerts: false).value[:code]
+    end
+    assert_equal before, old.reload.attributes
+  end
+
+  test "version migration during a probe preserves existing due precedence without claiming a grid content change" do
+    monitor, old = legacy_normalization_monitor
+    deadline = ANCHOR + 2.hours
+    monitor.update!(next_check_at: deadline)
+    Noaa::Forecast::GridData.expects(:call).once.with(mapping: @mapping, validators: {}, retained: nil)
+      .returns(success("status" => 200, "body" => @grid, "headers" => {}))
+    result = evaluate(persist: true, probe: true, fetch_alerts: false)
+    assert result.success?, result.value.inspect
+    assert_equal "incompatible_source", result.value[:change]["disposition"]
+    assert_nil result.value[:change]["meaningful_change"]
+    refute_includes result.value[:cadence]["reasons"], "grid_probe_changed"
+    assert_equal deadline, monitor.reload.next_check_at
+    assert_equal ANCHOR + 6.hours, monitor.next_probe_at
+    assert_equal 2, monitor.current_forecast_observation.normalization_version
+    assert_equal old.content_sha256, monitor.current_forecast_observation.content_sha256
+  end
+
+  private
+
+  def legacy_normalization_monitor
+    data = normalized(@grid).merge("normalization_version" => 1)
+    old = WeatherMonitoring::RecordObservation.call(resort: @resort, normalized: data, snapshot: snapshot(data), fetched_at: ANCHOR,
+      source_metadata: { "requested_coordinates" => { "latitude" => @resort.latitude, "longitude" => @resort.longitude },
+        "http_headers" => { "last-modified" => "Tue, 20 Oct 2026 06:31:29 GMT", "etag" => 'W/"legacy"' } }).value.fetch(:observation)
+    monitor = enabled_monitor
+    monitor.update!(mapping: @mapping, mapping_checked_at: ANCHOR, current_forecast_observation: old)
+    [ monitor, old ]
+  end
 end

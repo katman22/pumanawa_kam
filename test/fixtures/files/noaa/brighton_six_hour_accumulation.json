@@ -1,0 +1,307 @@
+{
+  "_fixture": {
+    "kind": "synthetic reconstruction of reported Brighton duration patterns, not captured production payload",
+    "synthetic_fields": "later amounts and context; not a reproduction of the production 17.4-19 inch estimate",
+    "evaluation_at": "2026-11-15T19:45:00Z"
+  },
+  "properties": {
+    "updateTime": "2026-11-15T18:31:00Z",
+    "gridId": "SLC",
+    "gridX": 110,
+    "gridY": 167,
+    "validTimes": "2026-11-15T12:00:00Z/P7D",
+    "snowfallAmount": {
+      "uom": "wmoUnit:mm",
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-15T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T18:00:00Z/PT6H",
+          "value": 100
+        },
+        {
+          "validTime": "2026-11-17T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T18:00:00Z/PT6H",
+          "value": 25.4
+        },
+        {
+          "validTime": "2026-11-21T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T18:00:00Z/PT6H",
+          "value": 0
+        }
+      ]
+    },
+    "quantitativePrecipitation": {
+      "uom": "wmoUnit:mm",
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-15T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-16T18:00:00Z/PT6H",
+          "value": 100
+        },
+        {
+          "validTime": "2026-11-17T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-17T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-18T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-19T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-20T18:00:00Z/PT6H",
+          "value": 25.4
+        },
+        {
+          "validTime": "2026-11-21T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-21T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T00:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T06:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T12:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-22T18:00:00Z/PT6H",
+          "value": 0
+        },
+        {
+          "validTime": "2026-11-23T00:00:00Z/PT6H",
+          "value": 0
+        }
+      ]
+    },
+    "probabilityOfPrecipitation": {
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/P8D",
+          "value": 80
+        }
+      ],
+      "uom": "wmoUnit:percent"
+    },
+    "snowLevel": {
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/P8D",
+          "value": 2200
+        }
+      ],
+      "uom": "wmoUnit:m"
+    },
+    "temperature": {
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/P8D",
+          "value": -2
+        }
+      ],
+      "uom": "wmoUnit:degC"
+    },
+    "weather": {
+      "values": [
+        {
+          "validTime": "2026-11-15T12:00:00Z/P8D",
+          "value": [
+            {
+              "weather": "snow"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

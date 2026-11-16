@@ -103,7 +103,10 @@ module WeatherMonitoring
 
     def fetch_grid(use_retained: true)
       compatible = use_retained && @previous && @previous.source_key == "#{@mapping['gridId']}/#{@mapping['gridX']},#{@mapping['gridY']}" &&
+        @previous.normalization_version == NormalizeForecast::VERSION &&
         @previous.source_metadata["requested_coordinates"] == { "latitude" => @resort.latitude, "longitude" => @resort.longitude }
+      # A 304 cannot upgrade a retained interpretation. Fetch source JSON once
+      # through the normal guarded evaluation before using its validators again.
       headers = compatible ? @previous.source_metadata.fetch("http_headers", {}) : {}
       validators = { "If-Modified-Since" => headers["last-modified"], "If-None-Match" => headers["etag"] }.compact
       Noaa::Forecast::GridData.call(mapping: @mapping, validators: validators, retained: compatible ? { "normalized" => @previous.normalized } : nil)

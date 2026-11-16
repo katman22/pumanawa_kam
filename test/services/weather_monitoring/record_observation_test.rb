@@ -46,4 +46,31 @@ class WeatherRecordObservationTest < ActiveSupport::TestCase
     observation = record(forecast)[:observation]
     assert_raises(ActiveRecord::RecordNotUnique) { WeatherForecastObservation.insert_all!([ observation.attributes.except("id") ]) }
   end
+
+  test "version two interpretation creates separate immutable evidence with identical source and content identity" do
+    raw = fixture("brighton_shortened_accumulation")
+    at = Time.iso8601(raw.fetch("_fixture").fetch("evaluation_at"))
+    current = normalized(raw)
+    legacy = current.deep_dup
+    legacy["normalization_version"] = 1
+    %w[snowfallAmount quantitativePrecipitation].each do |name|
+      legacy["quality"]["layers"][name]["diagnostics"] = [ "uncertain_accumulation_duration" ]
+    end
+    old = record(legacy, at: at)[:observation]
+    original = old.attributes.deep_dup
+    assert_equal "unknown", old.quality["state"]
+    fresh = record(current, at: at)
+    assert_equal "created", fresh[:disposition]
+    assert_equal 2, fresh[:observation].normalization_version
+    assert_equal "complete", fresh[:observation].quality["state"]
+    assert_equal old.source_updated_at, fresh[:observation].source_updated_at
+    assert_equal old.content_sha256, fresh[:observation].content_sha256
+    assert_equal old.selected_intervals, fresh[:observation].selected_intervals
+    again = record(current, at: at + 1.hour)
+    assert_equal "existing", again[:disposition]
+    assert_equal fresh[:observation].id, again[:observation].id
+    assert_equal 2, WeatherForecastObservation.where(resort: @resort).count
+    assert_equal original, old.reload.attributes
+    assert_raises(ActiveRecord::ReadOnlyRecord) { old.update!(normalization_version: 2) }
+  end
 end
