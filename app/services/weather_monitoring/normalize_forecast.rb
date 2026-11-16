@@ -2,7 +2,7 @@
 
 module WeatherMonitoring
   class NormalizeForecast < ApplicationService
-    VERSION = 1
+    VERSION = 2
     LAYERS = {
       "snowfallAmount" => [ "mm", "accumulation" ],
       "quantitativePrecipitation" => [ "mm", "accumulation" ],
@@ -29,7 +29,7 @@ module WeatherMonitoring
         "content_sha256" => Digest::SHA256.hexdigest(JSON.generate(canonical(layers))),
         "selected_intervals" => layers, "quality" => { "layers" => quality },
         "source_metadata" => properties.slice("validTimes", "elevation", "gridId", "gridX", "gridY"))
-    rescue KeyError, ArgumentError, TypeError
+    rescue KeyError, ArgumentError, TypeError, JSON::GeneratorError
       failed(code: "invalid_grid")
     end
 
@@ -51,7 +51,8 @@ module WeatherMonitoring
         end
         value, recognized = convert(entry["value"], layer["uom"], unit)
         diagnostics << "unsupported_unit_or_value" unless recognized
-        uncertain = semantic == "accumulation" && end_at - start_at != 6.hours
+        uncertain = semantic == "accumulation" && !supported_accumulation_duration?(
+          end_at - start_at, source: entry["value"], converted: value, recognized: recognized)
         diagnostics << "uncertain_accumulation_duration" if uncertain
         { "start_at" => start_at.iso8601(start_at.subsec.zero? ? 0 : 6), "end_at" => end_at.iso8601(end_at.subsec.zero? ? 0 : 6),
           "value" => value, "unit" => unit, "source_unit" => layer["uom"],
@@ -62,6 +63,15 @@ module WeatherMonitoring
       rows.each_cons(2) { |a, b| diagnostics << "conflicting_overlap" if b["start_at"] < a["end_at"] }
       diagnostics << "missing_layer" if rows.empty?
       [ rows, { "diagnostics" => diagnostics.uniq } ]
+    end
+
+    def supported_accumulation_duration?(seconds, source:, converted:, recognized:)
+      return true if seconds == 6.hours
+
+      # A rounded canonical zero is not evidence of a source-exact zero.
+      seconds.positive? && seconds < 6.hours && recognized &&
+        source.is_a?(Numeric) && source.finite? && source.zero? &&
+        converted.is_a?(Numeric) && converted.finite? && converted.zero?
     end
 
     def parse_interval(value)
